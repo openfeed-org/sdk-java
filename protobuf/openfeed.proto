@@ -1,0 +1,563 @@
+/**
+ * Copyright (C) 2011-2015 Barchart, Inc. <http://www.barchart.com/>
+ *
+ * All rights reserved. Licensed under the OSI BSD License.
+ *
+ * http://www.opensource.org/licenses/bsd-license.php
+ */
+syntax = "proto3";
+
+package org.openfeed;
+
+option java_multiple_files = true;
+option java_generate_equals_and_hash = true;
+option optimize_for = SPEED;
+
+import "instrument.proto";
+
+/// A wrapper for Openfeed data.  Will contain exactly one of the supported
+// message types
+message OpenfeedMessage {
+
+	 /// Millsecond unix epoch at time of message transmission (UTC)
+   sint64 sendingTime = 1;
+
+   /// The total number of markets available on this channel
+   // at the time the message was sent.  For UDP snapshot and definition feeds.
+   sint32 totalCount = 2;
+
+   /// The most recent packet sequence number sent on the incremental feed
+   // at the time this message was sent.  For UDP snapshot and definition feeds.
+   int64 syncSequence  = 3;
+
+   oneof data {
+     HeartBeat heartBeart = 10;
+     InstrumentDefinition instrumentDefinition = 11;
+     InstrumentGroupStatus instrumentGroupStatus = 12;
+     MarketSnapshot marketSnapshot = 13;
+     MarketUpdate marketUpdate = 14;
+  }
+}
+
+/// Heart Beat
+message HeartBeat {
+  /// UTC timestamp of transaction, milli seconds since Unix epoch
+  sint64 transactionTime = 1;
+  string status = 2;
+}
+
+
+/// Instrument Group Status
+message InstrumentGroupStatus {
+  /// UTC Timestamp of transaction, milli seconds since Unix epoch
+  sint64 transactionTime = 1;
+  string instrumentGroupId = 2;
+  InstrumentTradingStatus tradingStatus = 3;
+  sint32 tradeDate = 4;
+}
+
+/// Snapshot for a market
+message MarketSnapshot {
+
+  /// Unique id identifying the market
+  sint64 marketId = 1;
+  // UTC Timestamp of transaction, milli seconds since Unix epoch
+  sint64 transactionTime = 2;
+  // Instrument level sequence number
+  int64 marketSequence  = 3;
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 4;
+
+  InstrumentStatus instrumentStatus = 10;
+  // Best Bid Offer
+  BestBidOffer bbo = 11;
+  // Index Value
+  IndexValue index = 12;
+  // Price Level Book
+  AddPriceLevel priceLevels = 13;
+  // Order Book
+  repeated AddOrder orders = 14;
+  News news = 15;
+
+  /// Most recent opening price
+  Open open = 30;
+
+  /// High price for the trading session
+  High high = 31;
+
+  /// Low price for the trading session
+  Low low = 32;
+
+  /// Most recent closing price
+  Close close = 33;
+
+  /// Previous closing price
+  PrevClose prevClose = 34;
+
+  /// Most recent traded price and quantity
+  Last last = 35;
+
+  /// Year high price
+  YearHigh yearHigh = 36;
+
+  /// Year low price
+  YearLow yearLow = 37;
+
+  /// Total traded volume
+  Volume volume = 38;
+
+  /// Most recent settlement price
+  Settlement settlement = 39;
+
+  /// Most recent open interest
+  OpenInterest openInterest = 40;
+
+  /// Most recent volume weighted average price
+  Vwap vwap = 41;
+
+
+  Dividend dividend = 42;
+  NumberOfTrades numberOfTrades = 43;
+  MonetaryValue monetaryValue = 44;
+
+}
+
+//
+// Market Update for an instrument
+//
+message MarketUpdate {
+
+  /// Unique id identifying the market
+  sint64 marketId = 1;
+
+  /// UTC Timestamp of transaction, milli seconds since Unix epoch
+  sint64 transactionTime = 2;
+
+  /// Market level sequencing number
+  sint64 marketSequence = 3;
+
+  // Market participant/originator
+  string originatorId = 4;
+
+  bytes reserved = 5;
+
+  /// True if data is consolidated over many market participants/originators
+  bool consolidated = 6;
+
+
+  repeated Entry entry = 10;
+  message Entry {
+   oneof data {
+         InstrumentStatus instrumentStatus = 1;
+         BestBidOffer bbo = 2;
+         AddPriceLevel addPriceLevel = 3;
+         DeletePriceLevel deletePriceLevel = 4;
+         ModifyPriceLevel modifyPriceLevel = 5;
+         AddOrder addOrder = 6;
+         DeleteOrder deleteOrder = 7;
+         ModifyOrder modifyOrder = 8;
+         IndexValue index = 9;
+         Trade trade = 10;
+         TradeCorrection tradeCorrection = 11;
+         TradeCancel tradeCancel = 12;
+         News news = 13;
+         ClearBook clearBook = 14;
+
+         // Statistics
+         Open open = 30;
+         High high = 31;
+         Low low = 32;
+         Close close = 33;
+         PrevClose prevClose = 34;
+         Last last = 35;
+         YearHigh yearHigh = 36;
+         YearLow yearLow = 37;
+         Volume volume = 38;
+         Settlement settlement = 39;
+         OpenInterest openInterest = 40;
+         Vwap vwap = 41;
+         Dividend dividend = 42;
+         NumberOfTrades numberOfTrades = 43;
+         MonetaryValue monetaryValue = 44;
+    }
+  }
+}
+
+
+//
+// Enums
+//
+
+/// Book side
+enum BookSide {
+  BID = 0;
+	OFFER = 1;
+}
+
+enum InstrumentTradingStatus {
+    TRADING_HALT = 0;
+    TRADING_RESUME = 1;
+    PRE_OPEN = 2;
+    OPEN = 3;
+    PRE_CLOSE = 4;
+    CLOSE = 5;
+    UNKNOWN = 6;
+    QUOTATION_RESUME = 7;
+    OPEN_DELAY = 8;
+    NO_OPEN_NO_RESUME = 9;
+    FAST_MARKET = 10;
+    FAST_MARKET_END = 11;
+    LATE_MARKET = 12;
+    LATE_MARKET_END = 13;
+    POST_SESSION = 14;
+    POST_SESSION_END = 15;
+}
+
+enum RegulationSHOShortSalePriceTest {
+  PRICE_TEST_NONE = 0;
+  PRICE_TEST_IN_EFFECT = 1;
+  PRICE_TEST_REMAINS_IN_EFFECT = 2;
+}
+
+
+enum SettlementTerms {
+    CASH = 0;
+    NON_NET = 1;
+    CONTINGENT_TRADE = 2;
+    CASH_TODAY = 3;
+    DATE = 4;
+}
+
+enum CrossType {
+    DEFAULT = 0;
+    INTERNAL = 1;
+    BASIS = 2;
+    CONTINGENT = 3;
+    SPECIAL = 4;
+    VWAP = 5;
+}
+
+
+//
+// Instrument Status
+//
+message InstrumentStatus {
+  InstrumentTradingStatus tradingStatus = 10;
+  // UTC Timestamp, milli seconds since Unix epoch
+  sint64 openingTime = 11;
+  string note = 12;
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 13;
+  RegulationSHOShortSalePriceTest regulationSHOShortSalePriceTest = 14;
+}
+
+
+/// Best Bid and Offer.
+// If a side is not present, then that side has been deleted.
+//
+message BestBidOffer {
+
+  /// Apply factorPrice
+  sint64 bidPrice = 10;
+
+  /// Apply factorQuantity
+  sint64 bidQuantity = 11;
+
+  sint32 bidOrderCount = 12;
+
+  /// Liquidity provider information
+  // For Forex: BANK:CITY
+  // For Equities: EXCHANGE_MIC
+  string bidOriginator = 13;
+
+  /// Apply factorPrice
+  sint64 offerPrice = 20;
+
+  /// Apply factorQuantity
+  sint64 offerQuantity = 21;
+
+  sint32 offerOrderCount = 22;
+
+  /// Liquidity provider information
+  // For Forex: BANK:CITY
+  // For Equities: EXCHANGE_MIC
+  string offerOriginator = 23;
+
+  string quoteCondition = 30;
+
+  bool nationalBboUpdated = 31;
+
+}
+
+
+/// Insert a new price level, pushing existing levels down
+message AddPriceLevel {
+  /// price level index, starting at 1
+  sint32 level = 10;
+  BookSide side = 11;
+
+  /// Apply factorPrice
+  sint64 price = 12;
+  /// Apply factorQuantity
+  sint64 quantity = 13;
+  sint32 orderCount = 14;
+}
+
+/// Delete an existing price level, pulling existing levels up
+message DeletePriceLevel {
+  /// price level index, starting at 1
+  sint32 level = 10;
+  BookSide side = 11;
+}
+
+/// Modify the quantity or orderCount of an existing price level.
+/// The price itself will not change.
+message ModifyPriceLevel {
+  /// price level index, starting at 1
+  sint32 level = 10;
+  BookSide side = 11;
+  /// Apply factorPrice
+  sint64 price = 12;
+
+  /// Apply factorQuantity
+  sint64 quantity = 13;
+  sint32 orderCount = 14;
+}
+
+/// Not yet supported
+message AddOrder {
+  sint64 orderId = 10;
+  BookSide side = 11;
+  sint64 price = 12;
+  sint64 quantity = 13;
+}
+
+/// Not yet supported
+message DeleteOrder {
+  sint64 orderId = 10;
+  BookSide side = 11;
+}
+
+/// Not yet supported
+message ModifyOrder {
+  sint64 orderId = 10;
+  BookSide side = 11;
+  sint64 price = 12;
+  sint64 quantity = 13;
+}
+
+
+/// For non-tradable index products
+message IndexValue {
+  // Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+  sint64 last = 11;
+  sint64 volume = 12;
+  sint64 open = 13;
+  sint64 settlementOpen = 14;
+  sint64 specialOpen = 15;
+  sint64 high = 16;
+  sint64 low = 17;
+  sint64 close = 18;
+  sint64 bid = 19;
+  sint64 offer = 20;
+}
+
+
+/// A live trade.  When received, update the "last" field
+message Trade {
+
+  /// Apply factorPrice
+  sint64 price = 10;
+
+  /// Apply factorQuantity
+  sint64 quantity = 11;
+
+  string tradeId = 12;
+  BookSide side = 13;
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 14;
+  string buyerId = 15;
+  string sellerId = 16;
+  bool openingTrade = 17;
+  bool systemPriced = 18;
+  bool marketOnClose = 19;
+  bool oddLot = 20;
+  SettlementTerms settlementTerms = 21;
+  CrossType crossType = 22;
+  bool byPass = 23;
+  sint64 lastPrice = 24;
+  string saleCondition = 25;
+}
+
+///  Trade Correction
+message TradeCorrection {
+  // Corrected Price
+  sint64 price = 10;
+  // Corrected Quantity
+  sint64 quantity = 11;
+  string tradeId = 12;
+  BookSide side = 13;
+  // Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 14;
+  string buyerId = 15;
+  string sellerId = 16;
+  bool openingTrade = 17;
+  bool systemPriced = 18;
+  bool marketOnClose = 19;
+  bool oddLot = 20;
+  SettlementTerms settlementTerms = 21;
+  CrossType crossType = 22;
+  bool byPass = 23;
+  string originalTradeId = 24;
+  string saleCondition = 25;
+}
+
+//
+// Trade Cancel/Break
+//
+message TradeCancel {
+  sint64 correctedTradePrice = 10;
+  sint64 correctedTradeQuantity = 11;
+  string tradeId = 12;
+  string saleCondition = 13;
+}
+
+message Open {
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+
+  /// Apply factorPrice
+  sint64 price = 11;
+}
+message High {
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+
+  /// Apply factorPrice
+  sint64 price = 11;
+}
+message Low {
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+
+  /// Apply factorPrice
+  sint64 price = 11;
+}
+message Close {
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+
+  /// Apply factorPrice
+  sint64 price = 11;
+}
+message PrevClose {
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+
+  /// Apply factorPrice
+  sint64 price = 11;
+}
+
+message Last {
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+
+  /// Apply factorPrice
+  sint64 price = 11;
+
+  /// Apply factorQuantity
+  sint64 quantity = 12;
+}
+
+/// 52 week
+message YearHigh {
+  /// Apply factorPrice
+  sint64 price = 10;
+}
+
+/// 52 week
+message YearLow {
+  /// Apply factorPrice
+  sint64 price = 10;
+}
+
+/// Total volume traded
+message Volume {
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+
+  // Total volume traded.
+  sint64 volume = 11;
+}
+
+/// Total number of trades
+message NumberOfTrades {
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+  sint64 numberTrades = 11;
+}
+
+/// Total monetary value of trades
+message MonetaryValue {
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+
+  /// Apply factorPrice
+  sint64 value = 11;
+
+  string valueCurrencyCode = 12;
+}
+
+//// Settlement value for futures and options markets.
+message Settlement {
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+
+  /// Apply factorPrice
+  sint64 price = 11;
+  bool preliminarySettle = 12;
+}
+
+/// Open interest
+message OpenInterest {
+  // Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+  sint64 volume = 11;
+}
+
+/// Volume Weighted Average Price
+message Vwap {
+  // Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 10;
+  sint64 vwap = 11;
+}
+
+/// Dividend
+message Dividend {
+  // Date only, format 2012-07-04 -> 20120704
+  sint32 payableDate = 10;
+  sint32 recordDate = 11;
+  sint32 exDividendDate = 12;
+  // Cash amount of dividend
+  sint64 amount = 13;
+  string amountCurrencyCode = 14;
+  repeated string notes = 15;
+
+}
+
+/// News or informational message
+message News {
+  // Origination time = UTC timestamp milli seconds since Unix epoch
+  sint64 originationTime = 1;
+  string source = 2;
+  string languageCode = 3;
+  string headLine = 4;
+  string text = 5;
+  repeated string symbols = 6;
+}
+
+/// Clear all data from the order book that is configured for this market.
+message ClearBook {
+  sint32 reserved = 1;
+}
