@@ -1,0 +1,3911 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Message Specification - Openfeed Developer Guide</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  <link href="../extra.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Message Specification";
+    var mkdocs_page_input_path = "Message Specification.md";
+    var mkdocs_page_url = "/Message Specification/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Openfeed Developer Guide</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Message Specification</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#protocol-documentation">Protocol Documentation</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#table-of-contents">Table of Contents</a></li>
+        
+            <li><a class="toctree-l3" href="#instrumentproto">instrument.proto</a></li>
+        
+            <li><a class="toctree-l3" href="#openfeedproto">openfeed.proto</a></li>
+        
+            <li><a class="toctree-l3" href="#scalar-value-types">Scalar Value Types</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Openfeed Developer Guide</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Message Specification</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="protocol-documentation">Protocol Documentation</h1>
+<p><a name="top"/></p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#instrument.proto">instrument.proto</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition">InstrumentDefinition</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.Calendar">InstrumentDefinition.Calendar</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.Event">InstrumentDefinition.Event</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.MaturityDate">InstrumentDefinition.MaturityDate</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.PriceFormat">InstrumentDefinition.PriceFormat</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.Schedule">InstrumentDefinition.Schedule</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.SpreadLeg">InstrumentDefinition.SpreadLeg</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.Symbol">InstrumentDefinition.Symbol</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.TimeSpan">InstrumentDefinition.TimeSpan</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.BookType">InstrumentDefinition.BookType</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.EventType">InstrumentDefinition.EventType</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.InstrumentType">InstrumentDefinition.InstrumentType</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.OptionStyle">InstrumentDefinition.OptionStyle</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.OptionType">InstrumentDefinition.OptionType</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.PriceFormat.SubFormat">InstrumentDefinition.PriceFormat.SubFormat</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.State">InstrumentDefinition.State</a></li>
+<li><a href="#openfeed.proto">openfeed.proto</a></li>
+<li><a href="#org.openfeed.AddOrder">AddOrder</a></li>
+<li><a href="#org.openfeed.AddPriceLevel">AddPriceLevel</a></li>
+<li><a href="#org.openfeed.AdminMessage">AdminMessage</a></li>
+<li><a href="#org.openfeed.BestBidOffer">BestBidOffer</a></li>
+<li><a href="#org.openfeed.CapitalDistributions">CapitalDistributions</a></li>
+<li><a href="#org.openfeed.ClearBook">ClearBook</a></li>
+<li><a href="#org.openfeed.Close">Close</a></li>
+<li><a href="#org.openfeed.DeleteOrder">DeleteOrder</a></li>
+<li><a href="#org.openfeed.DeletePriceLevel">DeletePriceLevel</a></li>
+<li><a href="#org.openfeed.DividendsIncomeDistributions">DividendsIncomeDistributions</a></li>
+<li><a href="#org.openfeed.HeartBeat">HeartBeat</a></li>
+<li><a href="#org.openfeed.High">High</a></li>
+<li><a href="#org.openfeed.IndexValue">IndexValue</a></li>
+<li><a href="#org.openfeed.InstrumentGroupStatus">InstrumentGroupStatus</a></li>
+<li><a href="#org.openfeed.InstrumentStatus">InstrumentStatus</a></li>
+<li><a href="#org.openfeed.Last">Last</a></li>
+<li><a href="#org.openfeed.LoginRequest">LoginRequest</a></li>
+<li><a href="#org.openfeed.LoginResponse">LoginResponse</a></li>
+<li><a href="#org.openfeed.LogoutRequest">LogoutRequest</a></li>
+<li><a href="#org.openfeed.LogoutResponse">LogoutResponse</a></li>
+<li><a href="#org.openfeed.Low">Low</a></li>
+<li><a href="#org.openfeed.MarketSnapshot">MarketSnapshot</a></li>
+<li><a href="#org.openfeed.MarketUpdate">MarketUpdate</a></li>
+<li><a href="#org.openfeed.MarketUpdate.Entry">MarketUpdate.Entry</a></li>
+<li><a href="#org.openfeed.ModifyOrder">ModifyOrder</a></li>
+<li><a href="#org.openfeed.ModifyPriceLevel">ModifyPriceLevel</a></li>
+<li><a href="#org.openfeed.MonetaryValue">MonetaryValue</a></li>
+<li><a href="#org.openfeed.NetAssetValue">NetAssetValue</a></li>
+<li><a href="#org.openfeed.News">News</a></li>
+<li><a href="#org.openfeed.NumberOfTrades">NumberOfTrades</a></li>
+<li><a href="#org.openfeed.Open">Open</a></li>
+<li><a href="#org.openfeed.OpenInterest">OpenInterest</a></li>
+<li><a href="#org.openfeed.OpenfeedMessage">OpenfeedMessage</a></li>
+<li><a href="#org.openfeed.PrevClose">PrevClose</a></li>
+<li><a href="#org.openfeed.Settlement">Settlement</a></li>
+<li><a href="#org.openfeed.SharesOutstanding">SharesOutstanding</a></li>
+<li><a href="#org.openfeed.SnapshotRequest">SnapshotRequest</a></li>
+<li><a href="#org.openfeed.SnapshotResponse">SnapshotResponse</a></li>
+<li><a href="#org.openfeed.SubscriptionRequest">SubscriptionRequest</a></li>
+<li><a href="#org.openfeed.SubscriptionResponse">SubscriptionResponse</a></li>
+<li><a href="#org.openfeed.Trade">Trade</a></li>
+<li><a href="#org.openfeed.TradeCancel">TradeCancel</a></li>
+<li><a href="#org.openfeed.TradeCorrection">TradeCorrection</a></li>
+<li><a href="#org.openfeed.UnexpectedMessageResponse">UnexpectedMessageResponse</a></li>
+<li><a href="#org.openfeed.Volume">Volume</a></li>
+<li><a href="#org.openfeed.Vwap">Vwap</a></li>
+<li><a href="#org.openfeed.YearHigh">YearHigh</a></li>
+<li><a href="#org.openfeed.YearLow">YearLow</a></li>
+<li><a href="#org.openfeed.BookSide">BookSide</a></li>
+<li><a href="#org.openfeed.CrossType">CrossType</a></li>
+<li><a href="#org.openfeed.InstrumentTradingStatus">InstrumentTradingStatus</a></li>
+<li><a href="#org.openfeed.RegulationSHOShortSalePriceTest">RegulationSHOShortSalePriceTest</a></li>
+<li><a href="#org.openfeed.Result">Result</a></li>
+<li><a href="#org.openfeed.Service">Service</a></li>
+<li><a href="#org.openfeed.SettlementTerms">SettlementTerms</a></li>
+<li><a href="#scalar-value-types">Scalar Value Types</a></li>
+</ul>
+<p><a name="instrument.proto"/>
+<p align="right"><a href="#top">Top</a></p></p>
+<h2 id="instrumentproto">instrument.proto</h2>
+<p><a name="org.openfeed.InstrumentDefinition"/></p>
+<h3 id="instrumentdefinition">InstrumentDefinition</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Unique ID used in the data feed.</td>
+</tr>
+<tr>
+<td>instrumentType</td>
+<td><a href="#org.openfeed.InstrumentDefinition.InstrumentType">InstrumentDefinition.InstrumentType</a></td>
+<td>optional</td>
+<td>Instrument type as enum...</td>
+</tr>
+<tr>
+<td>supportBookTypes</td>
+<td><a href="#org.openfeed.InstrumentDefinition.BookType">InstrumentDefinition.BookType</a></td>
+<td>repeated</td>
+<td>Supported Book Types</td>
+</tr>
+<tr>
+<td>bookDepth</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Maximum depth of market-by-price order book</td>
+</tr>
+<tr>
+<td>vendorId</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>The name of the market data vendor</td>
+</tr>
+<tr>
+<td>symbol</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>Human readable market symbol, assigned by the exchange or venue.Not necessarily unique as the exchange or vendor could assign the same symbol to differentinstruments, for example if the instruments trade on different exchanges.</td>
+</tr>
+<tr>
+<td>description</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>Human readable market description.</td>
+</tr>
+<tr>
+<td>cfiCode</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>Market CFI code: http://en.wikipedia.org/wiki/ISO_10962</td>
+</tr>
+<tr>
+<td>currencyCode</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>Market currency code: http://en.wikipedia.org/wiki/ISO_4217</td>
+</tr>
+<tr>
+<td>exchangeCode</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>minimumPriceIncrement</td>
+<td><a href="#float">float</a></td>
+<td>optional</td>
+<td>Minimum price increment in market currency.</td>
+</tr>
+<tr>
+<td>contractPointValue</td>
+<td><a href="#float">float</a></td>
+<td>optional</td>
+<td>Contract point value in market currency.</td>
+</tr>
+<tr>
+<td>schedule</td>
+<td><a href="#org.openfeed.InstrumentDefinition.Schedule">InstrumentDefinition.Schedule</a></td>
+<td>optional</td>
+<td>Trading schedule for a typical week</td>
+</tr>
+<tr>
+<td>calendar</td>
+<td><a href="#org.openfeed.InstrumentDefinition.Calendar">InstrumentDefinition.Calendar</a></td>
+<td>optional</td>
+<td>Trading calendar (expiration, notice days, holidays?, etc)</td>
+</tr>
+<tr>
+<td>recordCreateTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>UTC Timestamp of creation, nano seconds since Unix epoch</td>
+</tr>
+<tr>
+<td>recordUpdateTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>UTC Timestamp of update, nano seconds since Unix epoch</td>
+</tr>
+<tr>
+<td>timeZoneName</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>Market time zone TZ database name.Permanent. Can be resolved into timeZoneOffset for given date/time.See http://joda-time.sourceforge.net/timezones.htmlSee http://en.wikipedia.org/wiki/List_of_tz_database_time_zones</td>
+</tr>
+<tr>
+<td>instrumentGroup</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>Identifies a logical grouping of instruments. By product, for example.</td>
+</tr>
+<tr>
+<td>symbolExpiration</td>
+<td><a href="#org.openfeed.InstrumentDefinition.MaturityDate">InstrumentDefinition.MaturityDate</a></td>
+<td>optional</td>
+<td>The Date of expiration for futures and options.</td>
+</tr>
+<tr>
+<td>state</td>
+<td><a href="#org.openfeed.InstrumentDefinition.State">InstrumentDefinition.State</a></td>
+<td>optional</td>
+<td>active: can have market state updates, can have historical datapassive: can NOT have market state updates, but can have historical datanormally "active" means newly listed or currently non expired marketsnormally "passive" means expired options, de-listed equities, etc.</td>
+</tr>
+<tr>
+<td>channel</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>The channel that updates for this instrument will appear on.</td>
+</tr>
+<tr>
+<td>underlyingMarketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>The marketId of the underlying asset.Used by Futures and Options when the underlying instrument is defined by the vendor</td>
+</tr>
+<tr>
+<td>priceFormat</td>
+<td><a href="#org.openfeed.InstrumentDefinition.PriceFormat">InstrumentDefinition.PriceFormat</a></td>
+<td>optional</td>
+<td>Display format</td>
+</tr>
+<tr>
+<td>optionStrikePriceFormat</td>
+<td><a href="#org.openfeed.InstrumentDefinition.PriceFormat">InstrumentDefinition.PriceFormat</a></td>
+<td>optional</td>
+<td>Strike price display format</td>
+</tr>
+<tr>
+<td>priceDenominator</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Divide prices by this value to get real price values</td>
+</tr>
+<tr>
+<td>quantityDenominator</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Divide trade quantities by this value to get real quantities</td>
+</tr>
+<tr>
+<td>isTradable</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td>true if this is a tradable instrument</td>
+</tr>
+<tr>
+<td>transactionTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>UTC timestamp of transaction, nano seconds since Unix epoch</td>
+</tr>
+<tr>
+<td>auxiliaryData</td>
+<td><a href="#bytes">bytes</a></td>
+<td>optional</td>
+<td>For internal use only.   Ignore</td>
+</tr>
+<tr>
+<td>symbols</td>
+<td><a href="#org.openfeed.InstrumentDefinition.Symbol">InstrumentDefinition.Symbol</a></td>
+<td>repeated</td>
+<td>List of alternate symbols for this instrument.  A single instrumentmay be provided by many different market data vendors, each withtheir own unique symbology. Allows this instrument to be taggedwith as many vendor symbols as necessary.</td>
+</tr>
+<tr>
+<td>optionStrike</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Option strike price in market currency.  Multiply by/ factorOptionsStrike to get actual strike</td>
+</tr>
+<tr>
+<td>optionType</td>
+<td><a href="#org.openfeed.InstrumentDefinition.OptionType">InstrumentDefinition.OptionType</a></td>
+<td>optional</td>
+<td>Option type: call vs put.</td>
+</tr>
+<tr>
+<td>optionStyle</td>
+<td><a href="#org.openfeed.InstrumentDefinition.OptionStyle">InstrumentDefinition.OptionStyle</a></td>
+<td>optional</td>
+<td>Option style : American vs European.</td>
+</tr>
+<tr>
+<td>optionStrikeDenominator</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Divide optionStrike by this value to get real strike price</td>
+</tr>
+<tr>
+<td>spreadCode</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>Spread type, can be vendor specific</td>
+</tr>
+<tr>
+<td>spreadLeg</td>
+<td><a href="#org.openfeed.InstrumentDefinition.SpreadLeg">InstrumentDefinition.SpreadLeg</a></td>
+<td>repeated</td>
+<td>Ordered list of underlying legs in a spread.</td>
+</tr>
+<tr>
+<td>userDefinedSpread</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td>true if user defined spread</td>
+</tr>
+<tr>
+<td>marketTier</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>Listing market classification</td>
+</tr>
+<tr>
+<td>financialStatusIndicator</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>Current financial status of the issuer</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.Calendar"/></p>
+<h3 id="instrumentdefinitioncalendar">InstrumentDefinition.Calendar</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>events</td>
+<td><a href="#org.openfeed.InstrumentDefinition.Event">InstrumentDefinition.Event</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.Event"/></p>
+<h3 id="instrumentdefinitionevent">InstrumentDefinition.Event</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>type</td>
+<td><a href="#org.openfeed.InstrumentDefinition.EventType">InstrumentDefinition.EventType</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>date</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.MaturityDate"/></p>
+<h3 id="instrumentdefinitionmaturitydate">InstrumentDefinition.MaturityDate</h3>
+<p>Date and time with time zone.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>year</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>month</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>day</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.PriceFormat"/></p>
+<h3 id="instrumentdefinitionpriceformat">InstrumentDefinition.PriceFormat</h3>
+<p>Recommended display format for prices.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>isFractional</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>denominator</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>subDenominator</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>subFormat</td>
+<td><a href="#org.openfeed.InstrumentDefinition.PriceFormat.SubFormat">InstrumentDefinition.PriceFormat.SubFormat</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.Schedule"/></p>
+<h3 id="instrumentdefinitionschedule">InstrumentDefinition.Schedule</h3>
+<p>Typical trading week schedule</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sessions</td>
+<td><a href="#org.openfeed.InstrumentDefinition.TimeSpan">InstrumentDefinition.TimeSpan</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.SpreadLeg"/></p>
+<h3 id="instrumentdefinitionspreadleg">InstrumentDefinition.SpreadLeg</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>ratio</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>symbol</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.Symbol"/></p>
+<h3 id="instrumentdefinitionsymbol">InstrumentDefinition.Symbol</h3>
+<p>A vendor's symbol for an instrument</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>vendor</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>symbol</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.TimeSpan"/></p>
+<h3 id="instrumentdefinitiontimespan">InstrumentDefinition.TimeSpan</h3>
+<p>Trading session
+Times are in nanos since midnight UTC on the Sunday starting a given trading week</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>timeStart</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>timeFinish</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.BookType"/></p>
+<h3 id="instrumentdefinitionbooktype">InstrumentDefinition.BookType</h3>
+<p>Market depth implementation type</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_BOOK_TYPE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>TOP_OF_BOOK</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>PRICE_LEVEL_DEPTH</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>ORDER_DEPTH</td>
+<td>3</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.EventType"/></p>
+<h3 id="instrumentdefinitioneventtype">InstrumentDefinition.EventType</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_EVENT_TYPE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>FIRST_TRADE_DATE</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>LAST_TRADE_DATE</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>SETTLEMENT_DATE</td>
+<td>10</td>
+<td></td>
+</tr>
+<tr>
+<td>FIRST_DELIVERY_DATE</td>
+<td>11</td>
+<td></td>
+</tr>
+<tr>
+<td>LAST_DELIVERY_DATE</td>
+<td>12</td>
+<td></td>
+</tr>
+<tr>
+<td>FIRST_NOTICE_DATE</td>
+<td>13</td>
+<td></td>
+</tr>
+<tr>
+<td>LAST_NOTICE_DATE</td>
+<td>14</td>
+<td></td>
+</tr>
+<tr>
+<td>FIRST_HOLDING_DATE</td>
+<td>15</td>
+<td></td>
+</tr>
+<tr>
+<td>LAST_HOLDING_DATE</td>
+<td>16</td>
+<td></td>
+</tr>
+<tr>
+<td>FIRST_POSITION_DATE</td>
+<td>17</td>
+<td></td>
+</tr>
+<tr>
+<td>LAST_POSITION_DATE</td>
+<td>18</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.InstrumentType"/></p>
+<h3 id="instrumentdefinitioninstrumenttype">InstrumentDefinition.InstrumentType</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_INSTRUMENT_TYPE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>FOREX</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>INDEX</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>EQUITY</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td>FUTURE</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>OPTION</td>
+<td>5</td>
+<td></td>
+</tr>
+<tr>
+<td>SPREAD</td>
+<td>6</td>
+<td></td>
+</tr>
+<tr>
+<td>MUTUAL_FUND</td>
+<td>7</td>
+<td></td>
+</tr>
+<tr>
+<td>MONEY_MARKET_FUND</td>
+<td>8</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.OptionStyle"/></p>
+<h3 id="instrumentdefinitionoptionstyle">InstrumentDefinition.OptionStyle</h3>
+<p>Option style.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_OPTIONS_STYLE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>DEFAULT</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>AMERICAN</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>EUROPEAN</td>
+<td>3</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.OptionType"/></p>
+<h3 id="instrumentdefinitionoptiontype">InstrumentDefinition.OptionType</h3>
+<p>Option type.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_OPTION_TYPE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>CALL</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>2</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.PriceFormat.SubFormat"/></p>
+<h3 id="instrumentdefinitionpriceformatsubformat">InstrumentDefinition.PriceFormat.SubFormat</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FLAT</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>FRACTIONAL</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>DECIMAL</td>
+<td>2</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.State"/></p>
+<h3 id="instrumentdefinitionstate">InstrumentDefinition.State</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_STATE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>ACTIVE</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>PASSIVE</td>
+<td>2</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="openfeed.proto"/>
+<p align="right"><a href="#top">Top</a></p></p>
+<h2 id="openfeedproto">openfeed.proto</h2>
+<p><a name="org.openfeed.AddOrder"/></p>
+<h3 id="addorder">AddOrder</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>orderId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>side</td>
+<td><a href="#org.openfeed.BookSide">BookSide</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>quantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>isImplied</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>priority</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.AddPriceLevel"/></p>
+<h3 id="addpricelevel">AddPriceLevel</h3>
+<p>Insert a new price level, pushing existing levels down</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>level</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>price level index, starting at 1</td>
+</tr>
+<tr>
+<td>side</td>
+<td><a href="#org.openfeed.BookSide">BookSide</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by quantityDenominator</td>
+</tr>
+<tr>
+<td>orderCount</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>impliedQuantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.AdminMessage"/></p>
+<h3 id="adminmessage">AdminMessage</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>originationTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>source</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>languageCode</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>headLine</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>text</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.BestBidOffer"/></p>
+<h3 id="bestbidoffer">BestBidOffer</h3>
+<p>Best Bid and Offer.
+If a side is not present, then that side has been deleted.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bidPrice</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+<tr>
+<td>bidQuantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by quantityDenominator</td>
+</tr>
+<tr>
+<td>bidOrderCount</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>bidOriginator</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>Liquidity provider informationFor Forex: BANK:CITYFor Equities: EXCHANGE_MIC</td>
+</tr>
+<tr>
+<td>offerPrice</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+<tr>
+<td>offerQuantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by quantityDenominator</td>
+</tr>
+<tr>
+<td>offerOrderCount</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>offerOriginator</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td>Liquidity provider informationFor Forex: BANK:CITYFor Equities: EXCHANGE_MIC</td>
+</tr>
+<tr>
+<td>quoteCondition</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>nationalBboUpdated</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.CapitalDistributions"/></p>
+<h3 id="capitaldistributions">CapitalDistributions</h3>
+<p>Capital Distributions</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>instrumentType</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>corporateAction</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>payableDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>recordDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>exDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>shortTermCapitalGain</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>longTermCapitalGain</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>unallocatedDistributions</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>returnOfCapital</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>currencyCode</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>notes</td>
+<td><a href="#string">string</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>reinvestDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.ClearBook"/></p>
+<h3 id="clearbook">ClearBook</h3>
+<p>Clear all data from the order books that are configured for this market.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reserved</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Close"/></p>
+<h3 id="close">Close</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.DeleteOrder"/></p>
+<h3 id="deleteorder">DeleteOrder</h3>
+<p>Delete an order from the order book. Indexed by orderId, which is unique per channel</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>orderId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>side</td>
+<td><a href="#org.openfeed.BookSide">BookSide</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.DeletePriceLevel"/></p>
+<h3 id="deletepricelevel">DeletePriceLevel</h3>
+<p>Delete an existing price level, pulling existing levels up</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>level</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>price level index, starting at 1</td>
+</tr>
+<tr>
+<td>side</td>
+<td><a href="#org.openfeed.BookSide">BookSide</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.DividendsIncomeDistributions"/></p>
+<h3 id="dividendsincomedistributions">DividendsIncomeDistributions</h3>
+<p>Dividends and Income Distributions</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>instrumentType</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>corporateAction</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>distributionType</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>payableDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>recordDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>exDividendDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>amount</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>currencyCode</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>notes</td>
+<td><a href="#string">string</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>totalCashDistribution</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>nonQualifiedCashDistribution</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>qualifiedCashDistribution</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>taxFreeCashDistribution</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>ordinaryForeignTaxCredit</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>qualifiedForeignTaxCredit</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>stockDividendRatio</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>reinvestDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.HeartBeat"/></p>
+<h3 id="heartbeat">HeartBeat</h3>
+<p>Heart Beat</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>transactionTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>UTC timestamp of transaction, nano seconds since Unix epoch</td>
+</tr>
+<tr>
+<td>status</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.High"/></p>
+<h3 id="high">High</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.IndexValue"/></p>
+<h3 id="indexvalue">IndexValue</h3>
+<p>For non-tradable index products</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>last</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>volume</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>open</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>settlementOpen</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>specialOpen</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>high</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>low</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>close</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>bid</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>offer</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentGroupStatus"/></p>
+<h3 id="instrumentgroupstatus">InstrumentGroupStatus</h3>
+<p>Instrument Group Status</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>transactionTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>UTC Timestamp of transaction, nano seconds since Unix epoch</td>
+</tr>
+<tr>
+<td>instrumentGroupId</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>tradingStatus</td>
+<td><a href="#org.openfeed.InstrumentTradingStatus">InstrumentTradingStatus</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentStatus"/></p>
+<h3 id="instrumentstatus">InstrumentStatus</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradingStatus</td>
+<td><a href="#org.openfeed.InstrumentTradingStatus">InstrumentTradingStatus</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>openingTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>note</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>regulationSHOShortSalePriceTest</td>
+<td><a href="#org.openfeed.RegulationSHOShortSalePriceTest">RegulationSHOShortSalePriceTest</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Last"/></p>
+<h3 id="last">Last</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by quantityDenominator</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.LoginRequest"/></p>
+<h3 id="loginrequest">LoginRequest</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>username</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>password</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.LoginResponse"/></p>
+<h3 id="loginresponse">LoginResponse</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>result</td>
+<td><a href="#org.openfeed.Result">Result</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.LogoutRequest"/></p>
+<h3 id="logoutrequest">LogoutRequest</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.LogoutResponse"/></p>
+<h3 id="logoutresponse">LogoutResponse</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>result</td>
+<td><a href="#org.openfeed.Result">Result</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>message</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Low"/></p>
+<h3 id="low">Low</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.MarketSnapshot"/></p>
+<h3 id="marketsnapshot">MarketSnapshot</h3>
+<p>Snapshot for a market</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Unique id identifying the market</td>
+</tr>
+<tr>
+<td>transactionTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>marketSequence</td>
+<td><a href="#int64">int64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>totalChunks</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>A snapshot with market depth may exceed the maximum message size. In that case, the snapshot will be broken up across multiple snapshot messages.</td>
+</tr>
+<tr>
+<td>currentChunk</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>instrumentStatus</td>
+<td><a href="#org.openfeed.InstrumentStatus">InstrumentStatus</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>bbo</td>
+<td><a href="#org.openfeed.BestBidOffer">BestBidOffer</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>index</td>
+<td><a href="#org.openfeed.IndexValue">IndexValue</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>priceLevels</td>
+<td><a href="#org.openfeed.AddPriceLevel">AddPriceLevel</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>orders</td>
+<td><a href="#org.openfeed.AddOrder">AddOrder</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>news</td>
+<td><a href="#org.openfeed.News">News</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>open</td>
+<td><a href="#org.openfeed.Open">Open</a></td>
+<td>optional</td>
+<td>Most recent opening price</td>
+</tr>
+<tr>
+<td>high</td>
+<td><a href="#org.openfeed.High">High</a></td>
+<td>optional</td>
+<td>High price for the trading session</td>
+</tr>
+<tr>
+<td>low</td>
+<td><a href="#org.openfeed.Low">Low</a></td>
+<td>optional</td>
+<td>Low price for the trading session</td>
+</tr>
+<tr>
+<td>close</td>
+<td><a href="#org.openfeed.Close">Close</a></td>
+<td>optional</td>
+<td>Most recent closing price</td>
+</tr>
+<tr>
+<td>prevClose</td>
+<td><a href="#org.openfeed.PrevClose">PrevClose</a></td>
+<td>optional</td>
+<td>Previous closing price</td>
+</tr>
+<tr>
+<td>last</td>
+<td><a href="#org.openfeed.Last">Last</a></td>
+<td>optional</td>
+<td>Most recent traded price and quantity</td>
+</tr>
+<tr>
+<td>yearHigh</td>
+<td><a href="#org.openfeed.YearHigh">YearHigh</a></td>
+<td>optional</td>
+<td>Year high price</td>
+</tr>
+<tr>
+<td>yearLow</td>
+<td><a href="#org.openfeed.YearLow">YearLow</a></td>
+<td>optional</td>
+<td>Year low price</td>
+</tr>
+<tr>
+<td>volume</td>
+<td><a href="#org.openfeed.Volume">Volume</a></td>
+<td>optional</td>
+<td>Total traded volume</td>
+</tr>
+<tr>
+<td>settlement</td>
+<td><a href="#org.openfeed.Settlement">Settlement</a></td>
+<td>optional</td>
+<td>Most recent settlement price</td>
+</tr>
+<tr>
+<td>openInterest</td>
+<td><a href="#org.openfeed.OpenInterest">OpenInterest</a></td>
+<td>optional</td>
+<td>Most recent open interest</td>
+</tr>
+<tr>
+<td>vwap</td>
+<td><a href="#org.openfeed.Vwap">Vwap</a></td>
+<td>optional</td>
+<td>Most recent volume weighted average price</td>
+</tr>
+<tr>
+<td>dividendsIncomeDistributions</td>
+<td><a href="#org.openfeed.DividendsIncomeDistributions">DividendsIncomeDistributions</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>numberOfTrades</td>
+<td><a href="#org.openfeed.NumberOfTrades">NumberOfTrades</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>monetaryValue</td>
+<td><a href="#org.openfeed.MonetaryValue">MonetaryValue</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>capitalDistributions</td>
+<td><a href="#org.openfeed.CapitalDistributions">CapitalDistributions</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>sharesOutstanding</td>
+<td><a href="#org.openfeed.SharesOutstanding">SharesOutstanding</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>netAssetValue</td>
+<td><a href="#org.openfeed.NetAssetValue">NetAssetValue</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.MarketUpdate"/></p>
+<h3 id="marketupdate">MarketUpdate</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Unique id identifying the market</td>
+</tr>
+<tr>
+<td>transactionTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>UTC Timestamp of transaction, nano seconds since Unix epoch</td>
+</tr>
+<tr>
+<td>marketSequence</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Market level sequencing number</td>
+</tr>
+<tr>
+<td>originatorId</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>reserved1</td>
+<td><a href="#bytes">bytes</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>consolidated</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td>True if data is consolidated over many market participants/originators</td>
+</tr>
+<tr>
+<td>reserved2</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>sourceSequence</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>distributionTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Distribution time in nano seconds since epoch.  Used by CTA and UTP Plans</td>
+</tr>
+<tr>
+<td>entry</td>
+<td><a href="#org.openfeed.MarketUpdate.Entry">MarketUpdate.Entry</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.MarketUpdate.Entry"/></p>
+<h3 id="marketupdateentry">MarketUpdate.Entry</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>instrumentStatus</td>
+<td><a href="#org.openfeed.InstrumentStatus">InstrumentStatus</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>bbo</td>
+<td><a href="#org.openfeed.BestBidOffer">BestBidOffer</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>addPriceLevel</td>
+<td><a href="#org.openfeed.AddPriceLevel">AddPriceLevel</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>deletePriceLevel</td>
+<td><a href="#org.openfeed.DeletePriceLevel">DeletePriceLevel</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>modifyPriceLevel</td>
+<td><a href="#org.openfeed.ModifyPriceLevel">ModifyPriceLevel</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>addOrder</td>
+<td><a href="#org.openfeed.AddOrder">AddOrder</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>deleteOrder</td>
+<td><a href="#org.openfeed.DeleteOrder">DeleteOrder</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>modifyOrder</td>
+<td><a href="#org.openfeed.ModifyOrder">ModifyOrder</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>index</td>
+<td><a href="#org.openfeed.IndexValue">IndexValue</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>trade</td>
+<td><a href="#org.openfeed.Trade">Trade</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>tradeCorrection</td>
+<td><a href="#org.openfeed.TradeCorrection">TradeCorrection</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>tradeCancel</td>
+<td><a href="#org.openfeed.TradeCancel">TradeCancel</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>news</td>
+<td><a href="#org.openfeed.News">News</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>clearBook</td>
+<td><a href="#org.openfeed.ClearBook">ClearBook</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>open</td>
+<td><a href="#org.openfeed.Open">Open</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>high</td>
+<td><a href="#org.openfeed.High">High</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>low</td>
+<td><a href="#org.openfeed.Low">Low</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>close</td>
+<td><a href="#org.openfeed.Close">Close</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>prevClose</td>
+<td><a href="#org.openfeed.PrevClose">PrevClose</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>last</td>
+<td><a href="#org.openfeed.Last">Last</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>yearHigh</td>
+<td><a href="#org.openfeed.YearHigh">YearHigh</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>yearLow</td>
+<td><a href="#org.openfeed.YearLow">YearLow</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>volume</td>
+<td><a href="#org.openfeed.Volume">Volume</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>settlement</td>
+<td><a href="#org.openfeed.Settlement">Settlement</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>openInterest</td>
+<td><a href="#org.openfeed.OpenInterest">OpenInterest</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>vwap</td>
+<td><a href="#org.openfeed.Vwap">Vwap</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>dividendsIncomeDistributions</td>
+<td><a href="#org.openfeed.DividendsIncomeDistributions">DividendsIncomeDistributions</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>numberOfTrades</td>
+<td><a href="#org.openfeed.NumberOfTrades">NumberOfTrades</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>monetaryValue</td>
+<td><a href="#org.openfeed.MonetaryValue">MonetaryValue</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>capitalDistributions</td>
+<td><a href="#org.openfeed.CapitalDistributions">CapitalDistributions</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>sharesOutstanding</td>
+<td><a href="#org.openfeed.SharesOutstanding">SharesOutstanding</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>netAssetValue</td>
+<td><a href="#org.openfeed.NetAssetValue">NetAssetValue</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.ModifyOrder"/></p>
+<h3 id="modifyorder">ModifyOrder</h3>
+<p>Modify the price or quantity of an order.  The side and implied flag cannot change</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>orderId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>side</td>
+<td><a href="#org.openfeed.BookSide">BookSide</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>quantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>isImplied</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>priority</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.ModifyPriceLevel"/></p>
+<h3 id="modifypricelevel">ModifyPriceLevel</h3>
+<p>Modify the quantity or orderCount of an existing price level.
+/ The price itself will not change.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>level</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>price level index, starting at 1</td>
+</tr>
+<tr>
+<td>side</td>
+<td><a href="#org.openfeed.BookSide">BookSide</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by quantityDenominator</td>
+</tr>
+<tr>
+<td>orderCount</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>impliedQuantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.MonetaryValue"/></p>
+<h3 id="monetaryvalue">MonetaryValue</h3>
+<p>Total monetary value of trades</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+<tr>
+<td>valueCurrencyCode</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.NetAssetValue"/></p>
+<h3 id="netassetvalue">NetAssetValue</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>netAssetValue</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.News"/></p>
+<h3 id="news">News</h3>
+<p>News or informational message</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>originationTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>source</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>languageCode</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>headLine</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>text</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>symbols</td>
+<td><a href="#string">string</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.NumberOfTrades"/></p>
+<h3 id="numberoftrades">NumberOfTrades</h3>
+<p>Total number of trades</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>numberTrades</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Open"/></p>
+<h3 id="open">Open</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.OpenInterest"/></p>
+<h3 id="openinterest">OpenInterest</h3>
+<p>Open interest</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>volume</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.OpenfeedMessage"/></p>
+<h3 id="openfeedmessage">OpenfeedMessage</h3>
+<p>A wrapper for Openfeed data.  Will contain exactly one of the supported
+message types</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sendingTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Nanoecond unix epoch at time of message transmission (UTC)</td>
+</tr>
+<tr>
+<td>totalCount</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>The total number of markets available on this channelat the time the message was sent.  For UDP snapshot and definition feeds.</td>
+</tr>
+<tr>
+<td>syncSequence</td>
+<td><a href="#int64">int64</a></td>
+<td>optional</td>
+<td>The most recent packet sequence number sent on the incremental feedat the time this message was sent.  For UDP snapshot and definition feeds.</td>
+</tr>
+<tr>
+<td>heartBeat</td>
+<td><a href="#org.openfeed.HeartBeat">HeartBeat</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>instrumentDefinition</td>
+<td><a href="#org.openfeed.InstrumentDefinition">InstrumentDefinition</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>instrumentGroupStatus</td>
+<td><a href="#org.openfeed.InstrumentGroupStatus">InstrumentGroupStatus</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>marketSnapshot</td>
+<td><a href="#org.openfeed.MarketSnapshot">MarketSnapshot</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>marketUpdate</td>
+<td><a href="#org.openfeed.MarketUpdate">MarketUpdate</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>adminMessage</td>
+<td><a href="#org.openfeed.AdminMessage">AdminMessage</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>subscriptionRequest</td>
+<td><a href="#org.openfeed.SubscriptionRequest">SubscriptionRequest</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>snapshotRequest</td>
+<td><a href="#org.openfeed.SnapshotRequest">SnapshotRequest</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>loginRequest</td>
+<td><a href="#org.openfeed.LoginRequest">LoginRequest</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>logoutRequest</td>
+<td><a href="#org.openfeed.LogoutRequest">LogoutRequest</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>subscriptionResponse</td>
+<td><a href="#org.openfeed.SubscriptionResponse">SubscriptionResponse</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>snapshotResponse</td>
+<td><a href="#org.openfeed.SnapshotResponse">SnapshotResponse</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>unexpectedMessageResponse</td>
+<td><a href="#org.openfeed.UnexpectedMessageResponse">UnexpectedMessageResponse</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>loginResponse</td>
+<td><a href="#org.openfeed.LoginResponse">LoginResponse</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>logoutResponse</td>
+<td><a href="#org.openfeed.LogoutResponse">LogoutResponse</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.PrevClose"/></p>
+<h3 id="prevclose">PrevClose</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Settlement"/></p>
+<h3 id="settlement">Settlement</h3>
+<p>/ Settlement value for futures and options markets.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+<tr>
+<td>preliminarySettle</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>reserved</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td>Reserved</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SharesOutstanding"/></p>
+<h3 id="sharesoutstanding">SharesOutstanding</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sharesOutstanding</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SnapshotRequest"/></p>
+<h3 id="snapshotrequest">SnapshotRequest</h3>
+<p>//////////
+Subscription messages
+///////////</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>service</td>
+<td><a href="#org.openfeed.Service">Service</a></td>
+<td>optional</td>
+<td>Preferred service (realtime or delayed).</td>
+</tr>
+<tr>
+<td>unsubscribe</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>intervalSeconds</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Number of seconds in between snapshotsZero means a single snapshot</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SnapshotResponse"/></p>
+<h3 id="snapshotresponse">SnapshotResponse</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>snapshot</td>
+<td><a href="#org.openfeed.MarketSnapshot">MarketSnapshot</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>result</td>
+<td><a href="#org.openfeed.Result">Result</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SubscriptionRequest"/></p>
+<h3 id="subscriptionrequest">SubscriptionRequest</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Client-assigned id for this request.  Response will include same id</td>
+</tr>
+<tr>
+<td>service</td>
+<td><a href="#org.openfeed.Service">Service</a></td>
+<td>optional</td>
+<td>Preferred service (realtime or delayed).</td>
+</tr>
+<tr>
+<td>unsubscribe</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>symbol</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>channel</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>exchange</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>snapshotIntervalSeconds</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SubscriptionResponse"/></p>
+<h3 id="subscriptionresponse">SubscriptionResponse</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>result</td>
+<td><a href="#org.openfeed.Result">Result</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>message</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>service</td>
+<td><a href="#org.openfeed.Service">Service</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Trade"/></p>
+<h3 id="trade">Trade</h3>
+<p>A live trade.  When received, update the "last" field</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by quantityDenominator</td>
+</tr>
+<tr>
+<td>tradeId</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>side</td>
+<td><a href="#org.openfeed.BookSide">BookSide</a></td>
+<td>optional</td>
+<td>The side of the aggressing order that caused the trade</td>
+</tr>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>buyerId</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>sellerId</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>openingTrade</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>systemPriced</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>marketOnClose</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>oddLot</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>settlementTerms</td>
+<td><a href="#org.openfeed.SettlementTerms">SettlementTerms</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>crossType</td>
+<td><a href="#org.openfeed.CrossType">CrossType</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>byPass</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>lastPrice</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>saleCondition</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.TradeCancel"/></p>
+<h3 id="tradecancel">TradeCancel</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correctedTradePrice</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>correctedTradeQuantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>tradeId</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>saleCondition</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.TradeCorrection"/></p>
+<h3 id="tradecorrection">TradeCorrection</h3>
+<p>Trade Correction</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>quantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>tradeId</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>side</td>
+<td><a href="#org.openfeed.BookSide">BookSide</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>buyerId</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>sellerId</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>openingTrade</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>systemPriced</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>marketOnClose</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>oddLot</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>settlementTerms</td>
+<td><a href="#org.openfeed.SettlementTerms">SettlementTerms</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>crossType</td>
+<td><a href="#org.openfeed.CrossType">CrossType</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>byPass</td>
+<td><a href="#bool">bool</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>originalTradeId</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>saleCondition</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.UnexpectedMessageResponse"/></p>
+<h3 id="unexpectedmessageresponse">UnexpectedMessageResponse</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>message</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Volume"/></p>
+<h3 id="volume">Volume</h3>
+<p>Total volume traded</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>volume</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Vwap"/></p>
+<h3 id="vwap">Vwap</h3>
+<p>Volume Weighted Average Price</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>vwap</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.YearHigh"/></p>
+<h3 id="yearhigh">YearHigh</h3>
+<p>52 week</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.YearLow"/></p>
+<h3 id="yearlow">YearLow</h3>
+<p>52 week</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td>optional</td>
+<td>Divide by priceDenominator</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.BookSide"/></p>
+<h3 id="bookside">BookSide</h3>
+<p>Book side</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_BOOK_SIDE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>BID</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>OFFER</td>
+<td>2</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.CrossType"/></p>
+<h3 id="crosstype">CrossType</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_CROSS_TYPE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>DEFAULT</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>INTERNAL</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>BASIS</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td>CONTINGENT</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>SPECIAL</td>
+<td>5</td>
+<td></td>
+</tr>
+<tr>
+<td>VWAP</td>
+<td>6</td>
+<td></td>
+</tr>
+<tr>
+<td>REGULAR</td>
+<td>7</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentTradingStatus"/></p>
+<h3 id="instrumenttradingstatus">InstrumentTradingStatus</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_TRADING_STATUS</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>TRADING_RESUME</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>PRE_OPEN</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>OPEN</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td>PRE_CLOSE</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>CLOSE</td>
+<td>5</td>
+<td></td>
+</tr>
+<tr>
+<td>TRADING_HALT</td>
+<td>6</td>
+<td></td>
+</tr>
+<tr>
+<td>QUOTATION_RESUME</td>
+<td>7</td>
+<td></td>
+</tr>
+<tr>
+<td>OPEN_DELAY</td>
+<td>8</td>
+<td></td>
+</tr>
+<tr>
+<td>NO_OPEN_NO_RESUME</td>
+<td>9</td>
+<td></td>
+</tr>
+<tr>
+<td>FAST_MARKET</td>
+<td>10</td>
+<td></td>
+</tr>
+<tr>
+<td>FAST_MARKET_END</td>
+<td>11</td>
+<td></td>
+</tr>
+<tr>
+<td>LATE_MARKET</td>
+<td>12</td>
+<td></td>
+</tr>
+<tr>
+<td>LATE_MARKET_END</td>
+<td>13</td>
+<td></td>
+</tr>
+<tr>
+<td>POST_SESSION</td>
+<td>14</td>
+<td></td>
+</tr>
+<tr>
+<td>POST_SESSION_END</td>
+<td>15</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.RegulationSHOShortSalePriceTest"/></p>
+<h3 id="regulationshoshortsalepricetest">RegulationSHOShortSalePriceTest</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_PRICE_TEST</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>PRICE_TEST_NONE</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>PRICE_TEST_IN_EFFECT</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>PRICE_TEST_REMAINS_IN_EFFECT</td>
+<td>3</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Result"/></p>
+<h3 id="result">Result</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_RESULT</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>SUCCESS</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>MALFORMED_MESSAGE</td>
+<td>120</td>
+<td></td>
+</tr>
+<tr>
+<td>UNEXPECTED_MESSAGE</td>
+<td>121</td>
+<td></td>
+</tr>
+<tr>
+<td>NOT_SUBSCRIBED</td>
+<td>122</td>
+<td></td>
+</tr>
+<tr>
+<td>DUPLICATE_SUBSCRIPTION</td>
+<td>123</td>
+<td></td>
+</tr>
+<tr>
+<td>INVALID_CREDENTIALS</td>
+<td>124</td>
+<td></td>
+</tr>
+<tr>
+<td>INSUFFICIENT_PRIVILEGES</td>
+<td>125</td>
+<td></td>
+</tr>
+<tr>
+<td>AUTHENTICATION_REQUIRED</td>
+<td>126</td>
+<td></td>
+</tr>
+<tr>
+<td>GENERIC_FAILURE</td>
+<td>127</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Service"/></p>
+<h3 id="service">Service</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_SERVICE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>REAL_TIME</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>DELAYED</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>REAL_TIME_SNAPSHOT</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td>DELAYED_SNAPSHOT</td>
+<td>4</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SettlementTerms"/></p>
+<h3 id="settlementterms">SettlementTerms</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_SETTLEMENT_TERMS</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>CASH</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>NON_NET</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>CONTINGENT_TRADE</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td>CASH_TODAY</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>DATE</td>
+<td>5</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="scalar-value-types"/></p>
+<h2 id="scalar-value-types">Scalar Value Types</h2>
+<table>
+<thead>
+<tr>
+<th>.proto Type</th>
+<th>Notes</th>
+<th>C++ Type</th>
+<th>Java Type</th>
+<th>Python Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a name="double"/> double</td>
+<td></td>
+<td>double</td>
+<td>double</td>
+<td>float</td>
+</tr>
+<tr>
+<td><a name="float"/> float</td>
+<td></td>
+<td>float</td>
+<td>float</td>
+<td>float</td>
+</tr>
+<tr>
+<td><a name="int32"/> int32</td>
+<td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+</tr>
+<tr>
+<td><a name="int64"/> int64</td>
+<td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.</td>
+<td>int64</td>
+<td>long</td>
+<td>int/long</td>
+</tr>
+<tr>
+<td><a name="uint32"/> uint32</td>
+<td>Uses variable-length encoding.</td>
+<td>uint32</td>
+<td>int</td>
+<td>int/long</td>
+</tr>
+<tr>
+<td><a name="uint64"/> uint64</td>
+<td>Uses variable-length encoding.</td>
+<td>uint64</td>
+<td>long</td>
+<td>int/long</td>
+</tr>
+<tr>
+<td><a name="sint32"/> sint32</td>
+<td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+</tr>
+<tr>
+<td><a name="sint64"/> sint64</td>
+<td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.</td>
+<td>int64</td>
+<td>long</td>
+<td>int/long</td>
+</tr>
+<tr>
+<td><a name="fixed32"/> fixed32</td>
+<td>Always four bytes. More efficient than uint32 if values are often greater than 2^28.</td>
+<td>uint32</td>
+<td>int</td>
+<td>int</td>
+</tr>
+<tr>
+<td><a name="fixed64"/> fixed64</td>
+<td>Always eight bytes. More efficient than uint64 if values are often greater than 2^56.</td>
+<td>uint64</td>
+<td>long</td>
+<td>int/long</td>
+</tr>
+<tr>
+<td><a name="sfixed32"/> sfixed32</td>
+<td>Always four bytes.</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+</tr>
+<tr>
+<td><a name="sfixed64"/> sfixed64</td>
+<td>Always eight bytes.</td>
+<td>int64</td>
+<td>long</td>
+<td>int/long</td>
+</tr>
+<tr>
+<td><a name="bool"/> bool</td>
+<td></td>
+<td>bool</td>
+<td>boolean</td>
+<td>boolean</td>
+</tr>
+<tr>
+<td><a name="string"/> string</td>
+<td>A string must always contain UTF-8 encoded or 7-bit ASCII text.</td>
+<td>string</td>
+<td>String</td>
+<td>str/unicode</td>
+</tr>
+<tr>
+<td><a name="bytes"/> bytes</td>
+<td>May contain any arbitrary sequence of bytes.</td>
+<td>string</td>
+<td>ByteString</td>
+<td>str</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+    <script src="../js/theme.js"></script>
+
+</body>
+</html>

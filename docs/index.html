@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="None">
+  
+  <link rel="shortcut icon" href="./img/favicon.ico">
+  <title>Home - Openfeed Developer Guide</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="./css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="./css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="./css/highlight.css">
+  <link href="./extra.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Home";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = "/";
+  </script>
+  
+  <script src="./js/jquery-2.1.1.min.js"></script>
+  <script src="./js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="./js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> Openfeed Developer Guide</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href=".">Home</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#openfeed-developer-guide">Openfeed Developer Guide</a></li>
+    
+
+    <li class="toctree-l2"><a href="#introduction">Introduction</a></li>
+    
+
+    <li class="toctree-l2"><a href="#architecture">Architecture</a></li>
+    
+
+    <li class="toctree-l2"><a href="#multicast-udp-connectivity">Multicast UDP Connectivity</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#channels-and-feeds">Channels and Feeds</a></li>
+        
+            <li><a class="toctree-l3" href="#packet-format">Packet Format</a></li>
+        
+            <li><a class="toctree-l3" href="#channel-recovery">Channel Recovery</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l2"><a href="#tcp-connectivity">TCP Connectivity</a></li>
+    
+
+    <li class="toctree-l2"><a href="#message-specification">Message Specification</a></li>
+    
+
+    <li class="toctree-l2"><a href="#book-management">Book Management</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#market-by-price">Market by Price</a></li>
+        
+            <li><a class="toctree-l3" href="#market-by-order">Market by Order</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="Message Specification/">Message Specification</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">Openfeed Developer Guide</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Home</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="openfeed-developer-guide">Openfeed Developer Guide</h1>
+<h1 id="introduction">Introduction</h1>
+<p>Openfeed is a new real-time market data protocol and feed from Barchart.</p>
+<h1 id="architecture">Architecture</h1>
+<h1 id="multicast-udp-connectivity">Multicast UDP Connectivity</h1>
+<p>Multicast UDP is the most efficient way to subscribe to a large number of products at a time. Consider
+using the UDP feed if you need simultaneous access to many markets, or if you need the lowest
+latency.</p>
+<aside class="notice">
+Multicast UDP requires data center colocation with Barchart. Please contact Barchart for more
+information.</aside>
+
+<h2 id="channels-and-feeds">Channels and Feeds</h2>
+<p>Market data over multicast UDP is segmented across a number of channels. A channel is a logical
+grouping of instruments, typically corresponding to a group of products from a particular exchange. A
+channel is identified by a numeric channelId in the range of 1-255</p>
+<p>Each channel is composed of a set of three multicast groups, called feeds.</p>
+<table>
+<thead>
+<tr>
+<th>Channel ID</th>
+<th align="center">Product</th>
+<th align="center">Incremental Feed</th>
+<th align="center">Snapshot Feed</th>
+<th align="center">Definition Feed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td align="center">CME</td>
+<td align="center">239.255.201.1:10001</td>
+<td align="center">239.255.202.1:20001</td>
+<td align="center">239.255.203.1:30001</td>
+</tr>
+<tr>
+<td>2</td>
+<td align="center">CBOT</td>
+<td align="center">239.255.201.2:10002</td>
+<td align="center">239.255.202.2:20002</td>
+<td align="center">239.255.203.2:30002</td>
+</tr>
+<tr>
+<td>3</td>
+<td align="center">NYMEX</td>
+<td align="center">239.255.201.3:10003</td>
+<td align="center">239.255.202.3:20003</td>
+<td align="center">239.255.203.3:30003</td>
+</tr>
+<tr>
+<td>4</td>
+<td align="center">COMEX</td>
+<td align="center">239.255.201.4:10004</td>
+<td align="center">239.255.202.4:20004</td>
+<td align="center">239.255.203.4:30004</td>
+</tr>
+<tr>
+<td>5</td>
+<td align="center">MGEX</td>
+<td align="center">239.255.201.5:10005</td>
+<td align="center">239.255.202.5:20005</td>
+<td align="center">239.255.203.5:30005</td>
+</tr>
+<tr>
+<td>6</td>
+<td align="center">CME Europe</td>
+<td align="center">239.255.201.6:10006</td>
+<td align="center">239.255.202.6:20006</td>
+<td align="center">239.255.203.6:30006</td>
+</tr>
+<tr>
+<td>7</td>
+<td align="center">BM&amp;F</td>
+<td align="center">239.255.201.7:10007</td>
+<td align="center">239.255.202.7:20007</td>
+<td align="center">239.255.203.7:30007</td>
+</tr>
+<tr>
+<td>8</td>
+<td align="center">ICE UK</td>
+<td align="center">239.255.201.8:10008</td>
+<td align="center">239.255.202.8:20008</td>
+<td align="center">239.255.203.8:30008</td>
+</tr>
+<tr>
+<td>9</td>
+<td align="center">BATS</td>
+<td align="center">239.255.201.9:10009</td>
+<td align="center">239.255.202.9:20009</td>
+<td align="center">239.255.203.9:30009</td>
+</tr>
+<tr>
+<td>10</td>
+<td align="center">NYSE Index</td>
+<td align="center">239.255.201.10:10010</td>
+<td align="center">239.255.202.10:20010</td>
+<td align="center">239.255.203.10:30010</td>
+</tr>
+<tr>
+<td>11</td>
+<td align="center">FTSE Index</td>
+<td align="center">239.255.201.11:10011</td>
+<td align="center">239.255.202.11:20011</td>
+<td align="center">239.255.203.11:30011</td>
+</tr>
+<tr>
+<td>12</td>
+<td align="center">S&amp;P / DJ Index</td>
+<td align="center">239.255.201.12:10012</td>
+<td align="center">239.255.202.12:20012</td>
+<td align="center">239.255.203.12:30012</td>
+</tr>
+<tr>
+<td>13</td>
+<td align="center">FOREX</td>
+<td align="center">239.255.201.13:10013</td>
+<td align="center">239.255.202.13:20013</td>
+<td align="center">239.255.203.13:30013</td>
+</tr>
+<tr>
+<td>14</td>
+<td align="center">TSX</td>
+<td align="center">239.255.201.14:10014</td>
+<td align="center">239.255.202.14:20014</td>
+<td align="center">239.255.203.14:30014</td>
+</tr>
+<tr>
+<td>15</td>
+<td align="center"></td>
+<td align="center">239.255.201.15:10015</td>
+<td align="center">239.255.202.15:20015</td>
+<td align="center">239.255.203.15:30015</td>
+</tr>
+<tr>
+<td>16</td>
+<td align="center"></td>
+<td align="center">239.255.201.16:10016</td>
+<td align="center">239.255.202.16:20016</td>
+<td align="center">239.255.203.16:30016</td>
+</tr>
+<tr>
+<td>17</td>
+<td align="center"></td>
+<td align="center">239.255.201.17:10017</td>
+<td align="center">239.255.202.17:20017</td>
+<td align="center">239.255.203.17:30017</td>
+</tr>
+<tr>
+<td>18</td>
+<td align="center">ERIS</td>
+<td align="center">239.255.201.18:10018</td>
+<td align="center">239.255.202.18:20018</td>
+<td align="center">239.255.203.18:30018</td>
+</tr>
+<tr>
+<td>19</td>
+<td align="center">NASDAQ Mutual Funds</td>
+<td align="center">239.255.201.19:10019</td>
+<td align="center">239.255.202.19:20019</td>
+<td align="center">239.255.203.19:30019</td>
+</tr>
+<tr>
+<td>20</td>
+<td align="center">FINRA OTC</td>
+<td align="center">239.255.201.20:10020</td>
+<td align="center">239.255.202.20:20020</td>
+<td align="center">239.255.203.20:30020</td>
+</tr>
+<tr>
+<td>21</td>
+<td align="center">LME</td>
+<td align="center">239.255.201.21:10021</td>
+<td align="center">239.255.202.21:20021</td>
+<td align="center">239.255.203.21:30021</td>
+</tr>
+<tr>
+<td>22</td>
+<td align="center">CFE</td>
+<td align="center">239.255.201.22:10022</td>
+<td align="center">239.255.202.22:20022</td>
+<td align="center">239.255.203.22:30022</td>
+</tr>
+<tr>
+<td>23</td>
+<td align="center">Euronext</td>
+<td align="center">239.255.201.23:10023</td>
+<td align="center">239.255.202.23:20023</td>
+<td align="center">239.255.203.23:30023</td>
+</tr>
+<tr>
+<td>24</td>
+<td align="center">ASX</td>
+<td align="center">239.255.201.24:10024</td>
+<td align="center">239.255.202.24:20024</td>
+<td align="center">239.255.203.24:30024</td>
+</tr>
+<tr>
+<td>25</td>
+<td align="center">Montreal</td>
+<td align="center">239.255.201.25:10025</td>
+<td align="center">239.255.202.25:20025</td>
+<td align="center">239.255.203.25:30025</td>
+</tr>
+<tr>
+<td>26</td>
+<td align="center">EUREX</td>
+<td align="center">239.255.201.26:10026</td>
+<td align="center">239.255.202.26:20026</td>
+<td align="center">239.255.203.26:30026</td>
+</tr>
+<tr>
+<td>27</td>
+<td align="center">NASDAQ Index</td>
+<td align="center">239.255.201.27:10027</td>
+<td align="center">239.255.202.27:20027</td>
+<td align="center">239.255.203.27:30027</td>
+</tr>
+<tr>
+<td>28</td>
+<td align="center">CBOE Index</td>
+<td align="center">239.255.201.28:10028</td>
+<td align="center">239.255.202.28:20028</td>
+<td align="center">239.255.203.28:30028</td>
+</tr>
+<tr>
+<td>29</td>
+<td align="center"></td>
+<td align="center">239.255.201.29:10029</td>
+<td align="center">239.255.202.29:20029</td>
+<td align="center">239.255.203.29:30029</td>
+</tr>
+<tr>
+<td>30</td>
+<td align="center"></td>
+<td align="center">239.255.201.30:10030</td>
+<td align="center">239.255.202.30:20030</td>
+<td align="center">239.255.203.30:30030</td>
+</tr>
+<tr>
+<td>31</td>
+<td align="center"></td>
+<td align="center">239.255.201.31:10031</td>
+<td align="center">239.255.202.31:20031</td>
+<td align="center">239.255.203.31:30031</td>
+</tr>
+<tr>
+<td>32</td>
+<td align="center"></td>
+<td align="center">239.255.201.32:10032</td>
+<td align="center">239.255.202.32:20032</td>
+<td align="center">239.255.203.32:30032</td>
+</tr>
+<tr>
+<td>33</td>
+<td align="center">Hong Kong Futures</td>
+<td align="center">239.255.201.33:10033</td>
+<td align="center">239.255.202.33:20033</td>
+<td align="center">239.255.203.33:30033</td>
+</tr>
+<tr>
+<td>34</td>
+<td align="center"></td>
+<td align="center">239.255.201.34:10034</td>
+<td align="center">239.255.202.34:20034</td>
+<td align="center">239.255.203.34:30034</td>
+</tr>
+<tr>
+<td>35</td>
+<td align="center">ICE</td>
+<td align="center">239.255.201.35:10035</td>
+<td align="center">239.255.202.35:20035</td>
+<td align="center">239.255.203.35:30035</td>
+</tr>
+</tbody>
+</table>
+<h3 id="incremental-feed">Incremental Feed</h3>
+<p>The incremental feed is a sequence of messages that reflect updates to the current state of the
+channel.</p>
+<p>An Openfeed message on the incremental feed can contain either an instrument definition or a market
+update. The translator will send all current Instrument Definitions upon Sunday system startup. If a
+new instrument is created during the week, the translator will send the instrument definition prior to
+any market updates.</p>
+<p>The packet sequence number will increment by 1 with every packet. A gap in sequence numbers
+indicates packet loss, and the client will need perform the channel recovery procedure in order to
+guarantee the correctness of the books and session statistics.</p>
+<h3 id="snapshot-feed">Snapshot Feed</h3>
+<p>The snapshot feed is used to recover the state of the channel in case the client suffers an outage, or
+joins the channel late.</p>
+<p>The snapshot feed operates in a loop over all the instruments on the channel. The loop is configured
+per-channel to generate market snapshots at a certain rate. Once all snapshots have been sent,
+the sequence number resets to 1 and the loop restarts. The total number of markets available on a
+channel at the time the snapshot was generated is recorded in the totalCount field.</p>
+<p>When a snapshot is generated, the syncSequence field will be populated with the last packet
+sequence number sent on the incremental channel. This is useful for synchronizing between the
+snapshot and incremental feeds when performing the channel recovery procedure.</p>
+<h3 id="definition-feed">Definition Feed</h3>
+<p>The definition feed is used to recover the instrument definitions on the channel. If the client misses
+the instrument definition broadcast on the incremental feed at Sunday start up, the definitions can be
+recovered from the definition feed. Additionally, if the client experiences packet loss or a client failure,
+the definition feed can be used to recover any newly created instrument definitions that may have
+been missed.</p>
+<p>Like the snapshot feed, the definition feed operates in a loop over all the instruments on the channel.
+The totalCount field is populated with the total number instruments available at the time packet was
+sent. Additional instruments added to the channel during the instrument loop will included in the loop
+before restarts. next loop.</p>
+<p>The syncSequence field is populated with the most recent packet sequence number sent on the
+incremental feed.</p>
+<h2 id="packet-format">Packet Format</h2>
+<p>A single UDP packet contains one binary header and zero or more openfeed messages.</p>
+<h3 id="binary-header">Binary Header</h3>
+<p>Each UDP packet payload starts with a binary header. The header fields are big-endian, unsigned
+integers.</p>
+<p><img alt="alt text" src="./udp-binary-header.png" title="UDP Binary Header" /></p>
+<ul>
+<li>
+<p>The sequence number starts at 1 and increments by 1 with with every packet (including heartbeats).
+Each feed (incremental, snapshot, definition) on a channel has its own distinct sequence numbers.</p>
+</li>
+<li>
+<p>The reset number will be changed to an arbitrary value every time that the channel has been reset.
+A channel will normally reset once a week on Sunday. The reset will also occur if there is a system
+failure or upgrade in the middle of the week. A channel reset means that the sequence number has
+been set to 1, and that all books and session statistics on the channel should be cleared.</p>
+</li>
+<li>
+<p>The channel id identifies which multicast channel the packet was sent on.</p>
+</li>
+<li>
+<p>The message count is the number of Openfeed messages in this packet, following the header.</p>
+</li>
+<li>
+<p>Sixteen bytes are reserved for internal or future use.</p>
+</li>
+</ul>
+<h3 id="message-packing">Message Packing</h3>
+<p>Each Openfeed message is prepended with its length in bytes, using the RawVarint32 encoding from
+Protocol Buffers. This format is compatible with the Protocol Buffers parseDelimitedFrom() method,
+making it easy for client code to parse the list of messages.</p>
+<h2 id="channel-recovery">Channel Recovery</h2>
+<p>The channel recovery procedure can be used to synchronize the client's state with the ticker plant, so
+that the all books and session statistics are accurate and the incremental feed can be applied. The
+channel recovery procedure should be performed when:</p>
+<ul>
+<li>
+<p>The client starts up after the channel has begun broadcasting; i.e. the first incremental sequence
+number seen is greater than one.</p>
+</li>
+<li>
+<p>The client experiences packet loss on the incremental feed; i.e. an incremental sequence number is
+greater than the previous sequence number plus one</p>
+</li>
+<li>
+<p>The client experiences a system outage that causes channel state to be lost.</p>
+</li>
+</ul>
+<h3 id="market-sequence-number">Market Sequence Number</h3>
+<p>In addition to the packet sequence numbers, the Openfeed tickerplant assigns sequence numbers to
+individual markets. The market sequence number is useful for performing channel recovery because it
+allows the client to identify which individual markets have been impacted by a minor outage (such as
+packet loss). Market sequence numbers start at one and increment by one with every Market Update.</p>
+<h3 id="recovery-procedure">Recovery Procedure</h3>
+<ol>
+<li>
+<p>Record the earliest continuous incremental packet sequence number, or ECIPSN. If a gap in
+incremental sequence numbers occurs, restart the procedure and reset the ECIPSN. If an old or
+duplicate packet is received, drop it (check the reset number to see if the channel has been reset.)</p>
+</li>
+<li>
+<p>When applying an incremental market update message, compare the market sequence number to
+the previous market sequence number for that market. If no previous update has been processed,
+treat it as zero. If the new market sequence number is equal to one plus the previous number,
+then this market has not been affected by the outage and the update can be applied normally.
+Otherwise, place the update in a queue for this market. Treat any instrument definitions on the
+incremental feed like normal.</p>
+</li>
+<li>
+<p>Begin processing the definition feed once the syncSequence is greater than or equal to the
+the ECIPSN - 1. Count the number of unique instrument definitions that have been recovered.
+Once the totalCount field equals the number of recorded definitions AND the syncSequence
+is greater than or equal to the ECIPSN minus one, then the definition recovery is complete. If
+the syncSequence is less than the ECIPSN minus one, then it is still possible that the missing
+incremental packet(s) defined a new instrument.</p>
+</li>
+<li>
+<p>Begin processing the snapshot feed once the syncSequence is greater than or equal to th
+ECIPSN - 1. If the syncSequence is less than the ECIPSN minus one, then the snapshot is stale
+and should be discarded.
+If the marketSequence field of the the market snapshot message is equal to the last market
+update that was applied, then this market was not affected by thee outage and does not need a
+snapshot. If the snapshot's marketSequence field is greater than the last applied market update,
+apply it to the current market state. Discard any queued market update messages that have
+sequence numbers less than or equal to the snapshot's marketSequence. Apply the rest of the
+queued updates, so long as the sequences numbers keep incrementing by one. 
+If there is gap in the queued updates, then another snapshot will be needed to restore the market
+state. Continue processing the snapshot loop until all markets have been restored.</p>
+</li>
+<li>
+<p>Once all market snapshots and instruments have been recovered, the recovery procedure is
+complete.</p>
+</li>
+</ol>
+<h1 id="tcp-connectivity">TCP Connectivity</h1>
+<p><aside class="warning">TCP Connectivity is not yet available on Barchart Openfeed.</aside></p>
+<h1 id="message-specification">Message Specification</h1>
+<p>The Openfeed wire protocol is based on Google's protocol buffers. Protocol buffers is a data
+serialization format that makes it easy to interoperate between any platform or language.</p>
+<p>The protocol is specified in the protocol buffer language, which describes the structure of the
+messages and fields. These .proto files can be run through a protocol buffer compiler, which will
+generate efficient code in your programming language of choice for decoding and encoding the
+messages.</p>
+<p>The Openfeed protocol is specified in two files:</p>
+<ul>
+<li>
+<p>openfeed.proto defines the real time market data messages</p>
+</li>
+<li>
+<p>instrument.proto defines the instrument definition messages</p>
+</li>
+</ul>
+<h1 id="book-management">Book Management</h1>
+<p>penfeed may disseminate orderbook information in two different formats: market-by-price
+ and market-by-order. The instrument definition will specify which style of
+book should be used.</p>
+<aside class="warning">Openfeed relies on incremental updates to sychronize state between the server and client.
+Other forms incremental updates simply replace the previous value. Incremental book updates
+messages are inherently stateful, so care must be taken when managing the order book in order
+to avoid a corrupted view of the market. Packet loss, out of sequence messages, and incorrect
+syncronization logic can cause client-side books to become out of sync with the server.</aside>
+
+<h2 id="market-by-price">Market by Price</h2>
+<p>With market-by-price, order book information is consolidated and dissemenated at the price level.
+Price levels begin at index 1 and continue until book_depth.</p>
+<h2 id="market-by-order">Market by Order</h2>
+<p>Market by order provides full order-by-order view of the market. Availability of this feature is limited by
+exchange functionality.</p>
+<aside class="notice">Market-by-order is currently not available on Barchart Openfeed.</aside>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Message Specification/" class="btn btn-neutral float-right" title="Message Specification">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+      
+        <span style="margin-left: 15px"><a href="Message Specification/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script src="./js/theme.js"></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 0.16.3
+Build Date UTC : 2017-06-16 05:46:06
+-->
