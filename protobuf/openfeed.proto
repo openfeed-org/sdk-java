@@ -1,10 +1,11 @@
 /**
- * Copyright (C) 2011-2015 Barchart, Inc. <http://www.barchart.com/>
+ * Copyright (C) 2011-2017 Barchart, Inc. <http://www.barchart.com/>
  *
  * All rights reserved. Licensed under the OSI BSD License.
  *
  * http://www.opensource.org/licenses/bsd-license.php
  */
+
 syntax = "proto3";
 
 package org.openfeed;
@@ -19,29 +20,43 @@ import "instrument.proto";
 // message types
 message OpenfeedMessage {
 
-	 /// Millsecond unix epoch at time of message transmission (UTC)
-   sint64 sendingTime = 1;
+  /// Nanoecond unix epoch at time of message transmission (UTC)
+  sint64 sendingTime = 1;
 
-   /// The total number of markets available on this channel
-   // at the time the message was sent.  For UDP snapshot and definition feeds.
-   sint32 totalCount = 2;
+  /// The total number of markets available on this channel
+  // at the time the message was sent.  For UDP snapshot and definition feeds.
+  sint32 totalCount = 2;
 
-   /// The most recent packet sequence number sent on the incremental feed
-   // at the time this message was sent.  For UDP snapshot and definition feeds.
-   int64 syncSequence  = 3;
+  /// The most recent packet sequence number sent on the incremental feed
+  // at the time this message was sent.  For UDP snapshot and definition feeds.
+  int64 syncSequence  = 3;
 
-   oneof data {
-     HeartBeat heartBeart = 10;
-     InstrumentDefinition instrumentDefinition = 11;
-     InstrumentGroupStatus instrumentGroupStatus = 12;
-     MarketSnapshot marketSnapshot = 13;
-     MarketUpdate marketUpdate = 14;
+  oneof data {
+    HeartBeat heartBeat = 10;
+    InstrumentDefinition instrumentDefinition = 11;
+    InstrumentGroupStatus instrumentGroupStatus = 12;
+    MarketSnapshot marketSnapshot = 13;
+    MarketUpdate marketUpdate = 14;
+    AdminMessage adminMessage = 15;
+
+// Requests
+    SubscriptionRequest subscriptionRequest = 30;
+    SnapshotRequest snapshotRequest = 31;
+    LoginRequest loginRequest = 32;
+    LogoutRequest logoutRequest = 33;
+
+// Responses
+    SubscriptionResponse subscriptionResponse = 20;
+    SnapshotResponse snapshotResponse = 21;
+    UnexpectedMessageResponse unexpectedMessageResponse = 22;
+    LoginResponse loginResponse = 23;
+    LogoutResponse logoutResponse = 24;     
   }
 }
 
 /// Heart Beat
 message HeartBeat {
-  /// UTC timestamp of transaction, milli seconds since Unix epoch
+  /// UTC timestamp of transaction, nano seconds since Unix epoch
   sint64 transactionTime = 1;
   string status = 2;
 }
@@ -49,7 +64,7 @@ message HeartBeat {
 
 /// Instrument Group Status
 message InstrumentGroupStatus {
-  /// UTC Timestamp of transaction, milli seconds since Unix epoch
+  /// UTC Timestamp of transaction, nano seconds since Unix epoch
   sint64 transactionTime = 1;
   string instrumentGroupId = 2;
   InstrumentTradingStatus tradingStatus = 3;
@@ -61,23 +76,33 @@ message MarketSnapshot {
 
   /// Unique id identifying the market
   sint64 marketId = 1;
-  // UTC Timestamp of transaction, milli seconds since Unix epoch
+  // UTC Timestamp of transaction, nano seconds since Unix epoch
   sint64 transactionTime = 2;
   // Instrument level sequence number
   int64 marketSequence  = 3;
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 4;
 
+  /// A snapshot with market depth may exceed the maximum message size.
+  //  In that case, the snapshot will be broken up across multiple
+  //  snapshot messages.
+  sint32 totalChunks = 5;
+  sint32 currentChunk = 6;
+  
   InstrumentStatus instrumentStatus = 10;
+  
   // Best Bid Offer
   BestBidOffer bbo = 11;
+  
   // Index Value
   IndexValue index = 12;
+  
   // Price Level Book
-  AddPriceLevel priceLevels = 13;
+  repeated AddPriceLevel priceLevels = 13;
+  
   // Order Book
   repeated AddOrder orders = 14;
-  News news = 15;
+   News news = 15;
 
   /// Most recent opening price
   Open open = 30;
@@ -113,12 +138,14 @@ message MarketSnapshot {
   OpenInterest openInterest = 40;
 
   /// Most recent volume weighted average price
-  Vwap vwap = 41;
+   Vwap vwap = 41;
 
-
-  Dividend dividend = 42;
+  DividendsIncomeDistributions dividendsIncomeDistributions = 42;
   NumberOfTrades numberOfTrades = 43;
   MonetaryValue monetaryValue = 44;
+  CapitalDistributions capitalDistributions = 45;
+  SharesOutstanding sharesOutstanding = 46;
+  NetAssetValue netAssetValue = 47;
 
 }
 
@@ -130,7 +157,7 @@ message MarketUpdate {
   /// Unique id identifying the market
   sint64 marketId = 1;
 
-  /// UTC Timestamp of transaction, milli seconds since Unix epoch
+  /// UTC Timestamp of transaction, nano seconds since Unix epoch
   sint64 transactionTime = 2;
 
   /// Market level sequencing number
@@ -139,11 +166,18 @@ message MarketUpdate {
   // Market participant/originator
   string originatorId = 4;
 
-  bytes reserved = 5;
+  bytes reserved1 = 5;
 
   /// True if data is consolidated over many market participants/originators
   bool consolidated = 6;
+  
+  string reserved2 = 7;
+   
+  // data source sequence number
+  sint64 sourceSequence = 8;
 
+  /// Distribution time in nano seconds since epoch.  Used by CTA and UTP Plans
+  sint64 distributionTime = 9;
 
   repeated Entry entry = 10;
   message Entry {
@@ -176,65 +210,73 @@ message MarketUpdate {
          Settlement settlement = 39;
          OpenInterest openInterest = 40;
          Vwap vwap = 41;
-         Dividend dividend = 42;
+         DividendsIncomeDistributions dividendsIncomeDistributions = 42;
          NumberOfTrades numberOfTrades = 43;
          MonetaryValue monetaryValue = 44;
+         CapitalDistributions capitalDistributions = 45;
+         SharesOutstanding sharesOutstanding = 46;
+         NetAssetValue netAssetValue = 47;
     }
   }
 }
 
 
-//
+// /////////////////////////////////////////////////////////////////
 // Enums
-//
+// /////////////////////////////////////////////////////////////////
 
 /// Book side
 enum BookSide {
-  BID = 0;
-	OFFER = 1;
+  UNKNOWN_BOOK_SIDE = 0;
+  BID = 1;
+  OFFER = 2;
 }
 
 enum InstrumentTradingStatus {
-    TRADING_HALT = 0;
-    TRADING_RESUME = 1;
-    PRE_OPEN = 2;
-    OPEN = 3;
-    PRE_CLOSE = 4;
-    CLOSE = 5;
-    UNKNOWN = 6;
-    QUOTATION_RESUME = 7;
-    OPEN_DELAY = 8;
-    NO_OPEN_NO_RESUME = 9;
-    FAST_MARKET = 10;
-    FAST_MARKET_END = 11;
-    LATE_MARKET = 12;
-    LATE_MARKET_END = 13;
-    POST_SESSION = 14;
-    POST_SESSION_END = 15;
+  UNKNOWN_TRADING_STATUS = 0;
+  TRADING_RESUME = 1;
+  PRE_OPEN = 2;
+  OPEN = 3;
+  PRE_CLOSE = 4;
+  CLOSE = 5;
+  TRADING_HALT = 6;
+  QUOTATION_RESUME = 7;
+  OPEN_DELAY = 8;
+  NO_OPEN_NO_RESUME = 9;
+  FAST_MARKET = 10;
+  FAST_MARKET_END = 11;
+  LATE_MARKET = 12;
+  LATE_MARKET_END = 13;
+  POST_SESSION = 14;
+  POST_SESSION_END = 15;
 }
 
 enum RegulationSHOShortSalePriceTest {
-  PRICE_TEST_NONE = 0;
-  PRICE_TEST_IN_EFFECT = 1;
-  PRICE_TEST_REMAINS_IN_EFFECT = 2;
+  UNKNOWN_PRICE_TEST = 0;
+  PRICE_TEST_NONE = 1;
+  PRICE_TEST_IN_EFFECT = 2;
+  PRICE_TEST_REMAINS_IN_EFFECT = 3;
 }
 
 
 enum SettlementTerms {
-    CASH = 0;
-    NON_NET = 1;
-    CONTINGENT_TRADE = 2;
-    CASH_TODAY = 3;
-    DATE = 4;
+  UNKNOWN_SETTLEMENT_TERMS = 0;
+  CASH = 1;
+  NON_NET = 2;
+  CONTINGENT_TRADE = 3;
+  CASH_TODAY = 4;
+  DATE = 5;
 }
 
 enum CrossType {
-    DEFAULT = 0;
-    INTERNAL = 1;
-    BASIS = 2;
-    CONTINGENT = 3;
-    SPECIAL = 4;
-    VWAP = 5;
+  UNKNOWN_CROSS_TYPE = 0;
+  DEFAULT = 1;
+  INTERNAL = 2;
+  BASIS = 3;
+  CONTINGENT = 4;
+  SPECIAL = 5;
+  VWAP = 6;
+  REGULAR = 7;
 }
 
 
@@ -243,7 +285,7 @@ enum CrossType {
 //
 message InstrumentStatus {
   InstrumentTradingStatus tradingStatus = 10;
-  // UTC Timestamp, milli seconds since Unix epoch
+  // UTC Timestamp, nano seconds since Unix epoch
   sint64 openingTime = 11;
   string note = 12;
   /// Date only, format 2012-07-04 -> 20120704
@@ -257,10 +299,10 @@ message InstrumentStatus {
 //
 message BestBidOffer {
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 bidPrice = 10;
 
-  /// Apply factorQuantity
+  /// Divide by quantityDenominator
   sint64 bidQuantity = 11;
 
   sint32 bidOrderCount = 12;
@@ -270,10 +312,10 @@ message BestBidOffer {
   // For Equities: EXCHANGE_MIC
   string bidOriginator = 13;
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 offerPrice = 20;
 
-  /// Apply factorQuantity
+  /// Divide by quantityDenominator
   sint64 offerQuantity = 21;
 
   sint32 offerOrderCount = 22;
@@ -296,11 +338,12 @@ message AddPriceLevel {
   sint32 level = 10;
   BookSide side = 11;
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 12;
-  /// Apply factorQuantity
+  /// Divide by quantityDenominator
   sint64 quantity = 13;
   sint32 orderCount = 14;
+  sint64 impliedQuantity = 15;
 }
 
 /// Delete an existing price level, pulling existing levels up
@@ -316,34 +359,39 @@ message ModifyPriceLevel {
   /// price level index, starting at 1
   sint32 level = 10;
   BookSide side = 11;
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 12;
 
-  /// Apply factorQuantity
+  /// Divide by quantityDenominator
   sint64 quantity = 13;
   sint32 orderCount = 14;
+  sint64 impliedQuantity = 15;
 }
 
-/// Not yet supported
+// Add an order to the order book.  Indexed by orderId, which is unique per channel
 message AddOrder {
   sint64 orderId = 10;
   BookSide side = 11;
   sint64 price = 12;
   sint64 quantity = 13;
+  bool isImplied = 14;
+  sint64 priority = 15;
 }
 
-/// Not yet supported
+/// Delete an order from the order book. Indexed by orderId, which is unique per channel
 message DeleteOrder {
   sint64 orderId = 10;
   BookSide side = 11;
 }
 
-/// Not yet supported
+/// Modify the price or quantity of an order.  The side and implied flag cannot change 
 message ModifyOrder {
-  sint64 orderId = 10;
-  BookSide side = 11;
-  sint64 price = 12;
-  sint64 quantity = 13;
+   sint64 orderId = 10;
+   BookSide side = 11;
+   sint64 price = 12;
+   sint64 quantity = 13;
+   bool isImplied = 14;
+   sint64 priority = 15;
 }
 
 
@@ -367,13 +415,15 @@ message IndexValue {
 /// A live trade.  When received, update the "last" field
 message Trade {
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 10;
 
-  /// Apply factorQuantity
+  /// Divide by quantityDenominator
   sint64 quantity = 11;
 
   string tradeId = 12;
+  
+  /// The side of the aggressing order that caused the trade
   BookSide side = 13;
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 14;
@@ -427,35 +477,35 @@ message Open {
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 10;
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 11;
 }
 message High {
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 10;
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 11;
 }
 message Low {
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 10;
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 11;
 }
 message Close {
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 10;
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 11;
 }
 message PrevClose {
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 10;
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 11;
 }
 
@@ -463,22 +513,22 @@ message Last {
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 10;
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 11;
 
-  /// Apply factorQuantity
+  /// Divide by quantityDenominator
   sint64 quantity = 12;
 }
 
 /// 52 week
 message YearHigh {
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 10;
 }
 
 /// 52 week
 message YearLow {
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 10;
 }
 
@@ -503,7 +553,7 @@ message MonetaryValue {
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 10;
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 value = 11;
 
   string valueCurrencyCode = 12;
@@ -514,9 +564,12 @@ message Settlement {
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 10;
 
-  /// Apply factorPrice
+  /// Divide by priceDenominator
   sint64 price = 11;
   bool preliminarySettle = 12;
+  
+  /// Reserved
+  bool reserved = 127;
 }
 
 /// Open interest
@@ -533,22 +586,74 @@ message Vwap {
   sint64 vwap = 11;
 }
 
-/// Dividend
-message Dividend {
+/// Dividends and Income Distributions
+message DividendsIncomeDistributions {
+  string instrumentType = 7;
+  // Corporate Action
+  string corporateAction = 8;
+  // Distribution Type
+  string distributionType = 9;
+
   // Date only, format 2012-07-04 -> 20120704
   sint32 payableDate = 10;
   sint32 recordDate = 11;
   sint32 exDividendDate = 12;
-  // Cash amount of dividend
+  // Cash amount of distribution
   sint64 amount = 13;
-  string amountCurrencyCode = 14;
+  string currencyCode = 14;
   repeated string notes = 15;
+  //
+  sint64 totalCashDistribution = 16;
+  sint64 nonQualifiedCashDistribution = 17;
+  sint64 qualifiedCashDistribution = 18;
+  sint64 taxFreeCashDistribution = 19;
+  sint64 ordinaryForeignTaxCredit = 20;
+  sint64 qualifiedForeignTaxCredit = 21;
+  sint64 stockDividendRatio = 22;
+  //
+  sint32 reinvestDate = 23;
+  
 
 }
 
+/// Capital Distributions
+message CapitalDistributions {
+ string instrumentType = 9;
+  // Corporate Action
+  string corporateAction = 10;
+
+  // Date only, format 2012-07-04 -> 20120704
+  sint32 payableDate = 11;
+  sint32 recordDate = 12;
+  sint32 exDate = 13;
+
+  // Distributions
+  sint64 shortTermCapitalGain = 14;
+  sint64 longTermCapitalGain = 15;
+  sint64 unallocatedDistributions = 16;
+  sint64 returnOfCapital = 17;
+
+  string currencyCode = 18;
+  repeated string notes = 19;
+  //
+  sint32 reinvestDate = 20;
+
+}
+
+//
+message SharesOutstanding {
+  sint64 sharesOutstanding = 1;
+}
+ 
+//
+message NetAssetValue {
+  sint64 netAssetValue = 1;
+}
+
+
 /// News or informational message
 message News {
-  // Origination time = UTC timestamp milli seconds since Unix epoch
+  // Origination time = UTC timestamp nano seconds since Unix epoch
   sint64 originationTime = 1;
   string source = 2;
   string languageCode = 3;
@@ -557,7 +662,124 @@ message News {
   repeated string symbols = 6;
 }
 
-/// Clear all data from the order book that is configured for this market.
+/// Clear all data from the order books that are configured for this market.
 message ClearBook {
-  sint32 reserved = 1;
+   sint32 reserved = 1;
+}
+
+// Administrative Message
+message AdminMessage {
+  // Origination time = UTC timestamp nano seconds since Unix epoch
+  sint64 originationTime = 1;
+  string source = 2;
+  string languageCode = 3;
+  string headLine = 4;
+  string text = 5;
+}
+
+
+/////////////
+// Subscription messages
+/////////////
+message SnapshotRequest {
+  sint64 correlationId = 1;
+  
+  /// Preferred service (realtime or delayed).
+  Service service = 2;
+  
+  bool unsubscribe = 3;
+  
+  oneof request {
+   sint64 marketId = 4;
+  
+  }
+  
+  /// Number of seconds in between snapshots
+  // Zero means a single snapshot
+  sint32 intervalSeconds = 127;
+  
+}
+
+message SnapshotResponse {
+  sint64 correlationId = 1;
+  MarketSnapshot snapshot = 2;
+  Result result = 3;
+}
+
+message UnexpectedMessageResponse {
+  string message = 1;
+}
+
+message LoginRequest {
+  sint64 correlationId = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message LogoutRequest  {
+  sint64 correlationId = 1;
+}
+
+message LoginResponse {
+  sint64 correlationId = 1;
+  
+  Result result = 2;
+  
+}
+
+message LogoutResponse {
+  sint64 correlationId = 1;
+  Result result = 2;
+  string message = 3;
+}
+
+message SubscriptionResponse {
+  sint64 correlationId = 1;
+  Result result = 2;
+  string message = 3;
+  Service service = 4;
+  sint64 marketId = 5;
+}
+
+message SubscriptionRequest {
+
+  /// Client-assigned id for this request.  Response will include same id
+  sint64 correlationId = 1;
+  
+  /// Preferred service (realtime or delayed).
+  Service service = 2;
+  
+  bool unsubscribe = 3;
+  
+  oneof request {
+   sint64 marketId = 4;
+   string symbol = 5;
+   sint32 channel = 6;
+   string exchange = 7;
+  }
+  
+  sint32 snapshotIntervalSeconds = 127;
+
+}
+
+enum Result {
+  UNKNOWN_RESULT = 0;
+  SUCCESS = 1;
+  MALFORMED_MESSAGE = 120;
+  UNEXPECTED_MESSAGE = 121;
+  NOT_SUBSCRIBED = 122;
+  DUPLICATE_SUBSCRIPTION = 123;
+  INVALID_CREDENTIALS = 124;
+  INSUFFICIENT_PRIVILEGES = 125;    
+  AUTHENTICATION_REQUIRED = 126;    
+  GENERIC_FAILURE = 127;
+}
+
+
+enum Service {
+  UNKNOWN_SERVICE = 0;
+  REAL_TIME = 1;
+  DELAYED = 2;
+  REAL_TIME_SNAPSHOT = 3;
+  DELAYED_SNAPSHOT = 4;
 }
