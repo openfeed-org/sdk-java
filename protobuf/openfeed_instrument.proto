@@ -157,6 +157,9 @@ message InstrumentDefinition {
  /// Current financial status of the issuer
   string financialStatusIndicator = 214;
 
+  /// ISIN: https://en.wikipedia.org/wiki/International_Securities_Identification_Number
+  string isin = 215;
+
   // #############################################
   enum InstrumentType {
     UNKNOWN_INSTRUMENT_TYPE = 0;
