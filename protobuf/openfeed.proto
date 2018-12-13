@@ -457,6 +457,8 @@ message Trades {
 
 /// A live trade.  When received, update the "last" field
 message Trade {
+  // Market participant/originator
+  string originatorId = 8;
   // UTC Timestamp, nano seconds since Unix epoch
   sint64 transactionTime = 9;
   /// Divide by priceDenominator
@@ -484,6 +486,8 @@ message Trade {
 
 ///  Trade Correction
 message TradeCorrection {
+  // Market participant/originator
+  string originatorId = 8;
   sint64 transactionTime = 9;
   // Corrected Price
   sint64 price = 10;
@@ -511,6 +515,8 @@ message TradeCorrection {
 // Trade Cancel/Break
 //
 message TradeCancel {
+  // Market participant/originator
+  string originatorId = 8;
   sint64 transactionTime = 9;
   sint64 correctedTradePrice = 10;
   sint64 correctedTradeQuantity = 11;
@@ -709,14 +715,14 @@ message NetAssetValue {
 }
 
 
-
 /// Intra and EOD Market Summary
 message MarketSummary {
   sint64 transactionTime = 1;
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradingDate = 2;
-  bool endOfDay = 3;
-  bool clear = 4;
+  bool startOfDay = 3;
+  bool endOfDay = 4;
+  ClearSet clear = 5;
   //
   InstrumentStatus instrumentStatus = 9;
   BestBidOffer bbo = 10;
@@ -730,7 +736,15 @@ message MarketSummary {
   Settlement settlement = 18;
   OpenInterest openInterest = 19;
   Vwap vwap = 20;
+  // Clears sets of fields
+  enum ClearSet {
+  	  NONE = 0;
+	  ALL = 1;
+	  BA = 2;
+	  CUSTOM_1 = 3;
+  }
 }
+
 
 message Context {
   repeated ContextData data = 1;
