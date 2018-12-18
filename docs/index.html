@@ -523,7 +523,8 @@ been set to 1, and that all books and session statistics on the channel should b
 </li>
 </ul>
 <h3 id="message-packing">Message Packing</h3>
-<p>Each Openfeed message is prepended with the following header:</p>
+<p>Each Openfeed message is prepended with the following header. 
+The header fields are big-endian, unsigned integers.</p>
 <table>
 <thead>
 <tr>
@@ -538,7 +539,7 @@ been set to 1, and that all books and session statistics on the channel should b
 <td>Length</td>
 <td>2</td>
 <td>short</td>
-<td>Message Length</td>
+<td>Message Length, not including header.</td>
 </tr>
 <tr>
 <td>Message Type</td>
@@ -718,5 +719,5 @@ exchange functionality.</p>
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2018-10-31 20:14:11
+Build Date UTC : 2018-12-18 17:26:59
 -->

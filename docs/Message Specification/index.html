@@ -172,6 +172,7 @@
 <li><a href="#org.openfeed.BookSide">BookSide</a></li>
 <li><a href="#org.openfeed.CrossType">CrossType</a></li>
 <li><a href="#org.openfeed.InstrumentTradingStatus">InstrumentTradingStatus</a></li>
+<li><a href="#org.openfeed.MarketSummary.ClearSet">MarketSummary.ClearSet</a></li>
 <li><a href="#org.openfeed.OpenCloseSettlementFlag">OpenCloseSettlementFlag</a></li>
 <li><a href="#org.openfeed.RegulationSHOShortSalePriceTest">RegulationSHOShortSalePriceTest</a></li>
 <li><a href="#org.openfeed.SettlementTerms">SettlementTerms</a></li>
@@ -1592,6 +1593,12 @@ If a side is not present, then that side has been deleted.</p>
 <td>Date only, format 2012-07-04 -&gt; 20120704</td>
 </tr>
 <tr>
+<td>startOfDay</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td>endOfDay</td>
 <td><a href="#bool">bool</a></td>
 <td></td>
@@ -1599,7 +1606,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 <tr>
 <td>clear</td>
-<td><a href="#bool">bool</a></td>
+<td><a href="#org.openfeed.MarketSummary.ClearSet">MarketSummary.ClearSet</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -2505,6 +2512,12 @@ message types</p>
 </thead>
 <tbody>
 <tr>
+<td>originatorId</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td>Market participant/originator</td>
+</tr>
+<tr>
 <td>transactionTime</td>
 <td><a href="#sint64">sint64</a></td>
 <td></td>
@@ -2628,6 +2641,12 @@ message types</p>
 </thead>
 <tbody>
 <tr>
+<td>originatorId</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td>Market participant/originator</td>
+</tr>
+<tr>
 <td>transactionTime</td>
 <td><a href="#sint64">sint64</a></td>
 <td></td>
@@ -2678,6 +2697,12 @@ message types</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>originatorId</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td>Market participant/originator</td>
+</tr>
 <tr>
 <td>transactionTime</td>
 <td><a href="#sint64">sint64</a></td>
@@ -3192,6 +3217,40 @@ message types</p>
 <tr>
 <td>NO_CHANGE</td>
 <td>21</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.MarketSummary.ClearSet"/></p>
+<h3 id="marketsummaryclearset">MarketSummary.ClearSet</h3>
+<p>Clears sets of fields</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NONE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>ALL</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>BA</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>CUSTOM_1</td>
+<td>3</td>
 <td></td>
 </tr>
 </tbody>
