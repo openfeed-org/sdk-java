@@ -50,6 +50,8 @@ enum InstrumentTradingStatus {
   CROSS = 19;
   POST_CLOSE = 20;
   NO_CHANGE = 21;
+  // Not available for trading.
+  NAFT = 22;
 }
 
 enum RegulationSHOShortSalePriceTest {
@@ -83,6 +85,13 @@ enum OpenCloseSettlementFlag {
   UNKNOWN = 0;
   DAILY_OPEN = 1;
   INDICATIVE_OPEN_PRICE = 2;
+}
+
+enum SettlementSource {
+  UNKNOWN_SETTLEMENT_SOURCE = 0;
+  GLOBEX = 1;
+  ITC = 2;
+  MANUAL = 3;
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -149,6 +158,32 @@ message InstrumentGroupStatus {
   sint32 tradeDate = 4;
 }
 
+/// Session used in snapshot.
+message MarketSession {
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 4;
+  /// Most recent opening price
+  Open open = 30;
+  /// High price for the trading session
+  High high = 31;
+  /// Low price for the trading session
+  Low low = 32;
+  /// Most recent traded price and quantity
+  Last last = 35;
+  /// Total traded volume
+  Volume volume = 38;
+  /// Most recent settlement price
+  Settlement settlement = 39;
+  /// Most recent settlement price
+  Settlement prevSettlement = 44;
+  /// Most recent open interest
+  OpenInterest openInterest = 40;
+  /// Number of trades
+  NumberOfTrades numberOfTrades = 41;
+  /// Monetary value
+  MonetaryValue monetaryValue = 42;
+}
+
 /// Snapshot for a market
 message MarketSnapshot {
   /// Unique id identifying the market
@@ -211,6 +246,26 @@ message MarketSnapshot {
   SharesOutstanding sharesOutstanding = 46;
   NetAssetValue netAssetValue = 47;
 
+  /// Previous session.
+  MarketSession previousSession = 48;
+
+  /// 'T' session.
+  MarketSession tSession = 49;
+}
+
+enum SnapshotRequestResult {
+  SNAPSHOT_REQUEST_UNKNOWN_RESULT = 0;
+  SNAPSHOT_REQUEST_SUCCESS = 1;
+  SNAPSHOT_REQUEST_NOT_FOUND = 2;
+  SNAPSHOT_REQUEST_SERVICE_NOT_AVAILABLE = 3;
+  SNAPSHOT_REQUEST_GENERIC_FAILURE = 4;
+}
+
+// Used by market state to return snapshot.
+message MarketSnapshotResponse {
+  SnapshotRequestResult result = 1;
+  string message = 2;
+  MarketSnapshot marketSnapshot = 3;
 }
 
 //
@@ -225,7 +280,6 @@ message MarketUpdate {
   /// This is usually the execution venue timestamp.
   sint64 transactionTime = 3;
   /// Distribution time in nano seconds since epoch.
-  /// Execution timestamp of market participant for multi participant venues like CTA, UTP, etc..
   sint64 distributionTime = 4;
   /// Market level sequencing number
   sint64 marketSequence = 5;
@@ -240,6 +294,16 @@ message MarketUpdate {
   sint32 priceDenominator = 9;
    // Feed specific context data set as required.
   Context context = 10;
+
+  /// Current session. This is used to 'enhance' updates from the translator in the Market State
+  MarketSession session = 11;
+
+  /// 'T' session. This is used to 'enhance' updates from the translator in the Market State
+  MarketSession tSession = 12;
+
+  /// Previous session. This is used to 'enhance' updates from the translator in the Market State
+  MarketSession previousSession = 13;
+
   oneof data {
       News news = 20;
       ClearBook clearBook = 21;
@@ -482,6 +546,17 @@ message Trade {
   sint64 lastPrice = 24;
   string saleCondition = 25;
   string currency = 26;
+  // Does not update Last
+  bool doesNotUpdateLast = 27;
+  // Does not update Volume
+  bool doesNotUpdateVolume = 28;
+  string session = 30;
+  // Is this a block trade.
+  bool blockTrade = 31;
+  /// Distribution time in nano seconds since epoch.
+  sint64 distributionTime = 32;
+  /// time in nano seconds since epoch.
+  sint64 transactionTime2 = 33;
 }
 
 ///  Trade Correction
@@ -509,6 +584,10 @@ message TradeCorrection {
   string originalTradeId = 24;
   string saleCondition = 25;
   string currency = 26;
+   /// Distribution time in nano seconds since epoch.
+  sint64 distributionTime = 27;
+  /// time in nano seconds since epoch.
+  sint64 transactionTime2 = 28;
 }
 
 //
@@ -523,6 +602,10 @@ message TradeCancel {
   string tradeId = 12;
   string saleCondition = 13;
   string currency = 14;
+   /// Distribution time in nano seconds since epoch.
+  sint64 distributionTime = 15;
+  /// time in nano seconds since epoch.
+  sint64 transactionTime2 = 16;
 }
 
 message Open {
@@ -579,6 +662,7 @@ message Last {
   /// Divide by quantityDenominator
   sint64 quantity = 12;
   string currency = 13;
+  string session = 30;
 }
 
 /// 52 week
@@ -633,6 +717,9 @@ message Settlement {
   sint64 price = 11;
   bool preliminarySettle = 12;
   string currency = 13;
+  SettlementSource settlementSource = 14;
+  /// Used by CME ITC.
+  string session = 15;
   /// Reserved
   bool reserved = 127;
 }
@@ -743,6 +830,23 @@ message MarketSummary {
 	  BA = 2;
 	  CUSTOM_1 = 3;
   }
+  /// Used by CME ITC.
+  string session = 21;
+
+  /// Used to differntiate various ddf messages.
+  enum SummaryType {
+    // DDF 2/1 Exchange refresh
+    EXCHANGE_REFRESH = 0;
+    // DDF 2/6 Live Prices refresh
+    REFRESH_LIVE_PRICE = 1;
+    // DDF 3/C end-of-day commodity prices
+    EOD_COMMODITY_PRICES = 2;
+    // DDF 3/S end-of-day stock and forex prices and volume
+    EOD_STOCK_FOREX_PRICES = 3;
+    // DDF 3/I end-of-day commodity volume and open interest message
+    EOD_COMMODITY_STATS = 4;
+  }
+  SummaryType summaryType = 22;
 }
 
 
@@ -770,3 +874,11 @@ message TracePoint {
   int32  componentLatencyNs = 4;
 }
 
+// TCP replay request.
+message TCPHistoricalReplayRequest {
+  int32 channel = 1;
+  int32 resetNumber = 2;
+  int64 sequence  = 3;
+  int32 count  = 4;
+  string requestId = 5;
+}
