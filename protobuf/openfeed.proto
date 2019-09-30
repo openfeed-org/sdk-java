@@ -94,6 +94,23 @@ enum SettlementSource {
   MANUAL = 3;
 }
 
+enum Service {
+  UNKNOWN_SERVICE = 0;
+  REAL_TIME = 1;
+  DELAYED = 2;
+  REAL_TIME_SNAPSHOT = 3;
+  DELAYED_SNAPSHOT = 4;
+  END_OF_DAY = 5;
+}
+
+enum MarketWideStatus {
+   STATUS_UNKNOWN = 0;
+   STATUS_START_OF_DAY = 1;
+   STATUS_END_OF_DAY = 2;
+   STATUS_OPEN = 3;
+   STATUS_CLOSE = 4;
+}
+
 // /////////////////////////////////////////////////////////////////
 // Messages
 // /////////////////////////////////////////////////////////////////
@@ -119,6 +136,7 @@ message OpenfeedMessage {
     InstrumentGroupStatus instrumentGroupStatus = 14;
     MarketSnapshot marketSnapshot = 15;
     MarketUpdate marketUpdate = 16;
+    MarketStatus marketStatus = 17;
   }
 }
 
@@ -133,6 +151,9 @@ message HeartBeat {
   /// UTC timestamp of transaction, nano seconds since Unix epoch
   sint64 transactionTime = 1;
   string status = 2;
+  bool exchange = 3;
+  sint32 channel = 4;
+  
 }
 
 // Administrative Message
@@ -147,6 +168,7 @@ message AdminMessage {
      OK = 0;
   }
   Status status = 6;
+  sint32 channel = 7;
 }
 
 /// Instrument Group Status
@@ -156,6 +178,15 @@ message InstrumentGroupStatus {
   string instrumentGroupId = 2;
   InstrumentTradingStatus tradingStatus = 3;
   sint32 tradeDate = 4;
+  sint32 channel = 5;
+}
+
+/// Market Status
+message MarketStatus {
+  /// UTC Timestamp of transaction, nano seconds since Unix epoch
+  sint64 transactionTime = 1;
+  sint32 channel = 2;
+  MarketWideStatus marketWideStatus = 3;
 }
 
 /// Session used in snapshot.
@@ -204,7 +235,9 @@ message MarketSnapshot {
   /// Divide prices by this value to get real price values.  Optional, use value
   /// from InstrumentDefinition if not set.
   sint32 priceDenominator = 8;
-  //
+  // 
+  Service service = 9;
+  // 
   InstrumentStatus instrumentStatus = 10;
   // Best Bid Offer
   BestBidOffer bbo = 11;
@@ -251,6 +284,9 @@ message MarketSnapshot {
 
   /// 'T' session.
   MarketSession tSession = 49;
+
+  /// Volume at price. Used by the market state/ JERQ.
+  VolumeAtPrice volumeAtPrice = 50;
 }
 
 enum SnapshotRequestResult {
@@ -286,7 +322,7 @@ message MarketUpdate {
   /// Data source sequence number
   sint64 sourceSequence = 6;
   // Market participant/originator
-  string originatorId = 7;
+  bytes originatorId = 7;
   /// True if data is consolidated over many market participants/originators
   bool consolidated = 8;
   /// Divide prices by this value to get real price values.  Optional, use value
@@ -404,8 +440,8 @@ message BestBidOffer {
   /// Liquidity provider information
   // For Forex: BANK:CITY
   // For Equities: EXCHANGE_MIC
-  string bidOriginator = 13;
-  string bidQuoteCondition = 14;
+  bytes bidOriginator = 13;
+  bytes bidQuoteCondition = 14;
   /// Divide by priceDenominator
   sint64 offerPrice = 20;
   /// Divide by quantityDenominator
@@ -414,9 +450,9 @@ message BestBidOffer {
   /// Liquidity provider information
   // For Forex: BANK:CITY
   // For Equities: EXCHANGE_MIC
-  string offerOriginator = 23;
-  string offerQuoteCondition = 24;
-  string quoteCondition = 30;
+  bytes offerOriginator = 23;
+  bytes offerQuoteCondition = 24;
+  bytes quoteCondition = 30;
   bool nationalBboUpdated = 31;
 }
 
@@ -522,20 +558,20 @@ message Trades {
 /// A live trade.  When received, update the "last" field
 message Trade {
   // Market participant/originator
-  string originatorId = 8;
+  bytes originatorId = 8;
   // UTC Timestamp, nano seconds since Unix epoch
   sint64 transactionTime = 9;
   /// Divide by priceDenominator
   sint64 price = 10;
   /// Divide by quantityDenominator
   sint64 quantity = 11;
-  string tradeId = 12;
+  bytes tradeId = 12;
   /// The side of the aggressing order that caused the trade
   BookSide side = 13;
   /// Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 14;
-  string buyerId = 15;
-  string sellerId = 16;
+  bytes buyerId = 15;
+  bytes sellerId = 16;
   bool openingTrade = 17;
   bool systemPriced = 18;
   bool marketOnClose = 19;
@@ -544,7 +580,7 @@ message Trade {
   CrossType crossType = 22;
   bool byPass = 23;
   sint64 lastPrice = 24;
-  string saleCondition = 25;
+  bytes saleCondition = 25;
   string currency = 26;
   // Does not update Last
   bool doesNotUpdateLast = 27;
@@ -562,18 +598,18 @@ message Trade {
 ///  Trade Correction
 message TradeCorrection {
   // Market participant/originator
-  string originatorId = 8;
+  bytes originatorId = 8;
   sint64 transactionTime = 9;
   // Corrected Price
   sint64 price = 10;
   // Corrected Quantity
   sint64 quantity = 11;
-  string tradeId = 12;
+  bytes tradeId = 12;
   BookSide side = 13;
   // Date only, format 2012-07-04 -> 20120704
   sint32 tradeDate = 14;
-  string buyerId = 15;
-  string sellerId = 16;
+  bytes buyerId = 15;
+  bytes sellerId = 16;
   bool openingTrade = 17;
   bool systemPriced = 18;
   bool marketOnClose = 19;
@@ -581,8 +617,8 @@ message TradeCorrection {
   SettlementTerms settlementTerms = 21;
   CrossType crossType = 22;
   bool byPass = 23;
-  string originalTradeId = 24;
-  string saleCondition = 25;
+  bytes originalTradeId = 24;
+  bytes saleCondition = 25;
   string currency = 26;
    /// Distribution time in nano seconds since epoch.
   sint64 distributionTime = 27;
@@ -595,12 +631,12 @@ message TradeCorrection {
 //
 message TradeCancel {
   // Market participant/originator
-  string originatorId = 8;
+  bytes originatorId = 8;
   sint64 transactionTime = 9;
   sint64 correctedTradePrice = 10;
   sint64 correctedTradeQuantity = 11;
-  string tradeId = 12;
-  string saleCondition = 13;
+  bytes tradeId = 12;
+  bytes saleCondition = 13;
   string currency = 14;
    /// Distribution time in nano seconds since epoch.
   sint64 distributionTime = 15;
@@ -878,7 +914,57 @@ message TracePoint {
 message TCPHistoricalReplayRequest {
   int32 channel = 1;
   int32 resetNumber = 2;
+  
   int64 sequence  = 3;
   int32 count  = 4;
   string requestId = 5;
 }
+
+/// Request for the snapshot to the Market state.
+message SnapshotRequest {
+  int32 channel = 1;
+  int32 resetNumber = 2;
+  string requestId = 3;
+  enum SnapshotRequestType {
+    ALL = 0;
+    QUOTE = 1;
+    DEPTH = 2;
+    VOLUME_AT_PRICE = 3;
+  }
+  repeated SnapshotRequestType snapshotRequestTypes = 4;
+}
+
+/// The VolumeAtPrice class encapsulates all of the trades throughout the day,
+/// and organizes a table of volume at prices.
+message VolumeAtPrice {
+  sint64 marketId = 1;
+  string symbol = 2;
+  /// UTC Timestamp of transaction, nano seconds since Unix epoch
+  sint64 transactionTime = 3;
+  sint64 lastPrice = 4;
+  sint64 lastQuantity = 5;
+  sint64 lastCumulativeVolume = 6;
+  /// Date only, format 2012-07-04 -> 20120704
+  sint32 tradeDate = 7;
+  repeated PriceLevelVolume priceVolumes = 8;
+  
+  message PriceLevelVolume {
+    sint64 price = 1;
+    sint64 volume = 2;
+  }
+}
+
+/// Open,High,Low,Close
+message Ohlc {
+  sint64 marketId = 1;
+  string symbol = 2;
+  /// Most recent opening price
+  Open open = 3;
+  /// High price for the trading session
+  High high = 4;
+  /// Low price for the trading session
+  Low low = 5;
+  /// Most recent closing price
+  Close close = 6;
+}
+

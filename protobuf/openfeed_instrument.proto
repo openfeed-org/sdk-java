@@ -160,6 +160,35 @@ message InstrumentDefinition {
   /// ISIN: https://en.wikipedia.org/wiki/International_Securities_Identification_Number
   string isin = 215;
 
+  /// Break out of currency pair
+  CurrencyPair currencyPair = 216;
+
+  /// true if exchange sends volume.
+  bool exchangeSendsVolume = 217;
+
+  /// true if exchange sends high.
+  bool exchangeSendsHigh = 218;
+
+  /// true if exchange sends low.
+  bool exchangeSendsLow = 219;
+
+  /// true if exchange sends open.
+  bool exchangeSendsOpen = 220;
+
+  /// true if this instrument represents consolidated NBBO.
+  bool consolidatedFeedInstrument = 221;
+
+  /// true if this instrument represents Pit symbol.
+  bool openOutcryInstrument = 222;
+
+  /// true if this instrument generated FX option.
+  bool syntheticAmericanOptionInstrument = 223;
+
+  /// 
+  string barchartExchangeCode = 224;
+  /// 
+  string barchartBaseCode = 225;
+  
   // #############################################
   enum InstrumentType {
     UNKNOWN_INSTRUMENT_TYPE = 0;
@@ -294,4 +323,9 @@ message InstrumentDefinition {
     SubFormat subFormat = 6;
   }
 
+  /// Currency Pair
+  message CurrencyPair {
+  	string currency1 = 1;
+  	string currency2 = 2;
+  }
 }
