@@ -139,7 +139,10 @@
 <li><a href="#org.openfeed.InstrumentStatus">InstrumentStatus</a></li>
 <li><a href="#org.openfeed.Last">Last</a></li>
 <li><a href="#org.openfeed.Low">Low</a></li>
+<li><a href="#org.openfeed.MarketSession">MarketSession</a></li>
 <li><a href="#org.openfeed.MarketSnapshot">MarketSnapshot</a></li>
+<li><a href="#org.openfeed.MarketSnapshotResponse">MarketSnapshotResponse</a></li>
+<li><a href="#org.openfeed.MarketStatus">MarketStatus</a></li>
 <li><a href="#org.openfeed.MarketSummary">MarketSummary</a></li>
 <li><a href="#org.openfeed.MarketUpdate">MarketUpdate</a></li>
 <li><a href="#org.openfeed.ModifyOrder">ModifyOrder</a></li>
@@ -148,12 +151,15 @@
 <li><a href="#org.openfeed.NetAssetValue">NetAssetValue</a></li>
 <li><a href="#org.openfeed.News">News</a></li>
 <li><a href="#org.openfeed.NumberOfTrades">NumberOfTrades</a></li>
+<li><a href="#org.openfeed.Ohlc">Ohlc</a></li>
 <li><a href="#org.openfeed.Open">Open</a></li>
 <li><a href="#org.openfeed.OpenInterest">OpenInterest</a></li>
 <li><a href="#org.openfeed.OpenfeedMessage">OpenfeedMessage</a></li>
 <li><a href="#org.openfeed.PrevClose">PrevClose</a></li>
 <li><a href="#org.openfeed.Settlement">Settlement</a></li>
 <li><a href="#org.openfeed.SharesOutstanding">SharesOutstanding</a></li>
+<li><a href="#org.openfeed.SnapshotRequest">SnapshotRequest</a></li>
+<li><a href="#org.openfeed.TCPHistoricalReplayRequest">TCPHistoricalReplayRequest</a></li>
 <li><a href="#org.openfeed.TracePoint">TracePoint</a></li>
 <li><a href="#org.openfeed.Trade">Trade</a></li>
 <li><a href="#org.openfeed.TradeCancel">TradeCancel</a></li>
@@ -161,6 +167,8 @@
 <li><a href="#org.openfeed.Trades">Trades</a></li>
 <li><a href="#org.openfeed.Trades.Entry">Trades.Entry</a></li>
 <li><a href="#org.openfeed.Volume">Volume</a></li>
+<li><a href="#org.openfeed.VolumeAtPrice">VolumeAtPrice</a></li>
+<li><a href="#org.openfeed.VolumeAtPrice.PriceLevelVolume">VolumeAtPrice.PriceLevelVolume</a></li>
 <li><a href="#org.openfeed.Vwap">Vwap</a></li>
 <li><a href="#org.openfeed.YearHigh">YearHigh</a></li>
 <li>
@@ -173,9 +181,15 @@
 <li><a href="#org.openfeed.CrossType">CrossType</a></li>
 <li><a href="#org.openfeed.InstrumentTradingStatus">InstrumentTradingStatus</a></li>
 <li><a href="#org.openfeed.MarketSummary.ClearSet">MarketSummary.ClearSet</a></li>
+<li><a href="#org.openfeed.MarketSummary.SummaryType">MarketSummary.SummaryType</a></li>
+<li><a href="#org.openfeed.MarketWideStatus">MarketWideStatus</a></li>
 <li><a href="#org.openfeed.OpenCloseSettlementFlag">OpenCloseSettlementFlag</a></li>
 <li><a href="#org.openfeed.RegulationSHOShortSalePriceTest">RegulationSHOShortSalePriceTest</a></li>
+<li><a href="#org.openfeed.Service">Service</a></li>
+<li><a href="#org.openfeed.SettlementSource">SettlementSource</a></li>
 <li><a href="#org.openfeed.SettlementTerms">SettlementTerms</a></li>
+<li><a href="#org.openfeed.SnapshotRequest.SnapshotRequestType">SnapshotRequest.SnapshotRequestType</a></li>
+<li><a href="#org.openfeed.SnapshotRequestResult">SnapshotRequestResult</a></li>
 </ul>
 </li>
 <li>
@@ -183,6 +197,7 @@
 <ul>
 <li><a href="#org.openfeed.InstrumentDefinition">InstrumentDefinition</a></li>
 <li><a href="#org.openfeed.InstrumentDefinition.Calendar">InstrumentDefinition.Calendar</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.CurrencyPair">InstrumentDefinition.CurrencyPair</a></li>
 <li><a href="#org.openfeed.InstrumentDefinition.Event">InstrumentDefinition.Event</a></li>
 <li><a href="#org.openfeed.InstrumentDefinition.MaturityDate">InstrumentDefinition.MaturityDate</a></li>
 <li><a href="#org.openfeed.InstrumentDefinition.PriceFormat">InstrumentDefinition.PriceFormat</a></li>
@@ -372,6 +387,12 @@
 <td></td>
 <td></td>
 </tr>
+<tr>
+<td>channel</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <p><a name="org.openfeed.BestBidOffer"/></p>
@@ -414,13 +435,13 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 <tr>
 <td>bidOriginator</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td>Liquidity provider information For Forex: BANK:CITY For Equities: EXCHANGE_MIC</td>
 </tr>
 <tr>
 <td>bidQuoteCondition</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -444,19 +465,19 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 <tr>
 <td>offerOriginator</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td>Liquidity provider information For Forex: BANK:CITY For Equities: EXCHANGE_MIC</td>
 </tr>
 <tr>
 <td>offerQuoteCondition</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>quoteCondition</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -1061,6 +1082,18 @@ If a side is not present, then that side has been deleted.</p>
 <td></td>
 <td></td>
 </tr>
+<tr>
+<td>exchange</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>channel</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <p><a name="org.openfeed.High"/></p>
@@ -1225,6 +1258,12 @@ If a side is not present, then that side has been deleted.</p>
 <td></td>
 <td></td>
 </tr>
+<tr>
+<td>channel</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <p><a name="org.openfeed.InstrumentStatus"/></p>
@@ -1320,6 +1359,12 @@ If a side is not present, then that side has been deleted.</p>
 <td></td>
 <td></td>
 </tr>
+<tr>
+<td>session</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <p><a name="org.openfeed.Low"/></p>
@@ -1357,6 +1402,87 @@ If a side is not present, then that side has been deleted.</p>
 <td><a href="#string">string</a></td>
 <td></td>
 <td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.MarketSession"/></p>
+<h3 id="marketsession">MarketSession</h3>
+<p>Session used in snapshot.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>open</td>
+<td><a href="#org.openfeed.Open">Open</a></td>
+<td></td>
+<td>Most recent opening price</td>
+</tr>
+<tr>
+<td>high</td>
+<td><a href="#org.openfeed.High">High</a></td>
+<td></td>
+<td>High price for the trading session</td>
+</tr>
+<tr>
+<td>low</td>
+<td><a href="#org.openfeed.Low">Low</a></td>
+<td></td>
+<td>Low price for the trading session</td>
+</tr>
+<tr>
+<td>last</td>
+<td><a href="#org.openfeed.Last">Last</a></td>
+<td></td>
+<td>Most recent traded price and quantity</td>
+</tr>
+<tr>
+<td>volume</td>
+<td><a href="#org.openfeed.Volume">Volume</a></td>
+<td></td>
+<td>Total traded volume</td>
+</tr>
+<tr>
+<td>settlement</td>
+<td><a href="#org.openfeed.Settlement">Settlement</a></td>
+<td></td>
+<td>Most recent settlement price</td>
+</tr>
+<tr>
+<td>prevSettlement</td>
+<td><a href="#org.openfeed.Settlement">Settlement</a></td>
+<td></td>
+<td>Most recent settlement price</td>
+</tr>
+<tr>
+<td>openInterest</td>
+<td><a href="#org.openfeed.OpenInterest">OpenInterest</a></td>
+<td></td>
+<td>Most recent open interest</td>
+</tr>
+<tr>
+<td>numberOfTrades</td>
+<td><a href="#org.openfeed.NumberOfTrades">NumberOfTrades</a></td>
+<td></td>
+<td>Number of trades</td>
+</tr>
+<tr>
+<td>monetaryValue</td>
+<td><a href="#org.openfeed.MonetaryValue">MonetaryValue</a></td>
+<td></td>
+<td>Monetary value</td>
 </tr>
 </tbody>
 </table>
@@ -1420,6 +1546,12 @@ If a side is not present, then that side has been deleted.</p>
 <td><a href="#sint32">sint32</a></td>
 <td></td>
 <td>Divide prices by this value to get real price values. Optional, use value / from InstrumentDefinition if not set.</td>
+</tr>
+<tr>
+<td>service</td>
+<td><a href="#org.openfeed.Service">Service</a></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td>instrumentStatus</td>
@@ -1565,6 +1697,90 @@ If a side is not present, then that side has been deleted.</p>
 <td></td>
 <td></td>
 </tr>
+<tr>
+<td>previousSession</td>
+<td><a href="#org.openfeed.MarketSession">MarketSession</a></td>
+<td></td>
+<td>Previous session.</td>
+</tr>
+<tr>
+<td>tSession</td>
+<td><a href="#org.openfeed.MarketSession">MarketSession</a></td>
+<td></td>
+<td>&#39;T&#39; session.</td>
+</tr>
+<tr>
+<td>volumeAtPrice</td>
+<td><a href="#org.openfeed.VolumeAtPrice">VolumeAtPrice</a></td>
+<td></td>
+<td>Volume at price. Used by the market state/ JERQ.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.MarketSnapshotResponse"/></p>
+<h3 id="marketsnapshotresponse">MarketSnapshotResponse</h3>
+<p>Used by market state to return snapshot.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>result</td>
+<td><a href="#org.openfeed.SnapshotRequestResult">SnapshotRequestResult</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>message</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>marketSnapshot</td>
+<td><a href="#org.openfeed.MarketSnapshot">MarketSnapshot</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.MarketStatus"/></p>
+<h3 id="marketstatus">MarketStatus</h3>
+<p>Market Status</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>transactionTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td>UTC Timestamp of transaction, nano seconds since Unix epoch</td>
+</tr>
+<tr>
+<td>channel</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>marketWideStatus</td>
+<td><a href="#org.openfeed.MarketWideStatus">MarketWideStatus</a></td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <p><a name="org.openfeed.MarketSummary"/></p>
@@ -1682,6 +1898,18 @@ If a side is not present, then that side has been deleted.</p>
 <td></td>
 <td></td>
 </tr>
+<tr>
+<td>session</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td>Used by CME ITC.</td>
+</tr>
+<tr>
+<td>summaryType</td>
+<td><a href="#org.openfeed.MarketSummary.SummaryType">MarketSummary.SummaryType</a></td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <p><a name="org.openfeed.MarketUpdate"/></p>
@@ -1719,7 +1947,7 @@ If a side is not present, then that side has been deleted.</p>
 <td>distributionTime</td>
 <td><a href="#sint64">sint64</a></td>
 <td></td>
-<td>Distribution time in nano seconds since epoch. / Execution timestamp of market participant for multi participant venues like CTA, UTP, etc..</td>
+<td>Distribution time in nano seconds since epoch.</td>
 </tr>
 <tr>
 <td>marketSequence</td>
@@ -1735,7 +1963,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 <tr>
 <td>originatorId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td>Market participant/originator</td>
 </tr>
@@ -1756,6 +1984,24 @@ If a side is not present, then that side has been deleted.</p>
 <td><a href="#org.openfeed.Context">Context</a></td>
 <td></td>
 <td>Feed specific context data set as required.</td>
+</tr>
+<tr>
+<td>session</td>
+<td><a href="#org.openfeed.MarketSession">MarketSession</a></td>
+<td></td>
+<td>Current session. This is used to &#39;enhance&#39; updates from the translator in the Market State</td>
+</tr>
+<tr>
+<td>tSession</td>
+<td><a href="#org.openfeed.MarketSession">MarketSession</a></td>
+<td></td>
+<td>&#39;T&#39; session. This is used to &#39;enhance&#39; updates from the translator in the Market State</td>
+</tr>
+<tr>
+<td>previousSession</td>
+<td><a href="#org.openfeed.MarketSession">MarketSession</a></td>
+<td></td>
+<td>Previous session. This is used to &#39;enhance&#39; updates from the translator in the Market State</td>
 </tr>
 <tr>
 <td>news</td>
@@ -2185,6 +2431,57 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
+<p><a name="org.openfeed.Ohlc"/></p>
+<h3 id="ohlc">Ohlc</h3>
+<p>Open,High,Low,Close</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>symbol</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>open</td>
+<td><a href="#org.openfeed.Open">Open</a></td>
+<td></td>
+<td>Most recent opening price</td>
+</tr>
+<tr>
+<td>high</td>
+<td><a href="#org.openfeed.High">High</a></td>
+<td></td>
+<td>High price for the trading session</td>
+</tr>
+<tr>
+<td>low</td>
+<td><a href="#org.openfeed.Low">Low</a></td>
+<td></td>
+<td>Low price for the trading session</td>
+</tr>
+<tr>
+<td>close</td>
+<td><a href="#org.openfeed.Close">Close</a></td>
+<td></td>
+<td>Most recent closing price</td>
+</tr>
+</tbody>
+</table>
 <p><a name="org.openfeed.Open"/></p>
 <h3 id="open">Open</h3>
 <table>
@@ -2342,6 +2639,12 @@ message types</p>
 <td></td>
 <td></td>
 </tr>
+<tr>
+<td>marketStatus</td>
+<td><a href="#org.openfeed.MarketStatus">MarketStatus</a></td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <p><a name="org.openfeed.PrevClose"/></p>
@@ -2426,6 +2729,18 @@ message types</p>
 <td></td>
 </tr>
 <tr>
+<td>settlementSource</td>
+<td><a href="#org.openfeed.SettlementSource">SettlementSource</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>session</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td>Used by CME ITC.</td>
+</tr>
+<tr>
 <td>reserved</td>
 <td><a href="#bool">bool</a></td>
 <td></td>
@@ -2454,6 +2769,90 @@ message types</p>
 <tr>
 <td>transactionTime</td>
 <td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SnapshotRequest"/></p>
+<h3 id="snapshotrequest">SnapshotRequest</h3>
+<p>Request for the snapshot to the Market state.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>channel</td>
+<td><a href="#int32">int32</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>resetNumber</td>
+<td><a href="#int32">int32</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>requestId</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>snapshotRequestTypes</td>
+<td><a href="#org.openfeed.SnapshotRequest.SnapshotRequestType">SnapshotRequest.SnapshotRequestType</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.TCPHistoricalReplayRequest"/></p>
+<h3 id="tcphistoricalreplayrequest">TCPHistoricalReplayRequest</h3>
+<p>TCP replay request.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>channel</td>
+<td><a href="#int32">int32</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>resetNumber</td>
+<td><a href="#int32">int32</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>sequence</td>
+<td><a href="#int64">int64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>count</td>
+<td><a href="#int32">int32</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>requestId</td>
+<td><a href="#string">string</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -2513,7 +2912,7 @@ message types</p>
 <tbody>
 <tr>
 <td>originatorId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td>Market participant/originator</td>
 </tr>
@@ -2537,7 +2936,7 @@ message types</p>
 </tr>
 <tr>
 <td>tradeId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -2555,13 +2954,13 @@ message types</p>
 </tr>
 <tr>
 <td>buyerId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>sellerId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -2615,7 +3014,7 @@ message types</p>
 </tr>
 <tr>
 <td>saleCondition</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -2624,6 +3023,42 @@ message types</p>
 <td><a href="#string">string</a></td>
 <td></td>
 <td></td>
+</tr>
+<tr>
+<td>doesNotUpdateLast</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td>Does not update Last</td>
+</tr>
+<tr>
+<td>doesNotUpdateVolume</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td>Does not update Volume</td>
+</tr>
+<tr>
+<td>session</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>blockTrade</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td>Is this a block trade.</td>
+</tr>
+<tr>
+<td>distributionTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td>Distribution time in nano seconds since epoch.</td>
+</tr>
+<tr>
+<td>transactionTime2</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td>time in nano seconds since epoch.</td>
 </tr>
 </tbody>
 </table>
@@ -2642,7 +3077,7 @@ message types</p>
 <tbody>
 <tr>
 <td>originatorId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td>Market participant/originator</td>
 </tr>
@@ -2666,13 +3101,13 @@ message types</p>
 </tr>
 <tr>
 <td>tradeId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>saleCondition</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -2681,6 +3116,18 @@ message types</p>
 <td><a href="#string">string</a></td>
 <td></td>
 <td></td>
+</tr>
+<tr>
+<td>distributionTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td>Distribution time in nano seconds since epoch.</td>
+</tr>
+<tr>
+<td>transactionTime2</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td>time in nano seconds since epoch.</td>
 </tr>
 </tbody>
 </table>
@@ -2699,7 +3146,7 @@ message types</p>
 <tbody>
 <tr>
 <td>originatorId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td>Market participant/originator</td>
 </tr>
@@ -2723,7 +3170,7 @@ message types</p>
 </tr>
 <tr>
 <td>tradeId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -2741,13 +3188,13 @@ message types</p>
 </tr>
 <tr>
 <td>buyerId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>sellerId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -2795,13 +3242,13 @@ message types</p>
 </tr>
 <tr>
 <td>originalTradeId</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
 <tr>
 <td>saleCondition</td>
-<td><a href="#string">string</a></td>
+<td><a href="#bytes">bytes</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -2810,6 +3257,18 @@ message types</p>
 <td><a href="#string">string</a></td>
 <td></td>
 <td></td>
+</tr>
+<tr>
+<td>distributionTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td>Distribution time in nano seconds since epoch.</td>
+</tr>
+<tr>
+<td>transactionTime2</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td>time in nano seconds since epoch.</td>
 </tr>
 </tbody>
 </table>
@@ -2896,6 +3355,96 @@ message types</p>
 <td><a href="#sint64">sint64</a></td>
 <td></td>
 <td>Total volume traded.</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.VolumeAtPrice"/></p>
+<h3 id="volumeatprice">VolumeAtPrice</h3>
+<p>The VolumeAtPrice class encapsulates all of the trades throughout the day,
+/ and organizes a table of volume at prices.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>symbol</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>transactionTime</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td>UTC Timestamp of transaction, nano seconds since Unix epoch</td>
+</tr>
+<tr>
+<td>lastPrice</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>lastQuantity</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>lastCumulativeVolume</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>tradeDate</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td>Date only, format 2012-07-04 -&gt; 20120704</td>
+</tr>
+<tr>
+<td>priceVolumes</td>
+<td><a href="#org.openfeed.VolumeAtPrice.PriceLevelVolume">VolumeAtPrice.PriceLevelVolume</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.VolumeAtPrice.PriceLevelVolume"/></p>
+<h3 id="volumeatpricepricelevelvolume">VolumeAtPrice.PriceLevelVolume</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>price</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>volume</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -3219,6 +3768,11 @@ message types</p>
 <td>21</td>
 <td></td>
 </tr>
+<tr>
+<td>NAFT</td>
+<td>22</td>
+<td>Not available for trading.</td>
+</tr>
 </tbody>
 </table>
 <p><a name="org.openfeed.MarketSummary.ClearSet"/></p>
@@ -3251,6 +3805,83 @@ message types</p>
 <tr>
 <td>CUSTOM_1</td>
 <td>3</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.MarketSummary.SummaryType"/></p>
+<h3 id="marketsummarysummarytype">MarketSummary.SummaryType</h3>
+<p>Used to differntiate various ddf messages.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EXCHANGE_REFRESH</td>
+<td>0</td>
+<td>DDF 2/1 Exchange refresh</td>
+</tr>
+<tr>
+<td>REFRESH_LIVE_PRICE</td>
+<td>1</td>
+<td>DDF 2/6 Live Prices refresh</td>
+</tr>
+<tr>
+<td>EOD_COMMODITY_PRICES</td>
+<td>2</td>
+<td>DDF 3/C end-of-day commodity prices</td>
+</tr>
+<tr>
+<td>EOD_STOCK_FOREX_PRICES</td>
+<td>3</td>
+<td>DDF 3/S end-of-day stock and forex prices and volume</td>
+</tr>
+<tr>
+<td>EOD_COMMODITY_STATS</td>
+<td>4</td>
+<td>DDF 3/I end-of-day commodity volume and open interest message</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.MarketWideStatus"/></p>
+<h3 id="marketwidestatus">MarketWideStatus</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>STATUS_UNKNOWN</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>STATUS_START_OF_DAY</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>STATUS_END_OF_DAY</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>STATUS_OPEN</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td>STATUS_CLOSE</td>
+<td>4</td>
 <td></td>
 </tr>
 </tbody>
@@ -3316,6 +3947,82 @@ message types</p>
 </tr>
 </tbody>
 </table>
+<p><a name="org.openfeed.Service"/></p>
+<h3 id="service">Service</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_SERVICE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>REAL_TIME</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>DELAYED</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>REAL_TIME_SNAPSHOT</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td>DELAYED_SNAPSHOT</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>END_OF_DAY</td>
+<td>5</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SettlementSource"/></p>
+<h3 id="settlementsource">SettlementSource</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_SETTLEMENT_SOURCE</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>GLOBEX</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>ITC</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>MANUAL</td>
+<td>3</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <p><a name="org.openfeed.SettlementTerms"/></p>
 <h3 id="settlementterms">SettlementTerms</h3>
 <table>
@@ -3355,6 +4062,77 @@ message types</p>
 <tr>
 <td>DATE</td>
 <td>5</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SnapshotRequest.SnapshotRequestType"/></p>
+<h3 id="snapshotrequestsnapshotrequesttype">SnapshotRequest.SnapshotRequestType</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ALL</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>QUOTE</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>DEPTH</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>VOLUME_AT_PRICE</td>
+<td>3</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SnapshotRequestResult"/></p>
+<h3 id="snapshotrequestresult">SnapshotRequestResult</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SNAPSHOT_REQUEST_UNKNOWN_RESULT</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>SNAPSHOT_REQUEST_SUCCESS</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>SNAPSHOT_REQUEST_NOT_FOUND</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>SNAPSHOT_REQUEST_SERVICE_NOT_AVAILABLE</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td>SNAPSHOT_REQUEST_GENERIC_FAILURE</td>
+<td>4</td>
 <td></td>
 </tr>
 </tbody>
@@ -3614,6 +4392,66 @@ message types</p>
 <td></td>
 <td>ISIN: https://en.wikipedia.org/wiki/International_Securities_Identification_Number</td>
 </tr>
+<tr>
+<td>currencyPair</td>
+<td><a href="#org.openfeed.InstrumentDefinition.CurrencyPair">InstrumentDefinition.CurrencyPair</a></td>
+<td></td>
+<td>Break out of currency pair</td>
+</tr>
+<tr>
+<td>exchangeSendsVolume</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td>true if exchange sends volume.</td>
+</tr>
+<tr>
+<td>exchangeSendsHigh</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td>true if exchange sends high.</td>
+</tr>
+<tr>
+<td>exchangeSendsLow</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td>true if exchange sends low.</td>
+</tr>
+<tr>
+<td>exchangeSendsOpen</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td>true if exchange sends open.</td>
+</tr>
+<tr>
+<td>consolidatedFeedInstrument</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td>true if this instrument represents consolidated NBBO.</td>
+</tr>
+<tr>
+<td>openOutcryInstrument</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td>true if this instrument represents Pit symbol.</td>
+</tr>
+<tr>
+<td>syntheticAmericanOptionInstrument</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td>true if this instrument generated FX option.</td>
+</tr>
+<tr>
+<td>barchartExchangeCode</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>barchartBaseCode</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <p><a name="org.openfeed.InstrumentDefinition.Calendar"/></p>
@@ -3632,6 +4470,33 @@ message types</p>
 <td>events</td>
 <td><a href="#org.openfeed.InstrumentDefinition.Event">InstrumentDefinition.Event</a></td>
 <td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.CurrencyPair"/></p>
+<h3 id="instrumentdefinitioncurrencypair">InstrumentDefinition.CurrencyPair</h3>
+<p>Currency Pair</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>currency1</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>currency2</td>
+<td><a href="#string">string</a></td>
+<td></td>
 <td></td>
 </tr>
 </tbody>
