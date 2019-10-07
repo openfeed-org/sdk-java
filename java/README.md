@@ -59,14 +59,14 @@ client-0: Exchange < {"transactionTime":"1570465382000080120","exchange":true,"c
 
 The client API has two main interfaces:
  	
-1. [OpenfeedClient.java](src\main\java\org\openfeed\client\OpenfeedClient.java)        - connect, subscribe methods
-2. [OpenfeedClientHandler.java](src\main\java\org\openfeed\client\OpenfeedClientHandler.java)  - Openfeed message handler
+1. [OpenfeedClient.java](src/main/java/org/openfeed/client/OpenfeedClient.java)        - connect, subscribe methods
+2. [OpenfeedClientHandler.java](src/main/java/org/openfeed/client/OpenfeedClientHandler.java)  - Openfeed message handler
 
 ### Client Usage
 
 To use the client you must do the following:
 	
-1. Create a Client Message Handler, an example handler is provided: [OpenfeedClientHandlerImpl.java](src\main\java\org\openfeed\client\OpenfeedClientHandlerImpl.java)
+1. Create a Client Message Handler, an example handler is provided: [OpenfeedClientHandlerImpl.java](src/main/java/org/openfeed/client/OpenfeedClientHandlerImpl.java)
 2. Create the web socket client and connect, see `OpenfeedClientMain.start()`
 3. Subscribe to symbols/exchanges using the OpenfeedClient interface, see see `OpenfeedClientMain.executeCommands()`.
 	
