@@ -8,29 +8,41 @@
 An executable jar will be build in target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar, with the main class being OpenfeedClientMain
 
 ## Command line examples
- 
-	Run java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -h
+
+```
+java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -h
+```
 
 ### To connect and subscribe for IBM and display updates
 
-  java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -s IBM -lu
-  
+```shell
+java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -s IBM -lu
+```
+
 ### Subscribe for all of NYSE and NASDAQ
 
-  java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -e NYSE,NASDAQ
-  
+```shell
+java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -e NYSE,NASDAQ
+```
+
 ### Subscribe only for trades for AAPL and IBM and display the updates
 
-  java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -t -s AAPL,IBM -lu
-  
+```shell
+java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -t -s AAPL,IBM -lu
+```  
+
 ## Get all instruments for NYSE and display them.
 
-  java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -ir -e NYSE -li
+```shell
+java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -ir -e NYSE -li
+```
 
 ## To log heartbeats (keep alives)
 
-	java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -e NYSE -lh
-  
+```shell
+java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -e NYSE -lh
+```
+
   The default heartbeat will be of the form:
   
   client-0:  < {"transactionTime":"1570465358319000000"}
@@ -42,46 +54,43 @@ An executable jar will be build in target/openfeed-client-1.0.0-SNAPSHOT-shaded.
   
 ## API Usage
 
- 	The client API has two main interfaces:
+The client API has two main interfaces:
  	
- 	1.  OpenfeedClient.java         - connect, subscribe methods
- 	2.	OpenfeedClientHandler.java  - Openfeed message handler
+1.  [OpenfeedClient.java](src\main\java\org\openfeed\client\OpenfeedClient.java)        - connect, subscribe methods
+2.	[OpenfeedClientHandler.java](src\main\java\org\openfeed\client\OpenfeedClientHandler.java)  - Openfeed message handler
 
 ### Client Usage
 
-	To use the client you must do the following:
+To use the client you must do the following:
 	
-	1. Create a Client Message Handler, an example handler is provided: OpenfeedClientHandlerImpl.java
-	2. Create the web socket client and connect, see OpenfeedClientMain.start()
-	3. Subscribe to symbols/exchanges using the OpenfeedClient interface, see see OpenfeedClientMain.executeCommands().
+1. Create a Client Message Handler, an example handler is provided: [OpenfeedClientHandlerImpl.java](src\main\java\org\openfeed\client\OpenfeedClientHandlerImpl.java)
+2. Create the web socket client and connect, see `OpenfeedClientMain.start()`
+3. Subscribe to symbols/exchanges using the OpenfeedClient interface, see see `OpenfeedClientMain.executeCommands()`.
 	
-	To connect and subscribe to all of AMEX:
-	
-	 OpenfeedClientConfigImpl config = new OpenfeedClientConfigImpl();
-	 config.setUserName("<user name>");
-     config.setPassword("<password>");
+To connect and subscribe to all of AMEX:
+
+```java
+OpenfeedClientConfigImpl config = new OpenfeedClientConfigImpl();
+config.setUserName("<user name>");
+config.setPassword("<password>");
         
-	 InstrumentCache instrumentCache = new InstrumentCacheImpl();
-	 OpenfeedClientHandlerImpl clientHandler = new OpenfeedClientHandlerImpl(config, instrumentCache);
- 	 OpenfeedClientWebSocket client = new OpenfeedClientWebSocket(config, clientHandler);
-	 // Connect and Login
-     client.connect();
-     // Subscribe to AMEX
-     String exchanges = new String[] { "AMEX" };
-     client.subscribeExchange(Service.REAL_TIME, config.getSubcriptionType(), exchanges);
-     
-	 The client will receive the following for each symbol:
+InstrumentCache instrumentCache = new InstrumentCacheImpl();
+OpenfeedClientHandlerImpl clientHandler = new OpenfeedClientHandlerImpl(config, instrumentCache);
+OpenfeedClientWebSocket client = new OpenfeedClientWebSocket(config, clientHandler);
+// Connect and Login
+client.connect();
+// Subscribe to AMEX
+String exchanges = new String[] { "AMEX" };
+client.subscribeExchange(Service.REAL_TIME, config.getSubcriptionType(), exchanges);
+```
+
+The client will receive the following for each symbol:
 	 
-	 1. InstrumentDefinition
-	 2. MarketSnapshot
-	 3. Stream of MarketUpdate(s)
+1. InstrumentDefinition
+2. MarketSnapshot
+3. Stream of MarketUpdate(s)
 	 
 ### Notes:
 
-	* All times are in Epoch Nanoseconds 	
-	* Exchange and Channel ids are listed in ExchangeId.java
-
-
-
-  
-  
+* All times are in Epoch Nanoseconds 	
+* Exchange and Channel ids are listed in ExchangeId.java
