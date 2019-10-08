@@ -9,6 +9,8 @@ public interface InstrumentCache {
 
     InstrumentDefinition getInstrumentBySeqId(int marketId);
 
+    String getSymbol(long marketId);
+
     int getTotalNumberOfInstruments();
 
     void dump();

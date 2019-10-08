@@ -36,6 +36,8 @@ public interface OpenfeedClientConfig {
     boolean isLogUpdate();
     boolean isLogBbo();
     boolean isLogTrade();
+    boolean isLogTradeCancel();
+    boolean isLogTradeCorrection();
 
     int getStatsDisplaySeconds();
 

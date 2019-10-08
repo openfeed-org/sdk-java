@@ -60,5 +60,10 @@ public class InstrumentCacheImpl implements InstrumentCache {
         return this.sequentialIdToInstrument.get(seqId);
     }
 
+    @Override
+    public String getSymbol(long marketId) {
+        InstrumentDefinition def = marketIdToInstrument.get(marketId);
+        return def != null ? def.getSymbol() : "";
+    }
 
 }

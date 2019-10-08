@@ -52,6 +52,8 @@ public class OpenfeedClientMain {
         options.addOption(Option.builder("ls").desc("log snapshots").build());
         options.addOption(Option.builder("lu").desc("log updates").build());
         options.addOption(Option.builder("lt").desc("log trades").build());
+        options.addOption(Option.builder("ltc").desc("log trade cancel").build());
+        options.addOption(Option.builder("ltco").desc("log trade correction").build());
         //
         options.addOption(Option.builder("h").desc("help").build());
         CommandLineParser cmdParser = new org.apache.commons.cli.DefaultParser();
@@ -134,6 +136,12 @@ public class OpenfeedClientMain {
         }
         if (cmdLine.hasOption("lt")) {
             config.setLogTrade(true);
+        }
+        if (cmdLine.hasOption("ltc")) {
+            config.setLogTradeCancel(true);
+        }
+        if (cmdLine.hasOption("ltco")) {
+            config.setLogTradeCorrection(true);
         }
         if (cmdLine.hasOption("h")) {
             printHelp();

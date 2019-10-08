@@ -30,7 +30,6 @@ import io.netty.channel.ChannelPromise;
 
 public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     private static final Logger log = LoggerFactory.getLogger(OpenfeedClientHandler.class);
-
     private OpenfeedClientConfig config;
     private InstrumentCache instrumentCache;
     private ConnectionStats connectionStats;
@@ -38,8 +37,8 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     private ChannelPromise instrumentDownloadPromise;
     private int numDefinitions;
 
-    public OpenfeedClientHandlerImpl(OpenfeedClientConfig config,
-            InstrumentCache instrumentCache, ConnectionStats stats) {
+    public OpenfeedClientHandlerImpl(OpenfeedClientConfig config, InstrumentCache instrumentCache,
+            ConnectionStats stats) {
         this.config = config;
         this.instrumentCache = instrumentCache;
         this.connectionStats = stats;
@@ -122,8 +121,15 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     public void onMarketUpdate(MarketUpdate update) {
         connectionStats.getMessageStats().incrUpdates();
         updateExchangeStats(update.getMarketId(), StatType.update);
+        // Symbol is optional
+        String symbol = null;
+        if (update.getSymbol() != null) {
+            symbol = update.getSymbol();
+        } else {
+            symbol = instrumentCache.getSymbol(update.getMarketId());
+        }
         if (config.isLogUpdate()) {
-            log.info("{}: < {}", config.getClientId(), PbUtil.toJson(update));
+            log.info("{}: {}: < {}", config.getClientId(), symbol, PbUtil.toJson(update));
         }
         switch (update.getDataCase()) {
         case BBO:
@@ -136,7 +142,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                 updateExchangeStats(update.getMarketId(), StatType.bbo);
             }
             if (config.isLogBbo()) {
-                log.info("{}: < {}", config.getClientId(), PbUtil.toJson(update));
+                log.info("{}: {}: < {}", config.getClientId(), symbol, PbUtil.toJson(update));
             }
             break;
         case CAPITALDISTRIBUTIONS:
@@ -186,23 +192,32 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         case TRADES:
             connectionStats.getMessageStats().incrTrades();
             updateExchangeStats(update.getMarketId(), StatType.trade);
-            if (config.isLogTrade()) {
-                log.info("{}: < {}", config.getClientId(), PbUtil.toJson(update));
-            }
             Trades trades = update.getTrades();
             for (Entry te : trades.getTradesList()) {
                 switch (te.getDataCase()) {
                 case TRADE:
                     Trade trade = te.getTrade();
-                    long transTime = trade.getTransactionTime();
+                    String tradeId = trade.getTradeId().toStringUtf8();
+                    if (config.isLogTrade()) {
+                        log.info("{}: {}: Trade tradeId: {}  < {}", config.getClientId(), symbol, tradeId,
+                                PbUtil.toJson(update));
+                    }
                     break;
                 case TRADECANCEL:
                     TradeCancel cancel = te.getTradeCancel();
-                    log.info("{}: TradeCancel < {}", config.getClientId(), PbUtil.toJson(cancel));
+                    tradeId = cancel.getTradeId().toStringUtf8();
+                    if (config.isLogTradeCancel()) {
+                        log.info("{}: {}: Cancel tradeId: {} < {}", config.getClientId(), symbol, tradeId,
+                                PbUtil.toJson(cancel));
+                    }
                     break;
                 case TRADECORRECTION:
                     TradeCorrection correction = te.getTradeCorrection();
-                    log.info("{}: TradeCorrection < {}", config.getClientId(), PbUtil.toJson(correction));
+                    tradeId = correction.getTradeId().toStringUtf8();
+                    if (config.isLogTradeCorrection()) {
+                        log.info("{}: {}: Correction tradeId: {} < {}", config.getClientId(), symbol, tradeId,
+                                PbUtil.toJson(correction));
+                    }
                     break;
                 default:
                 case DATA_NOT_SET:
@@ -221,7 +236,6 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         default:
             break;
         }
-
     }
 
     @Override
@@ -233,7 +247,6 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     public void onOhlc(Ohlc ohlc) {
         log.info("{}: < {}", config.getClientId(), PbUtil.toJson(ohlc));
     }
-
 
     private long getNowNs() {
         Instant now = Instant.now();

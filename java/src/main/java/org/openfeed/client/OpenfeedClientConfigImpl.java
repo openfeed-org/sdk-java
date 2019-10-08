@@ -36,6 +36,8 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private boolean logUpdates;
     private boolean logBbo;
     private boolean logTrade;
+    private boolean logTradeCancel;
+    private boolean logTradeCorrection;
     //
     private int statsDisplaySeconds = 30;
 
@@ -299,4 +301,21 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         this.reconnectDelaySec = sec;
     }
 
+    @Override
+    public boolean isLogTradeCancel() {
+        return this.logTradeCancel;
+    }
+
+    @Override
+    public boolean isLogTradeCorrection() {
+        return this.logTradeCorrection;
+    }
+
+    public void setLogTradeCancel(boolean tradeCancel) {
+        this.logTradeCancel = tradeCancel;
+    }
+
+    public void setLogTradeCorrection(boolean tradeCorrection) {
+        this.logTradeCorrection = tradeCorrection;
+    }
 }

@@ -301,7 +301,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             ByteBuf outBuf = ByteBufAllocator.DEFAULT.buffer();
             try {
                 this.encodeBuf.reset();
-                req.writeDelimitedTo(this.encodeBuf);
+                req.writeTo(this.encodeBuf);
                 outBuf.writeBytes(encodeBuf.toByteArray());
                 BinaryWebSocketFrame frame = new BinaryWebSocketFrame(outBuf);
                 this.channel.writeAndFlush(frame);

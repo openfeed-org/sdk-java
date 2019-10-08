@@ -121,7 +121,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                     offset = 0;
                 }
                 ByteArrayInputStream bis = new ByteArrayInputStream(array);
-                OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseDelimitedFrom(bis);
+                OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(bis);
                 handleResponse(rsp);
             } catch (Exception e) {
                 log.error("{}: Could not process message: {}", ctx.channel().remoteAddress(), e.getMessage());
