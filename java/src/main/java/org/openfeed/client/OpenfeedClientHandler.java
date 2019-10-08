@@ -16,6 +16,9 @@ import org.openfeed.VolumeAtPrice;
 import io.netty.channel.ChannelPromise;
 
 public interface OpenfeedClientHandler {
+    // Connection Related Events
+    void onEvent(OpenfeedClient client, OpenfeedEvent event);
+
     // Request Responses
     void onLoginResponse(LoginResponse loginResponse);
     void onLogoutResponse(LogoutResponse logoutResponse);

@@ -21,6 +21,8 @@ import org.openfeed.SubscriptionType;
 import org.openfeed.client.OpenfeedClient;
 import org.openfeed.client.OpenfeedClientConfig;
 import org.openfeed.client.OpenfeedClientHandler;
+import org.openfeed.client.OpenfeedEvent;
+import org.openfeed.client.OpenfeedEvent.EventType;
 import org.openfeed.client.PbUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,6 +197,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             // Wait for connect
             webSocketHandler.handshakeFuture().sync();
             this.connected.set(true);
+            clientHandler.onEvent(this, new OpenfeedEvent(EventType.Connected, "Connected to: " + uri));
             // login
             login();
 
@@ -221,6 +224,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         if (this.channel != null && this.channel.isActive()) {
             this.channel.close();
         }
+        clientHandler.onEvent(this, new OpenfeedEvent(EventType.Disconnected, "Disconnected from: " + uri));
         this.connected.set(false);
         this.token = null;
         this.correlationId = 1;
@@ -238,6 +242,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             try {
                 this.channel.closeFuture().sync();
                 log.info("{}: Channel Closed", config.getClientId());
+                this.channel = null;
+                closeConnection();
             } catch (InterruptedException e) {
                 log.error("{}: Channel Close Issue: {}", config.getClientId(), e.getMessage());
             }

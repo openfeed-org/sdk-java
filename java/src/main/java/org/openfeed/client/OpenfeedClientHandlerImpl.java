@@ -44,6 +44,27 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         this.connectionStats = stats;
     }
 
+    @Override
+    public void onEvent(OpenfeedClient client, OpenfeedEvent event) {
+        log.info("{}: Event: {} - {}", config.getClientId(), event.getType(), event.getMessage());
+        switch (event.getType()) {
+        case Connected:
+            if (config.getStatsDisplaySeconds() > 0) {
+                client.scheduleAtFixedRate(() -> {
+                    log.info("{}: connected: {} {}", config.getClientId(), client.isConnected(),
+                            getConnectionStats());
+                }, 5, config.getStatsDisplaySeconds(), TimeUnit.SECONDS);
+            }
+            break;
+        case Disconnected:
+            break;
+        case Login:
+            break;
+        default:
+            break;
+        }
+    }
+
     public OpenfeedClientHandlerImpl(OpenfeedClientConfigImpl config, InstrumentCache instrumentCache) {
         this(config, instrumentCache, new ConnectionStats());
     }
@@ -121,12 +142,14 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     public void onMarketUpdate(MarketUpdate update) {
         connectionStats.getMessageStats().incrUpdates();
         updateExchangeStats(update.getMarketId(), StatType.update);
+        //
+        InstrumentDefinition definition = instrumentCache.getInstrument(update.getMarketId());
         // Symbol is optional
         String symbol = null;
         if (update.getSymbol() != null) {
             symbol = update.getSymbol();
         } else {
-            symbol = instrumentCache.getSymbol(update.getMarketId());
+            symbol = definition.getSymbol();
         }
         if (config.isLogUpdate()) {
             log.info("{}: {}: < {}", config.getClientId(), symbol, PbUtil.toJson(update));
@@ -199,24 +222,24 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                     Trade trade = te.getTrade();
                     String tradeId = trade.getTradeId().toStringUtf8();
                     if (config.isLogTrade()) {
-                        log.info("{}: {}: Trade tradeId: {}  < {}", config.getClientId(), symbol, tradeId,
-                                PbUtil.toJson(update));
+                        log.info("{}: {}/{}/{}: Trade tradeId: {}  < {}", config.getClientId(), symbol,
+                                update.getMarketId(), definition.getChannel(), tradeId, PbUtil.toJson(update));
                     }
                     break;
                 case TRADECANCEL:
                     TradeCancel cancel = te.getTradeCancel();
                     tradeId = cancel.getTradeId().toStringUtf8();
                     if (config.isLogTradeCancel()) {
-                        log.info("{}: {}: Cancel tradeId: {} < {}", config.getClientId(), symbol, tradeId,
-                                PbUtil.toJson(cancel));
+                        log.info("{}: {}/{}/{}: Cancel tradeId: {} < {}", config.getClientId(), symbol,
+                                update.getMarketId(), definition.getChannel(), tradeId, PbUtil.toJson(update));
                     }
                     break;
                 case TRADECORRECTION:
                     TradeCorrection correction = te.getTradeCorrection();
                     tradeId = correction.getTradeId().toStringUtf8();
                     if (config.isLogTradeCorrection()) {
-                        log.info("{}: {}: Correction tradeId: {} < {}", config.getClientId(), symbol, tradeId,
-                                PbUtil.toJson(correction));
+                        log.info("{}: {}/{}/{}: Correction tradeId: {} < {}", config.getClientId(), symbol,
+                                update.getMarketId(), definition.getChannel(), tradeId, PbUtil.toJson(update));
                     }
                     break;
                 default:
