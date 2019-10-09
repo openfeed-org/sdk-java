@@ -95,5 +95,137 @@ The client will receive the following for each symbol:
 	 
 ### Notes:
 
+* The Protocol Buffer message definitions are in: src/main/proto
+  * Client to server message definitions are in: openfeed_api.proto
 * All times are in Epoch Nanoseconds 	
 * Exchange and Channel ids are listed in ExchangeId.java
+
+
+### Trade Cancel and Trade Correction TradeId Matching
+
+Trade Cancel and Trade Corrections are matched by the "tradeId" field.  The tradeId field is of a bytes field type, to convert the bytes to a string:
+
+```java
+ String tradeId = trade.getTradeId().toStringUtf8();
+```
+
+Below is an example for USHY (marketId = 4997695455292339999) on channel 31 (AMEX) for a Trade Cancel.
+Notice the tradeId fields match.
+ 
+```javascript
+08:38:27.019 USHY/4997695455292339999/31: Trade tradeId: 71675256329293  < 
+{
+    "marketId": "4997695455292339999",
+    "symbol": "USHY",
+    "transactionTime": "1570628306989699000",
+    "marketSequence": "1799",
+    "session": {
+        "last": {
+            "transactionTime": "1570628306862294126",
+            "tradeDate": 20191009,
+            "price": "404943",
+            "quantity": "207"
+        },
+        "volume": {
+            "volume": "4863"
+        },
+        "numberOfTrades": {
+            "numberTrades": "7"
+        },
+        "monetaryValue": {
+            "value": "1927002001"
+        }
+    },
+    "trades": {
+        "trades": [{
+            "trade": {
+                "originatorId": "RA==",
+                "transactionTime": "1570628306862294126",
+                "price": "404943",
+                "quantity": "207",
+                "tradeId": "NzE2NzUyNTYzMjkyOTM=",
+                "tradeDate": 20191009,
+                "saleCondition": "ICAgIA==",
+                "session": "@",
+                "distributionTime": "1570628306862827981",
+                "transactionTime2": "1570628306862294126"
+            }
+        }]
+    }
+}
+
+08:49:12.847 USHY/4997695455292339999/31: Cancel tradeId: 71675256329293 < 
+{
+    "marketId": "4997695455292339999",
+    "symbol": "USHY",
+    "transactionTime": "1570628952816851000",
+    "marketSequence": "3346",
+    "trades": {
+        "trades": [{
+            "tradeCancel": {
+                "originatorId": "RA==",
+                "transactionTime": "1570628952667443092",
+                "correctedTradePrice": "404943",
+                "correctedTradeQuantity": "9425",
+                "tradeId": "NzE2NzUyNTYzMjkyOTM=",
+                "saleCondition": "ICAgIA==",
+                "distributionTime": "1570628952668103917",
+                "transactionTime2": "1570628952667443092"
+            }
+        }]
+    }
+}
+```
+
+Below is an example for a Trade Correction for BYND (marketId = 97499913580948752) on channel 16 (NASDAQ).
+
+```javascript
+14:43:37.704  BYND/97499913580948752/16: Trade tradeId: 14  <
+ {
+     "marketId": "97499913580948752",
+     "symbol": "BYND",
+     "transactionTime": "1570563817670241000",
+     "marketSequence": "46767",
+     "session": {
+         "volume": {
+             "volume": "1046270"
+         }
+     },
+     "trades": {
+         "trades": [{
+             "trade": {
+                 "transactionTime": "1570563817643565000",
+                 "price": "1428800",
+                 "quantity": "1000",
+                 "tradeId": "MTQ=",
+                 "tradeDate": 20191008,
+                 "saleCondition": "QDcgVw==",
+                 "doesNotUpdateLast": true,
+                 "session": "7",
+                 "distributionTime": "1570563817644189263"
+             }
+         }]
+     }
+ }
+
+ 15:22:45.244 BYND/97499913580948752/16: Correction tradeId: 14 < 
+{
+    "marketId": "97499913580948752",
+    "symbol": "BYND",
+    "transactionTime": "1570566165217444000",
+    "marketSequence": "62776",
+    "trades": {
+        "trades": [{
+            "tradeCorrection": {
+                "transactionTime": "1570566164507000000",
+                "price": "1427800",
+                "quantity": "1000",
+                "tradeId": "MTQ=",
+                "tradeDate": 20191008,
+                "distributionTime": "1570566165099713276"
+            }
+        }]
+    }
+}
+```
+
