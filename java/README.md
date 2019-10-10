@@ -95,8 +95,8 @@ The client will receive the following for each symbol:
 	 
 ### Notes:
 
-* The Protocol Buffer message definitions are in: src/main/proto
-  * Client to server message definitions are in: openfeed_api.proto
+* The Protocol Buffer message definitions are in: [src/main/proto](src/main/proto)
+  * Client to server message definitions are in: [openfeed_api.proto](src/main/proto/openfeed_api.proto)
 * All times are in Epoch Nanoseconds 	
 * Exchange and Channel ids are listed in ExchangeId.java
 
