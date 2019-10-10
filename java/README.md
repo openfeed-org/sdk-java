@@ -5,7 +5,7 @@
 
 	mvn clean install
 
-An executable jar will be build in target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar, with the main class being OpenfeedClientMain
+An executable jar will be build in `target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar`, with the main class being [OpenfeedClientMain](src/main/java/org/openfeed/client/OpenfeedClientMain.java) 
 
 ## Command line examples
 
@@ -31,13 +31,13 @@ java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <passwor
 java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -t -s AAPL,IBM -lu
 ```  
 
-## Get all instruments for NYSE and display them.
+### Get all instruments for NYSE and display them.
 
 ```shell
 java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -ir -e NYSE -li
 ```
 
-## To log heartbeats (keep alives)
+### To log heartbeats (keep alives)
 
 ```shell
 java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -e NYSE -lh
