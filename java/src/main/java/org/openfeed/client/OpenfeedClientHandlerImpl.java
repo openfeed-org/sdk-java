@@ -88,7 +88,11 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
 
     @Override
     public void onInstrumentReferenceResponse(InstrumentReferenceResponse instrumentReferenceResponse) {
-        log.info("{}: < {}", config.getClientId(), PbUtil.toJson(instrumentReferenceResponse));
+        log.debug("{}: < {}", config.getClientId(), PbUtil.toJson(instrumentReferenceResponse));
+        log.info("{}/{}/{}  ofExc: {} ddf: {} ddfExc: {} ddfBaseCode: {}", instrumentReferenceResponse.getSymbol(),instrumentReferenceResponse.getChannelId(),instrumentReferenceResponse.getMarketId(),
+                instrumentReferenceResponse.getExchange(),instrumentReferenceResponse.getDdfSymbol(),instrumentReferenceResponse.getDdfExchange(),
+                instrumentReferenceResponse.getDdfBaseCode()
+                );
     }
 
     @Override
