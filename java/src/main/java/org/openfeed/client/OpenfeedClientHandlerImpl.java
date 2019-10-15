@@ -161,12 +161,14 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         switch (update.getDataCase()) {
         case BBO:
             BestBidOffer bbo = update.getBbo();
-            if (bbo.getNationalBboUpdated()) {
-                connectionStats.getMessageStats().incrNBbo();
-                updateExchangeStats(update.getMarketId(), StatType.nbbo);
-            } else {
+            if (bbo.getRegional()) {
+                // Regional/Participant Quote
                 connectionStats.getMessageStats().incrBbo();
                 updateExchangeStats(update.getMarketId(), StatType.bbo);
+            } else {
+                // NBBO for Equities
+                connectionStats.getMessageStats().incrNBbo();
+                updateExchangeStats(update.getMarketId(), StatType.nbbo);
             }
             if (config.isLogBbo()) {
                 log.info("{}: {}: < {}", config.getClientId(), symbol, PbUtil.toJson(update));

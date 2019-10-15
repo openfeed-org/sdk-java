@@ -308,6 +308,7 @@ message MarketSnapshotResponse {
 // Market Update for an instrument
 //
 message MarketUpdate {
+  reserved 8;
   /// Unique id identifying the market
   sint64 marketId = 1;
   // Optional symbol identifier
@@ -323,22 +324,20 @@ message MarketUpdate {
   sint64 sourceSequence = 6;
   // Market participant/originator
   bytes originatorId = 7;
-  /// True if data is consolidated over many market participants/originators
-  bool consolidated = 8;
+  // deprecated bool consolidated = 8;
   /// Divide prices by this value to get real price values.  Optional, use value
   /// from InstrumentDefinition if not set.
   sint32 priceDenominator = 9;
-   // Feed specific context data set as required.
+  // Feed specific context data set as required.
   Context context = 10;
-
   /// Current session. This is used to 'enhance' updates from the translator in the Market State
   MarketSession session = 11;
-
   /// 'T' session. This is used to 'enhance' updates from the translator in the Market State
   MarketSession tSession = 12;
-
   /// Previous session. This is used to 'enhance' updates from the translator in the Market State
   MarketSession previousSession = 13;
+  // True if message applies to regional/participant member
+  bool regional = 14;
 
   oneof data {
       News news = 20;
@@ -429,7 +428,9 @@ message InstrumentStatus {
 
 /// Best Bid and Offer.
 // If a side is not present, then that side has been deleted.
+// By default this value is the NBBO, if regional/participant quote then regional = true
 message BestBidOffer {
+  reserved 31;
   // UTC Timestamp, nano seconds since Unix epoch
   sint64 transactionTime = 9;
   /// Divide by priceDenominator
@@ -453,7 +454,8 @@ message BestBidOffer {
   bytes offerOriginator = 23;
   bytes offerQuoteCondition = 24;
   bytes quoteCondition = 30;
-  bool nationalBboUpdated = 31;
+  //  Deprecated bool nationalBboUpdated = 31;
+  bool regional = 32;
 }
 
 /// Insert a new price level, pushing existing levels down
