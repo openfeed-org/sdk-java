@@ -1,9 +1,11 @@
 package org.openfeed.client;
 
 public class MessageStats {
+
     public enum StatType {
         instrument, snapshot, update, bbo, nbbo, trade
     }
+
     private long numInstruments;
     private long numSnapshots;
     private long numUpdates;
@@ -18,6 +20,16 @@ public class MessageStats {
 
     public MessageStats() {
     }
+
+    public void clear() {
+        numInstruments = 0;
+        numSnapshots = 0;
+        numUpdates = 0;
+        numBbo = 0;
+        numNBbo = 0;
+        numTrades = 0;
+    }
+
 
     public void incrInstruments() {
         this.numInstruments++;
@@ -46,7 +58,7 @@ public class MessageStats {
     @Override
     public String toString() {
         String ec = exchangeCode != null ? "exch: " + exchangeCode + " " : "";
-        return  ec +
+        return ec +
                 "inst: " + numInstruments + " snp: " + numSnapshots + " upd: " + numUpdates + " bbo: " + numBbo
                 + " nbbo: " + numNBbo
                 + " trd: " + numTrades;

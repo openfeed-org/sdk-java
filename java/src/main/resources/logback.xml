@@ -13,8 +13,7 @@
 			<maxHistory>14</maxHistory>
 		</rollingPolicy>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS, America/Chicago} [%thread]
-				%-5level %logger{36} - %msg%n</pattern>
+			<pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS, America/Chicago} [%thread] %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
 	</appender>
 

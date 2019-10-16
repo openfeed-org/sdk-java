@@ -25,4 +25,11 @@ public class ConnectionStats {
         });
         return sb.toString();
     }
+
+    public void clear() {
+        overallStats.clear();
+        exchangeToMessageStats.forEach( (code, stats) -> {
+            stats.clear();
+        });
+    }
 }

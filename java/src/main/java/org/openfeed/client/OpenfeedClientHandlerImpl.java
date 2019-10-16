@@ -57,6 +57,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
             }
             break;
         case Disconnected:
+            connectionStats.clear();
             break;
         case Login:
             break;
