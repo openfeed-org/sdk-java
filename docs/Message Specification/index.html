@@ -8,24 +8,24 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Protocol Documentation - Openfeed Developer Guide</title>
+  <title>Message Specification - Openfeed Developer Guide</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link rel="stylesheet" href="../css/highlight.css">
+  <link href="../extra.css" rel="stylesheet">
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Protocol Documentation";
+    var mkdocs_page_name = "Message Specification";
     var mkdocs_page_input_path = "Message Specification.md";
-    var mkdocs_page_url = null;
+    var mkdocs_page_url = "/Message Specification/";
   </script>
   
-  <script src="../js/jquery-2.1.1.min.js" defer></script>
-  <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
   
 </head>
 
@@ -39,7 +39,7 @@
         <a href=".." class="icon icon-home"> Openfeed Developer Guide</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+    <input type="text" name="q" placeholder="Search docs" />
   </form>
 </div>
       </div>
@@ -50,12 +50,12 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="..">Openfeed Developer Guide</a>
+    <a class="" href="..">Home</a>
 	    </li>
           
             <li class="toctree-l1 current">
 		
-    <a class="current" href="./">Protocol Documentation</a>
+    <a class="current" href="./">Message Specification</a>
     <ul class="subnav">
             
     <li class="toctree-l2"><a href="#protocol-documentation">Protocol Documentation</a></li>
@@ -65,6 +65,8 @@
             <li><a class="toctree-l3" href="#table-of-contents">Table of Contents</a></li>
         
             <li><a class="toctree-l3" href="#openfeedproto">openfeed.proto</a></li>
+        
+            <li><a class="toctree-l3" href="#openfeed_apiproto">openfeed_api.proto</a></li>
         
             <li><a class="toctree-l3" href="#openfeed_instrumentproto">openfeed_instrument.proto</a></li>
         
@@ -98,7 +100,7 @@
     
       
     
-    <li>Protocol Documentation</li>
+    <li>Message Specification</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -109,7 +111,7 @@
             <div class="section">
               
                 <h1 id="protocol-documentation">Protocol Documentation</h1>
-<p><a name="top"/></p>
+<p><a name="top"></a></p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li>
@@ -193,6 +195,31 @@
 </ul>
 </li>
 <li>
+<p><a href="#openfeed_api.proto">openfeed_api.proto</a></p>
+<ul>
+<li><a href="#org.openfeed.InstrumentReferenceRequest">InstrumentReferenceRequest</a></li>
+<li><a href="#org.openfeed.InstrumentReferenceResponse">InstrumentReferenceResponse</a></li>
+<li><a href="#org.openfeed.InstrumentRequest">InstrumentRequest</a></li>
+<li><a href="#org.openfeed.InstrumentResponse">InstrumentResponse</a></li>
+<li><a href="#org.openfeed.LoginRequest">LoginRequest</a></li>
+<li><a href="#org.openfeed.LoginResponse">LoginResponse</a></li>
+<li><a href="#org.openfeed.LogoutRequest">LogoutRequest</a></li>
+<li><a href="#org.openfeed.LogoutResponse">LogoutResponse</a></li>
+<li><a href="#org.openfeed.OpenfeedGatewayMessage">OpenfeedGatewayMessage</a></li>
+<li><a href="#org.openfeed.OpenfeedGatewayRequest">OpenfeedGatewayRequest</a></li>
+<li><a href="#org.openfeed.Status">Status</a></li>
+<li><a href="#org.openfeed.SubscriptionRequest">SubscriptionRequest</a></li>
+<li><a href="#org.openfeed.SubscriptionRequest.Request">SubscriptionRequest.Request</a></li>
+<li>
+<p><a href="#org.openfeed.SubscriptionResponse">SubscriptionResponse</a></p>
+</li>
+<li>
+<p><a href="#org.openfeed.Result">Result</a></p>
+</li>
+<li><a href="#org.openfeed.SubscriptionType">SubscriptionType</a></li>
+</ul>
+</li>
+<li>
 <p><a href="#openfeed_instrument.proto">openfeed_instrument.proto</a></p>
 <ul>
 <li><a href="#org.openfeed.InstrumentDefinition">InstrumentDefinition</a></li>
@@ -214,6 +241,7 @@
 <li><a href="#org.openfeed.InstrumentDefinition.InstrumentType">InstrumentDefinition.InstrumentType</a></li>
 <li><a href="#org.openfeed.InstrumentDefinition.OptionStyle">InstrumentDefinition.OptionStyle</a></li>
 <li><a href="#org.openfeed.InstrumentDefinition.OptionType">InstrumentDefinition.OptionType</a></li>
+<li><a href="#org.openfeed.InstrumentDefinition.PriceFormat.SubFormat">InstrumentDefinition.PriceFormat.SubFormat</a></li>
 <li><a href="#org.openfeed.InstrumentDefinition.State">InstrumentDefinition.State</a></li>
 </ul>
 </li>
@@ -221,10 +249,10 @@
 <p><a href="#scalar-value-types">Scalar Value Types</a></p>
 </li>
 </ul>
-<p><a name="openfeed.proto"/>
+<p><a name="openfeed.proto"></a>
 <p align="right"><a href="#top">Top</a></p></p>
 <h2 id="openfeedproto">openfeed.proto</h2>
-<p><a name="org.openfeed.AddOrder"/></p>
+<p><a name="org.openfeed.AddOrder"></a></p>
 <h3 id="addorder">AddOrder</h3>
 <p>Add an order to the order book.  Indexed by orderId, which is unique per channel</p>
 <table>
@@ -281,7 +309,7 @@
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.AddPriceLevel"/></p>
+<p><a name="org.openfeed.AddPriceLevel"></a></p>
 <h3 id="addpricelevel">AddPriceLevel</h3>
 <p>Insert a new price level, pushing existing levels down</p>
 <table>
@@ -338,7 +366,7 @@
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.AdminMessage"/></p>
+<p><a name="org.openfeed.AdminMessage"></a></p>
 <h3 id="adminmessage">AdminMessage</h3>
 <p>Administrative Message</p>
 <table>
@@ -395,10 +423,11 @@
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.BestBidOffer"/></p>
+<p><a name="org.openfeed.BestBidOffer"></a></p>
 <h3 id="bestbidoffer">BestBidOffer</h3>
 <p>Best Bid and Offer.
-If a side is not present, then that side has been deleted.</p>
+/ If a side is not present, then that side has been deleted.
+/ By default this value is the NBBO, if regional/participant quote then regional = true</p>
 <table>
 <thead>
 <tr>
@@ -482,14 +511,14 @@ If a side is not present, then that side has been deleted.</p>
 <td></td>
 </tr>
 <tr>
-<td>nationalBboUpdated</td>
+<td>regional</td>
 <td><a href="#bool">bool</a></td>
 <td></td>
-<td></td>
+<td>True if regional/participant member quote</td>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.CapitalDistributions"/></p>
+<p><a name="org.openfeed.CapitalDistributions"></a></p>
 <h3 id="capitaldistributions">CapitalDistributions</h3>
 <p>Capital Distributions</p>
 <table>
@@ -582,7 +611,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.ChannelReset"/></p>
+<p><a name="org.openfeed.ChannelReset"></a></p>
 <h3 id="channelreset">ChannelReset</h3>
 <p>Channel Reset</p>
 <table>
@@ -609,7 +638,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.ClearBook"/></p>
+<p><a name="org.openfeed.ClearBook"></a></p>
 <h3 id="clearbook">ClearBook</h3>
 <p>Clear all data from the order books that are configured for this market.</p>
 <table>
@@ -636,7 +665,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Close"/></p>
+<p><a name="org.openfeed.Close"></a></p>
 <h3 id="close">Close</h3>
 <table>
 <thead>
@@ -674,7 +703,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Context"/></p>
+<p><a name="org.openfeed.Context"></a></p>
 <h3 id="context">Context</h3>
 <table>
 <thead>
@@ -700,7 +729,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.ContextData"/></p>
+<p><a name="org.openfeed.ContextData"></a></p>
 <h3 id="contextdata">ContextData</h3>
 <table>
 <thead>
@@ -762,7 +791,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.DeleteOrder"/></p>
+<p><a name="org.openfeed.DeleteOrder"></a></p>
 <h3 id="deleteorder">DeleteOrder</h3>
 <p>Delete an order from the order book. Indexed by orderId, which is unique per channel</p>
 <table>
@@ -795,7 +824,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.DeletePriceLevel"/></p>
+<p><a name="org.openfeed.DeletePriceLevel"></a></p>
 <h3 id="deletepricelevel">DeletePriceLevel</h3>
 <p>Delete an existing price level, pulling existing levels up</p>
 <table>
@@ -828,7 +857,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.DepthOrder"/></p>
+<p><a name="org.openfeed.DepthOrder"></a></p>
 <h3 id="depthorder">DepthOrder</h3>
 <p>Depth By Order</p>
 <table>
@@ -849,7 +878,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.DepthOrder.Entry"/></p>
+<p><a name="org.openfeed.DepthOrder.Entry"></a></p>
 <h3 id="depthorderentry">DepthOrder.Entry</h3>
 <table>
 <thead>
@@ -881,7 +910,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.DepthPriceLevel"/></p>
+<p><a name="org.openfeed.DepthPriceLevel"></a></p>
 <h3 id="depthpricelevel">DepthPriceLevel</h3>
 <p>Depth Price Level</p>
 <table>
@@ -902,7 +931,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.DepthPriceLevel.Entry"/></p>
+<p><a name="org.openfeed.DepthPriceLevel.Entry"></a></p>
 <h3 id="depthpricelevelentry">DepthPriceLevel.Entry</h3>
 <table>
 <thead>
@@ -934,7 +963,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.DividendsIncomeDistributions"/></p>
+<p><a name="org.openfeed.DividendsIncomeDistributions"></a></p>
 <h3 id="dividendsincomedistributions">DividendsIncomeDistributions</h3>
 <p>Dividends and Income Distributions</p>
 <table>
@@ -1057,7 +1086,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.HeartBeat"/></p>
+<p><a name="org.openfeed.HeartBeat"></a></p>
 <h3 id="heartbeat">HeartBeat</h3>
 <p>Heart Beat</p>
 <table>
@@ -1096,7 +1125,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.High"/></p>
+<p><a name="org.openfeed.High"></a></p>
 <h3 id="high">High</h3>
 <table>
 <thead>
@@ -1134,7 +1163,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.IndexValue"/></p>
+<p><a name="org.openfeed.IndexValue"></a></p>
 <h3 id="indexvalue">IndexValue</h3>
 <p>For non-tradable index products</p>
 <table>
@@ -1221,7 +1250,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentGroupStatus"/></p>
+<p><a name="org.openfeed.InstrumentGroupStatus"></a></p>
 <h3 id="instrumentgroupstatus">InstrumentGroupStatus</h3>
 <p>Instrument Group Status</p>
 <table>
@@ -1266,7 +1295,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentStatus"/></p>
+<p><a name="org.openfeed.InstrumentStatus"></a></p>
 <h3 id="instrumentstatus">InstrumentStatus</h3>
 <p>Instrument Status</p>
 <table>
@@ -1317,7 +1346,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Last"/></p>
+<p><a name="org.openfeed.Last"></a></p>
 <h3 id="last">Last</h3>
 <table>
 <thead>
@@ -1367,7 +1396,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Low"/></p>
+<p><a name="org.openfeed.Low"></a></p>
 <h3 id="low">Low</h3>
 <table>
 <thead>
@@ -1405,7 +1434,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.MarketSession"/></p>
+<p><a name="org.openfeed.MarketSession"></a></p>
 <h3 id="marketsession">MarketSession</h3>
 <p>Session used in snapshot.</p>
 <table>
@@ -1486,7 +1515,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.MarketSnapshot"/></p>
+<p><a name="org.openfeed.MarketSnapshot"></a></p>
 <h3 id="marketsnapshot">MarketSnapshot</h3>
 <p>Snapshot for a market</p>
 <table>
@@ -1717,7 +1746,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.MarketSnapshotResponse"/></p>
+<p><a name="org.openfeed.MarketSnapshotResponse"></a></p>
 <h3 id="marketsnapshotresponse">MarketSnapshotResponse</h3>
 <p>Used by market state to return snapshot.</p>
 <table>
@@ -1750,7 +1779,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.MarketStatus"/></p>
+<p><a name="org.openfeed.MarketStatus"></a></p>
 <h3 id="marketstatus">MarketStatus</h3>
 <p>Market Status</p>
 <table>
@@ -1783,7 +1812,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.MarketSummary"/></p>
+<p><a name="org.openfeed.MarketSummary"></a></p>
 <h3 id="marketsummary">MarketSummary</h3>
 <p>Intra and EOD Market Summary</p>
 <table>
@@ -1912,7 +1941,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.MarketUpdate"/></p>
+<p><a name="org.openfeed.MarketUpdate"></a></p>
 <h3 id="marketupdate">MarketUpdate</h3>
 <p>Market Update for an instrument</p>
 <table>
@@ -1968,12 +1997,6 @@ If a side is not present, then that side has been deleted.</p>
 <td>Market participant/originator</td>
 </tr>
 <tr>
-<td>consolidated</td>
-<td><a href="#bool">bool</a></td>
-<td></td>
-<td>True if data is consolidated over many market participants/originators</td>
-</tr>
-<tr>
 <td>priceDenominator</td>
 <td><a href="#sint32">sint32</a></td>
 <td></td>
@@ -2002,6 +2025,12 @@ If a side is not present, then that side has been deleted.</p>
 <td><a href="#org.openfeed.MarketSession">MarketSession</a></td>
 <td></td>
 <td>Previous session. This is used to &#39;enhance&#39; updates from the translator in the Market State</td>
+</tr>
+<tr>
+<td>regional</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td>True if message applies to regional/participant member</td>
 </tr>
 <tr>
 <td>news</td>
@@ -2167,7 +2196,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.ModifyOrder"/></p>
+<p><a name="org.openfeed.ModifyOrder"></a></p>
 <h3 id="modifyorder">ModifyOrder</h3>
 <p>Modify the price or quantity of an order.  The side and implied flag cannot change</p>
 <table>
@@ -2224,7 +2253,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.ModifyPriceLevel"/></p>
+<p><a name="org.openfeed.ModifyPriceLevel"></a></p>
 <h3 id="modifypricelevel">ModifyPriceLevel</h3>
 <p>Modify the quantity or orderCount of an existing price level.
 / The price itself will not change.</p>
@@ -2282,7 +2311,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.MonetaryValue"/></p>
+<p><a name="org.openfeed.MonetaryValue"></a></p>
 <h3 id="monetaryvalue">MonetaryValue</h3>
 <p>Total monetary value of trades</p>
 <table>
@@ -2321,7 +2350,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.NetAssetValue"/></p>
+<p><a name="org.openfeed.NetAssetValue"></a></p>
 <h3 id="netassetvalue">NetAssetValue</h3>
 <table>
 <thead>
@@ -2347,7 +2376,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.News"/></p>
+<p><a name="org.openfeed.News"></a></p>
 <h3 id="news">News</h3>
 <p>News or informational message</p>
 <table>
@@ -2398,7 +2427,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.NumberOfTrades"/></p>
+<p><a name="org.openfeed.NumberOfTrades"></a></p>
 <h3 id="numberoftrades">NumberOfTrades</h3>
 <p>Total number of trades</p>
 <table>
@@ -2431,7 +2460,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Ohlc"/></p>
+<p><a name="org.openfeed.Ohlc"></a></p>
 <h3 id="ohlc">Ohlc</h3>
 <p>Open,High,Low,Close</p>
 <table>
@@ -2482,7 +2511,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Open"/></p>
+<p><a name="org.openfeed.Open"></a></p>
 <h3 id="open">Open</h3>
 <table>
 <thead>
@@ -2526,7 +2555,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.OpenInterest"/></p>
+<p><a name="org.openfeed.OpenInterest"></a></p>
 <h3 id="openinterest">OpenInterest</h3>
 <p>Open interest</p>
 <table>
@@ -2559,7 +2588,7 @@ If a side is not present, then that side has been deleted.</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.OpenfeedMessage"/></p>
+<p><a name="org.openfeed.OpenfeedMessage"></a></p>
 <h3 id="openfeedmessage">OpenfeedMessage</h3>
 <p>A wrapper for Openfeed data.  Will contain exactly one of the supported
 message types</p>
@@ -2647,7 +2676,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.PrevClose"/></p>
+<p><a name="org.openfeed.PrevClose"></a></p>
 <h3 id="prevclose">PrevClose</h3>
 <table>
 <thead>
@@ -2685,7 +2714,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Settlement"/></p>
+<p><a name="org.openfeed.Settlement"></a></p>
 <h3 id="settlement">Settlement</h3>
 <p>Settlement value for futures and options markets.</p>
 <table>
@@ -2748,7 +2777,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.SharesOutstanding"/></p>
+<p><a name="org.openfeed.SharesOutstanding"></a></p>
 <h3 id="sharesoutstanding">SharesOutstanding</h3>
 <table>
 <thead>
@@ -2774,7 +2803,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.SnapshotRequest"/></p>
+<p><a name="org.openfeed.SnapshotRequest"></a></p>
 <h3 id="snapshotrequest">SnapshotRequest</h3>
 <p>Request for the snapshot to the Market state.</p>
 <table>
@@ -2813,7 +2842,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.TCPHistoricalReplayRequest"/></p>
+<p><a name="org.openfeed.TCPHistoricalReplayRequest"></a></p>
 <h3 id="tcphistoricalreplayrequest">TCPHistoricalReplayRequest</h3>
 <p>TCP replay request.</p>
 <table>
@@ -2858,7 +2887,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.TracePoint"/></p>
+<p><a name="org.openfeed.TracePoint"></a></p>
 <h3 id="tracepoint">TracePoint</h3>
 <p>Tracing</p>
 <table>
@@ -2897,7 +2926,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Trade"/></p>
+<p><a name="org.openfeed.Trade"></a></p>
 <h3 id="trade">Trade</h3>
 <p>A live trade.  When received, update the &#34;last&#34; field</p>
 <table>
@@ -3062,7 +3091,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.TradeCancel"/></p>
+<p><a name="org.openfeed.TradeCancel"></a></p>
 <h3 id="tradecancel">TradeCancel</h3>
 <p>Trade Cancel/Break</p>
 <table>
@@ -3131,7 +3160,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.TradeCorrection"/></p>
+<p><a name="org.openfeed.TradeCorrection"></a></p>
 <h3 id="tradecorrection">TradeCorrection</h3>
 <p>Trade Correction</p>
 <table>
@@ -3272,7 +3301,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Trades"/></p>
+<p><a name="org.openfeed.Trades"></a></p>
 <h3 id="trades">Trades</h3>
 <p>Trades</p>
 <table>
@@ -3293,7 +3322,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Trades.Entry"/></p>
+<p><a name="org.openfeed.Trades.Entry"></a></p>
 <h3 id="tradesentry">Trades.Entry</h3>
 <table>
 <thead>
@@ -3325,7 +3354,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Volume"/></p>
+<p><a name="org.openfeed.Volume"></a></p>
 <h3 id="volume">Volume</h3>
 <p>Total volume traded</p>
 <table>
@@ -3358,7 +3387,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.VolumeAtPrice"/></p>
+<p><a name="org.openfeed.VolumeAtPrice"></a></p>
 <h3 id="volumeatprice">VolumeAtPrice</h3>
 <p>The VolumeAtPrice class encapsulates all of the trades throughout the day,
 / and organizes a table of volume at prices.</p>
@@ -3422,7 +3451,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.VolumeAtPrice.PriceLevelVolume"/></p>
+<p><a name="org.openfeed.VolumeAtPrice.PriceLevelVolume"></a></p>
 <h3 id="volumeatpricepricelevelvolume">VolumeAtPrice.PriceLevelVolume</h3>
 <table>
 <thead>
@@ -3448,7 +3477,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Vwap"/></p>
+<p><a name="org.openfeed.Vwap"></a></p>
 <h3 id="vwap">Vwap</h3>
 <p>Volume Weighted Average Price</p>
 <table>
@@ -3481,7 +3510,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.YearHigh"/></p>
+<p><a name="org.openfeed.YearHigh"></a></p>
 <h3 id="yearhigh">YearHigh</h3>
 <p>52 week</p>
 <table>
@@ -3514,7 +3543,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.YearLow"/></p>
+<p><a name="org.openfeed.YearLow"></a></p>
 <h3 id="yearlow">YearLow</h3>
 <p>52 week</p>
 <table>
@@ -3547,7 +3576,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.AdminMessage.Status"/></p>
+<p><a name="org.openfeed.AdminMessage.Status"></a></p>
 <h3 id="adminmessagestatus">AdminMessage.Status</h3>
 <table>
 <thead>
@@ -3565,7 +3594,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.BookSide"/></p>
+<p><a name="org.openfeed.BookSide"></a></p>
 <h3 id="bookside">BookSide</h3>
 <p>Book side</p>
 <table>
@@ -3594,7 +3623,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.CrossType"/></p>
+<p><a name="org.openfeed.CrossType"></a></p>
 <h3 id="crosstype">CrossType</h3>
 <table>
 <thead>
@@ -3647,7 +3676,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentTradingStatus"/></p>
+<p><a name="org.openfeed.InstrumentTradingStatus"></a></p>
 <h3 id="instrumenttradingstatus">InstrumentTradingStatus</h3>
 <table>
 <thead>
@@ -3775,7 +3804,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.MarketSummary.ClearSet"/></p>
+<p><a name="org.openfeed.MarketSummary.ClearSet"></a></p>
 <h3 id="marketsummaryclearset">MarketSummary.ClearSet</h3>
 <p>Clears sets of fields</p>
 <table>
@@ -3809,7 +3838,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.MarketSummary.SummaryType"/></p>
+<p><a name="org.openfeed.MarketSummary.SummaryType"></a></p>
 <h3 id="marketsummarysummarytype">MarketSummary.SummaryType</h3>
 <p>Used to differntiate various ddf messages.</p>
 <table>
@@ -3848,7 +3877,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.MarketWideStatus"/></p>
+<p><a name="org.openfeed.MarketWideStatus"></a></p>
 <h3 id="marketwidestatus">MarketWideStatus</h3>
 <table>
 <thead>
@@ -3886,7 +3915,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.OpenCloseSettlementFlag"/></p>
+<p><a name="org.openfeed.OpenCloseSettlementFlag"></a></p>
 <h3 id="openclosesettlementflag">OpenCloseSettlementFlag</h3>
 <table>
 <thead>
@@ -3914,7 +3943,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.RegulationSHOShortSalePriceTest"/></p>
+<p><a name="org.openfeed.RegulationSHOShortSalePriceTest"></a></p>
 <h3 id="regulationshoshortsalepricetest">RegulationSHOShortSalePriceTest</h3>
 <table>
 <thead>
@@ -3947,7 +3976,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.Service"/></p>
+<p><a name="org.openfeed.Service"></a></p>
 <h3 id="service">Service</h3>
 <table>
 <thead>
@@ -3990,7 +4019,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.SettlementSource"/></p>
+<p><a name="org.openfeed.SettlementSource"></a></p>
 <h3 id="settlementsource">SettlementSource</h3>
 <table>
 <thead>
@@ -4023,7 +4052,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.SettlementTerms"/></p>
+<p><a name="org.openfeed.SettlementTerms"></a></p>
 <h3 id="settlementterms">SettlementTerms</h3>
 <table>
 <thead>
@@ -4066,7 +4095,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.SnapshotRequest.SnapshotRequestType"/></p>
+<p><a name="org.openfeed.SnapshotRequest.SnapshotRequestType"></a></p>
 <h3 id="snapshotrequestsnapshotrequesttype">SnapshotRequest.SnapshotRequestType</h3>
 <table>
 <thead>
@@ -4099,7 +4128,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.SnapshotRequestResult"/></p>
+<p><a name="org.openfeed.SnapshotRequestResult"></a></p>
 <h3 id="snapshotrequestresult">SnapshotRequestResult</h3>
 <table>
 <thead>
@@ -4137,10 +4166,792 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="openfeed_instrument.proto"/>
+<p><a name="openfeed_api.proto"></a>
+<p align="right"><a href="#top">Top</a></p></p>
+<h2 id="openfeed_apiproto">openfeed_api.proto</h2>
+<p><a name="org.openfeed.InstrumentReferenceRequest"></a></p>
+<h3 id="instrumentreferencerequest">InstrumentReferenceRequest</h3>
+<p>Instrument References, returns InstrumentReferenceResponse(s)</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>token</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>symbol</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>exchange</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>channelId</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentReferenceResponse"></a></p>
+<h3 id="instrumentreferenceresponse">InstrumentReferenceResponse</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>status</td>
+<td><a href="#org.openfeed.Status">Status</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>numberOfDefinitions</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>channelId</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>symbol</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>exchange</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ddfSymbol</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ddfExchange</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ddfBaseCode</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentRequest"></a></p>
+<h3 id="instrumentrequest">InstrumentRequest</h3>
+<p>Instrument Definition(s), will stream InstrumentDefinition(s)</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>token</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>symbol</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>exchange</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>channelId</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentResponse"></a></p>
+<h3 id="instrumentresponse">InstrumentResponse</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>status</td>
+<td><a href="#org.openfeed.Status">Status</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>numberOfDefinitions</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.LoginRequest"></a></p>
+<h3 id="loginrequest">LoginRequest</h3>
+<p>Login</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>username</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>password</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.LoginResponse"></a></p>
+<h3 id="loginresponse">LoginResponse</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>status</td>
+<td><a href="#org.openfeed.Status">Status</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>token</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.LogoutRequest"></a></p>
+<h3 id="logoutrequest">LogoutRequest</h3>
+<p>Logout</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>token</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.LogoutResponse"></a></p>
+<h3 id="logoutresponse">LogoutResponse</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>status</td>
+<td><a href="#org.openfeed.Status">Status</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.OpenfeedGatewayMessage"></a></p>
+<h3 id="openfeedgatewaymessage">OpenfeedGatewayMessage</h3>
+<p>Openfeed Server Response</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>loginResponse</td>
+<td><a href="#org.openfeed.LoginResponse">LoginResponse</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>logoutResponse</td>
+<td><a href="#org.openfeed.LogoutResponse">LogoutResponse</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>instrumentResponse</td>
+<td><a href="#org.openfeed.InstrumentResponse">InstrumentResponse</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>instrumentReferenceResponse</td>
+<td><a href="#org.openfeed.InstrumentReferenceResponse">InstrumentReferenceResponse</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>subscriptionResponse</td>
+<td><a href="#org.openfeed.SubscriptionResponse">SubscriptionResponse</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>marketStatus</td>
+<td><a href="#org.openfeed.MarketStatus">MarketStatus</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>heartBeat</td>
+<td><a href="#org.openfeed.HeartBeat">HeartBeat</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>instrumentDefinition</td>
+<td><a href="#org.openfeed.InstrumentDefinition">InstrumentDefinition</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>marketSnapshot</td>
+<td><a href="#org.openfeed.MarketSnapshot">MarketSnapshot</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>marketUpdate</td>
+<td><a href="#org.openfeed.MarketUpdate">MarketUpdate</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>volumeAtPrice</td>
+<td><a href="#org.openfeed.VolumeAtPrice">VolumeAtPrice</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ohlc</td>
+<td><a href="#org.openfeed.Ohlc">Ohlc</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.OpenfeedGatewayRequest"></a></p>
+<h3 id="openfeedgatewayrequest">OpenfeedGatewayRequest</h3>
+<p>Openfeed Server request</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>loginRequest</td>
+<td><a href="#org.openfeed.LoginRequest">LoginRequest</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>logoutRequest</td>
+<td><a href="#org.openfeed.LogoutRequest">LogoutRequest</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>subscriptionRequest</td>
+<td><a href="#org.openfeed.SubscriptionRequest">SubscriptionRequest</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>instrumentRequest</td>
+<td><a href="#org.openfeed.InstrumentRequest">InstrumentRequest</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>instrumentReferenceRequest</td>
+<td><a href="#org.openfeed.InstrumentReferenceRequest">InstrumentReferenceRequest</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Status"></a></p>
+<h3 id="status">Status</h3>
+<p>Serivce Messages
+/////////////////</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>result</td>
+<td><a href="#org.openfeed.Result">Result</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>message</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>service</td>
+<td><a href="#org.openfeed.Service">Service</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SubscriptionRequest"></a></p>
+<h3 id="subscriptionrequest">SubscriptionRequest</h3>
+<p>Subscription Request</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td>Client-assigned id for this request. Response will include same id</td>
+</tr>
+<tr>
+<td>token</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>service</td>
+<td><a href="#org.openfeed.Service">Service</a></td>
+<td></td>
+<td>Preferred service (realtime or delayed).</td>
+</tr>
+<tr>
+<td>unsubscribe</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>requests</td>
+<td><a href="#org.openfeed.SubscriptionRequest.Request">SubscriptionRequest.Request</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SubscriptionRequest.Request"></a></p>
+<h3 id="subscriptionrequestrequest">SubscriptionRequest.Request</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>symbol</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>exchange</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>channelId</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>subscriptionType</td>
+<td><a href="#org.openfeed.SubscriptionType">SubscriptionType</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>snapshotIntervalSeconds</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td>0 = send only current snapshot once, else send at interval seconds</td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SubscriptionResponse"></a></p>
+<h3 id="subscriptionresponse">SubscriptionResponse</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlationId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>status</td>
+<td><a href="#org.openfeed.Status">Status</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>symbol</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>marketId</td>
+<td><a href="#sint64">sint64</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>exchange</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>channelId</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>numberOfDefinitions</td>
+<td><a href="#sint32">sint32</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.Result"></a></p>
+<h3 id="result">Result</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UNKNOWN_RESULT</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>SUCCESS</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>INVALID_SYMBOL</td>
+<td>116</td>
+<td></td>
+</tr>
+<tr>
+<td>INVALID_MARKET_ID</td>
+<td>117</td>
+<td></td>
+</tr>
+<tr>
+<td>INVALID_EXCHANGE</td>
+<td>118</td>
+<td></td>
+</tr>
+<tr>
+<td>INVALID_CHANNEL_ID</td>
+<td>119</td>
+<td></td>
+</tr>
+<tr>
+<td>MALFORMED_MESSAGE</td>
+<td>120</td>
+<td></td>
+</tr>
+<tr>
+<td>UNEXPECTED_MESSAGE</td>
+<td>121</td>
+<td></td>
+</tr>
+<tr>
+<td>NOT_SUBSCRIBED</td>
+<td>122</td>
+<td></td>
+</tr>
+<tr>
+<td>DUPLICATE_SUBSCRIPTION</td>
+<td>123</td>
+<td></td>
+</tr>
+<tr>
+<td>INVALID_CREDENTIALS</td>
+<td>124</td>
+<td></td>
+</tr>
+<tr>
+<td>INSUFFICIENT_PRIVILEGES</td>
+<td>125</td>
+<td></td>
+</tr>
+<tr>
+<td>AUTHENTICATION_REQUIRED</td>
+<td>126</td>
+<td></td>
+</tr>
+<tr>
+<td>GENERIC_FAILURE</td>
+<td>127</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.SubscriptionType"></a></p>
+<h3 id="subscriptiontype">SubscriptionType</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ALL</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>QUOTE</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>QUOTE_PARTICIPANT</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr>
+<td>DEPTH_PRICE</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td>DEPTH_ORDER</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>TRADES</td>
+<td>5</td>
+<td></td>
+</tr>
+<tr>
+<td>CUMLATIVE_VOLUME</td>
+<td>6</td>
+<td></td>
+</tr>
+<tr>
+<td>OHLC</td>
+<td>7</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="openfeed_instrument.proto"></a>
 <p align="right"><a href="#top">Top</a></p></p>
 <h2 id="openfeed_instrumentproto">openfeed_instrument.proto</h2>
-<p><a name="org.openfeed.InstrumentDefinition"/></p>
+<p><a name="org.openfeed.InstrumentDefinition"></a></p>
 <h3 id="instrumentdefinition">InstrumentDefinition</h3>
 <table>
 <thead>
@@ -4454,7 +5265,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.Calendar"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.Calendar"></a></p>
 <h3 id="instrumentdefinitioncalendar">InstrumentDefinition.Calendar</h3>
 <table>
 <thead>
@@ -4474,7 +5285,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.CurrencyPair"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.CurrencyPair"></a></p>
 <h3 id="instrumentdefinitioncurrencypair">InstrumentDefinition.CurrencyPair</h3>
 <p>Currency Pair</p>
 <table>
@@ -4501,7 +5312,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.Event"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.Event"></a></p>
 <h3 id="instrumentdefinitionevent">InstrumentDefinition.Event</h3>
 <table>
 <thead>
@@ -4527,7 +5338,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.MaturityDate"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.MaturityDate"></a></p>
 <h3 id="instrumentdefinitionmaturitydate">InstrumentDefinition.MaturityDate</h3>
 <p>Date and time with time zone.</p>
 <table>
@@ -4560,7 +5371,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.PriceFormat"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.PriceFormat"></a></p>
 <h3 id="instrumentdefinitionpriceformat">InstrumentDefinition.PriceFormat</h3>
 <p>Recommended display format for prices.</p>
 <table>
@@ -4599,7 +5410,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.Schedule"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.Schedule"></a></p>
 <h3 id="instrumentdefinitionschedule">InstrumentDefinition.Schedule</h3>
 <p>Typical trading week schedule</p>
 <table>
@@ -4620,7 +5431,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.SpreadLeg"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.SpreadLeg"></a></p>
 <h3 id="instrumentdefinitionspreadleg">InstrumentDefinition.SpreadLeg</h3>
 <table>
 <thead>
@@ -4652,7 +5463,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.Symbol"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.Symbol"></a></p>
 <h3 id="instrumentdefinitionsymbol">InstrumentDefinition.Symbol</h3>
 <p>A vendor&#39;s symbol for an instrument</p>
 <table>
@@ -4679,7 +5490,7 @@ message types</p>
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.TimeSpan"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.TimeSpan"></a></p>
 <h3 id="instrumentdefinitiontimespan">InstrumentDefinition.TimeSpan</h3>
 <p>Trading session
 Times are in nanos since midnight UTC on the Sunday starting a given trading week</p>
@@ -4707,7 +5518,7 @@ Times are in nanos since midnight UTC on the Sunday starting a given trading wee
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.BookType"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.BookType"></a></p>
 <h3 id="instrumentdefinitionbooktype">InstrumentDefinition.BookType</h3>
 <p>Market depth implementation type</p>
 <table>
@@ -4741,7 +5552,7 @@ Times are in nanos since midnight UTC on the Sunday starting a given trading wee
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.EventType"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.EventType"></a></p>
 <h3 id="instrumentdefinitioneventtype">InstrumentDefinition.EventType</h3>
 <table>
 <thead>
@@ -4814,7 +5625,7 @@ Times are in nanos since midnight UTC on the Sunday starting a given trading wee
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.InstrumentType"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.InstrumentType"></a></p>
 <h3 id="instrumentdefinitioninstrumenttype">InstrumentDefinition.InstrumentType</h3>
 <h6 id="_1"></h6>
 <table>
@@ -4873,7 +5684,7 @@ Times are in nanos since midnight UTC on the Sunday starting a given trading wee
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.OptionStyle"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.OptionStyle"></a></p>
 <h3 id="instrumentdefinitionoptionstyle">InstrumentDefinition.OptionStyle</h3>
 <p>Option style.</p>
 <table>
@@ -4907,7 +5718,7 @@ Times are in nanos since midnight UTC on the Sunday starting a given trading wee
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.OptionType"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.OptionType"></a></p>
 <h3 id="instrumentdefinitionoptiontype">InstrumentDefinition.OptionType</h3>
 <p>Option type.</p>
 <table>
@@ -4936,7 +5747,35 @@ Times are in nanos since midnight UTC on the Sunday starting a given trading wee
 </tr>
 </tbody>
 </table>
-<p><a name="org.openfeed.InstrumentDefinition.State"/></p>
+<p><a name="org.openfeed.InstrumentDefinition.PriceFormat.SubFormat"></a></p>
+<h3 id="instrumentdefinitionpriceformatsubformat">InstrumentDefinition.PriceFormat.SubFormat</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Number</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FLAT</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>FRACTIONAL</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td>DECIMAL</td>
+<td>2</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="org.openfeed.InstrumentDefinition.State"></a></p>
 <h3 id="instrumentdefinitionstate">InstrumentDefinition.State</h3>
 <table>
 <thead>
@@ -5091,7 +5930,7 @@ Times are in nanos since midnight UTC on the Sunday starting a given trading wee
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href=".." class="btn btn-neutral" title="Openfeed Developer Guide"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -5105,12 +5944,12 @@ Times are in nanos since midnight UTC on the Sunday starting a given trading wee
 
   Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+	  
         </div>
       </div>
 
     </section>
-
+    
   </div>
 
   <div class="rst-versions" role="note" style="cursor: pointer">
@@ -5122,9 +5961,7 @@ Times are in nanos since midnight UTC on the Sunday starting a given trading wee
       
     </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
+    <script src="../js/theme.js"></script>
 
 </body>
 </html>
