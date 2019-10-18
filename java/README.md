@@ -1,6 +1,10 @@
 
 # Openfeed Java Client
 
+## Connection
+  
+  This client will open up a websocket connection to:  ws://openfeed-stream-stage.aws.barchart.com:80/ws
+  
 ## To Build
 
 	mvn clean install
