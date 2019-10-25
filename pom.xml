@@ -7,12 +7,10 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<name>openfeed-client</name>
 
-	<url>http://maven.apache.org</url>
-
 	<scm>
-		<url>https://github.com/openfeed-project/openfeed</url>
-		<connection>scm:git:git://github.com/openfeed-project/openfeed.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/openfeed-project/openfeed.git</developerConnection>
+		<url>https://github.com/openfeed-org/api-java</url>
+		<connection>scm:git:https://github.com/openfeed-org/api-java.git</connection>
+		<developerConnection>scm:git:ssh://https://github.com/openfeed-org/api-java.git</developerConnection>
 	</scm>
 
 	<properties>
