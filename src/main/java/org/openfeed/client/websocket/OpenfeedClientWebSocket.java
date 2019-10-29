@@ -172,6 +172,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                             p.addLast(webSocketHandler);
                         }
                     });
+
         } catch (Exception e) {
             log.error("{} Initialization error: {}", config.getClientId(), e.getMessage());
             throw new RuntimeException(config.getClientId() + ": Could not initialize environment", e);
