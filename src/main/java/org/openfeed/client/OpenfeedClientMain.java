@@ -172,13 +172,6 @@ public class OpenfeedClientMain {
 
     private void executeCommands(OpenfeedClientWebSocket client, OpenfeedClientHandlerImpl handler)
             throws InterruptedException {
-        // Display Stats if configured.
-        if (config.getStatsDisplaySeconds() > 0) {
-            client.scheduleAtFixedRate(() -> {
-                log.info("{}: connected: {} {}", config.getClientId(), client.isConnected(),
-                        handler.getConnectionStats());
-            }, 5, config.getStatsDisplaySeconds(), TimeUnit.SECONDS);
-        }
 
         if (config.isInstrumentRequest()) {
             if (config.getSymbols() != null) {

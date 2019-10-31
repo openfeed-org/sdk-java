@@ -181,12 +181,12 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public void scheduleAtFixedRate(Runnable task, long delay, long interval, TimeUnit timeUnit) {
-        clientEventLoopGroup.scheduleAtFixedRate(task, delay, interval, timeUnit);
+        channel.eventLoop().scheduleAtFixedRate(task, delay, interval, timeUnit);
     }
 
     @Override
     public void schedule(Runnable task, long delay, TimeUnit timeUnit) {
-        clientEventLoopGroup.schedule(task, delay, timeUnit);
+        channel.eventLoop().schedule(task, delay, timeUnit);
     }
 
     private void connectAndLogin() {
