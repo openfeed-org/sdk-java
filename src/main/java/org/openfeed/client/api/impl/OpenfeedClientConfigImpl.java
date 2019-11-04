@@ -44,8 +44,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private int statsDisplaySeconds = 30;
 
 
-    @Override
-    protected OpenfeedClientConfigImpl clone() throws CloneNotSupportedException {
+    public OpenfeedClientConfigImpl dup() throws CloneNotSupportedException {
         OpenfeedClientConfigImpl o = new OpenfeedClientConfigImpl();
         o.host = this.host;
         o.port = this.port;
