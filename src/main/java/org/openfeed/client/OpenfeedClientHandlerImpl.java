@@ -23,6 +23,9 @@ import org.openfeed.Trades;
 import org.openfeed.Trades.Entry;
 import org.openfeed.VolumeAtPrice;
 import org.openfeed.client.MessageStats.StatType;
+import org.openfeed.client.api.*;
+import org.openfeed.client.websocket.OpenfeedClientConfigImpl;
+import org.openfeed.client.websocket.PbUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

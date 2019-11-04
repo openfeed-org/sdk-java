@@ -1,7 +1,5 @@
 package org.openfeed.client;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -10,6 +8,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
+import org.openfeed.client.api.InstrumentCache;
+import org.openfeed.client.websocket.InstrumentCacheImpl;
+import org.openfeed.client.websocket.OpenfeedClientConfigImpl;
 import org.openfeed.client.websocket.OpenfeedClientWebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +19,8 @@ import org.slf4j.LoggerFactory;
  * Sample Openfeed Client using Google Protobuf
  *
  */
-public class OpenfeedClientMain {
-    private static final Logger log = LoggerFactory.getLogger(OpenfeedClientMain.class);
+public class OpenfeedClientExampleMain {
+    private static final Logger log = LoggerFactory.getLogger(OpenfeedClientExampleMain.class);
     private static Options options;
     private InstrumentCache instrumentCache = new InstrumentCacheImpl();
     private OpenfeedClientConfigImpl config;
@@ -148,7 +149,7 @@ public class OpenfeedClientMain {
             System.exit(1);
         }
         log.info("Starting Openfeed Client with {}", config);
-        OpenfeedClientMain app = new OpenfeedClientMain(config);
+        OpenfeedClientExampleMain app = new OpenfeedClientExampleMain(config);
         app.start();
     }
 
@@ -157,7 +158,7 @@ public class OpenfeedClientMain {
         formatter.printHelp("OpenfeedClient", options);
     }
 
-    public OpenfeedClientMain(OpenfeedClientConfigImpl config) {
+    public OpenfeedClientExampleMain(OpenfeedClientConfigImpl config) {
         this.config = config;
     }
 

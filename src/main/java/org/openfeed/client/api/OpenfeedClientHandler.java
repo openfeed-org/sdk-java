@@ -1,4 +1,4 @@
-package org.openfeed.client;
+package org.openfeed.client.api;
 
 import org.openfeed.HeartBeat;
 import org.openfeed.InstrumentDefinition;
@@ -14,6 +14,7 @@ import org.openfeed.SubscriptionResponse;
 import org.openfeed.VolumeAtPrice;
 
 import io.netty.channel.ChannelPromise;
+import org.openfeed.client.ConnectionStats;
 
 public interface OpenfeedClientHandler {
     // Connection Related Events

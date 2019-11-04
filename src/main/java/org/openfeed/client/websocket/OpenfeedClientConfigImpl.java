@@ -1,10 +1,11 @@
-package org.openfeed.client;
+package org.openfeed.client.websocket;
 
 import java.util.UUID;
 
 import org.openfeed.SubscriptionType;
 
 import com.google.common.base.MoreObjects;
+import org.openfeed.client.api.OpenfeedClientConfig;
 
 public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private static final long RECONNECT_TIMEOUT_WAIT_SEC = 2;

@@ -8,9 +8,8 @@ import org.openfeed.LoginResponse;
 import org.openfeed.LogoutResponse;
 import org.openfeed.OpenfeedGatewayMessage;
 import org.openfeed.Result;
-import org.openfeed.client.OpenfeedClientConfig;
-import org.openfeed.client.OpenfeedClientHandler;
-import org.openfeed.client.PbUtil;
+import org.openfeed.client.api.OpenfeedClientConfig;
+import org.openfeed.client.api.OpenfeedClientHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

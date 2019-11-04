@@ -1,4 +1,4 @@
-package org.openfeed.client;
+package org.openfeed.client.websocket;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -7,6 +7,8 @@ import org.agrona.collections.Int2ObjectHashMap;
 import org.agrona.collections.Long2ObjectHashMap;
 import org.agrona.collections.Object2LongHashMap;
 import org.openfeed.InstrumentDefinition;
+import org.openfeed.client.api.InstrumentCache;
+import org.openfeed.client.api.OpenfeedClientHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

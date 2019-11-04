@@ -1,4 +1,4 @@
-package org.openfeed.client;
+package org.openfeed.client.api;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;

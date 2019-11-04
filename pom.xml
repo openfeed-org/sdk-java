@@ -17,8 +17,25 @@
         <projectJavaVersion>10</projectJavaVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <protobuf.version>3.9.0</protobuf.version>
-        <mainClass>org.openfeed.client.OpenfeedClientMain</mainClass>
+        <mainClass>org.openfeed.client.OpenfeedClientExampleMain</mainClass>
+        <barchartNexusURL>https://nexus.barchart.com</barchartNexusURL>
+        <barchartArchonURL>${barchartNexusURL}/content/groups/archon</barchartArchonURL>
+        <barchartReleaseURL>${barchartNexusURL}/content/repositories/releases</barchartReleaseURL>
+        <barchartSnapshotsURL>${barchartNexusURL}/content/repositories/snapshots</barchartSnapshotsURL>
     </properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>barchart-nexus-snapshots</id>
+            <name>Barchart Nexus Snapshots</name>
+            <url>${barchartSnapshotsURL}</url>
+        </snapshotRepository>
+        <repository>
+            <id>barchart-nexus-releases</id>
+            <name>Barchart Nexus Releases</name>
+            <url>${barchartReleaseURL}</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <extensions>

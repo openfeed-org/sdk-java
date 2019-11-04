@@ -18,12 +18,11 @@ import org.openfeed.Service;
 import org.openfeed.SubscriptionRequest;
 import org.openfeed.SubscriptionRequest.Request.Builder;
 import org.openfeed.SubscriptionType;
-import org.openfeed.client.OpenfeedClient;
-import org.openfeed.client.OpenfeedClientConfig;
-import org.openfeed.client.OpenfeedClientHandler;
-import org.openfeed.client.OpenfeedEvent;
-import org.openfeed.client.OpenfeedEvent.EventType;
-import org.openfeed.client.PbUtil;
+import org.openfeed.client.api.OpenfeedClient;
+import org.openfeed.client.api.OpenfeedClientConfig;
+import org.openfeed.client.api.OpenfeedClientHandler;
+import org.openfeed.client.api.OpenfeedEvent;
+import org.openfeed.client.api.OpenfeedEvent.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
