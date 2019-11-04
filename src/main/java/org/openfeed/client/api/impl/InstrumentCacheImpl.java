@@ -1,4 +1,4 @@
-package org.openfeed.client.websocket;
+package org.openfeed.client.api.impl;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

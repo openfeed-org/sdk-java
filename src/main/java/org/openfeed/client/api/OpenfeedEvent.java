@@ -1,8 +1,9 @@
 package org.openfeed.client.api;
 
+
 public class OpenfeedEvent {
     public enum EventType {
-        Connected, Disconnected, Login;
+        Connected, Disconnected, Login, Logout;
     };
 
     private EventType type;

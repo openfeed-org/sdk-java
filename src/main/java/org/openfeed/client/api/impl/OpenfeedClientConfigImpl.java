@@ -1,11 +1,10 @@
-package org.openfeed.client.websocket;
-
-import java.util.UUID;
-
-import org.openfeed.SubscriptionType;
+package org.openfeed.client.api.impl;
 
 import com.google.common.base.MoreObjects;
+import org.openfeed.SubscriptionType;
 import org.openfeed.client.api.OpenfeedClientConfig;
+
+import java.util.UUID;
 
 public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private static final long RECONNECT_TIMEOUT_WAIT_SEC = 2;
@@ -29,6 +28,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private SubscriptionType subcriptionType = SubscriptionType.QUOTE;
     private boolean instrumentRequest;
     private boolean instrumentCrossReferenceRequest;
+    private int randomInstruments;
     // logging
     private boolean logAll;
     private boolean logHeartBeat;
@@ -40,6 +40,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private boolean logTradeCancel;
     private boolean logTradeCorrection;
     //
+    private int numberOfConnections = 1;
     private int statsDisplaySeconds = 30;
 
 
@@ -61,6 +62,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.subcriptionType = this.subcriptionType;
         o.instrumentRequest = this.instrumentRequest;
         o.instrumentCrossReferenceRequest = this.instrumentCrossReferenceRequest;
+        o.randomInstruments = this.randomInstruments;
         //
         o.logAll = this.logAll;
         o.logHeartBeat = this.logHeartBeat;
@@ -69,7 +71,10 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.logUpdates = this.logUpdates;
         o.logBbo = this.logBbo;
         o.logTrade = this.logTrade;
+        o.logTradeCancel = this.logTradeCancel;
+        o.logTradeCorrection = this.logTradeCorrection;
         //
+        o.numberOfConnections = this.numberOfConnections;
         o.statsDisplaySeconds = this.statsDisplaySeconds;
         return o;
     }
@@ -158,6 +163,16 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         return logTrade;
     }
 
+    @Override
+    public boolean isLogTradeCancel() {
+        return this.logTradeCancel;
+    }
+
+    @Override
+    public boolean isLogTradeCorrection() {
+        return this.logTradeCorrection;
+    }
+
     public void setLogTrade(boolean logTrades) {
         this.logTrade = logTrades;
     }
@@ -213,6 +228,14 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         this.channelIds = channelIds;
     }
 
+    @Override
+    public int getNumberOfConnections() {
+        return this.numberOfConnections;
+    }
+
+    public void setNumberOfConnections(int numberOfConnections) {
+        this.numberOfConnections = numberOfConnections;
+    }
 
     public void setSubscriptonType(SubscriptionType type) {
         this.subcriptionType = type;
@@ -256,6 +279,14 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         this.logAll = logAll;
     }
 
+    public void setRandomInstruments(int numInstruments) {
+        this.randomInstruments = numInstruments;
+    }
+
+    @Override
+    public int getRandomInstruments() {
+        return this.randomInstruments;
+    }
 
     @Override
     public int getStatsDisplaySeconds() {
@@ -302,21 +333,11 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         this.reconnectDelaySec = sec;
     }
 
-    @Override
-    public boolean isLogTradeCancel() {
-        return this.logTradeCancel;
+    public void setLogTradeCancel(boolean v) {
+        this.logTradeCancel = v;
     }
 
-    @Override
-    public boolean isLogTradeCorrection() {
-        return this.logTradeCorrection;
-    }
-
-    public void setLogTradeCancel(boolean tradeCancel) {
-        this.logTradeCancel = tradeCancel;
-    }
-
-    public void setLogTradeCorrection(boolean tradeCorrection) {
-        this.logTradeCorrection = tradeCorrection;
+    public void setLogTradeCorrection(boolean v) {
+        this.logTradeCorrection = v;
     }
 }

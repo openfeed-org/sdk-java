@@ -1,4 +1,4 @@
-package org.openfeed.client;
+package org.openfeed.client.examples;
 
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
@@ -22,10 +22,12 @@ import org.openfeed.TradeCorrection;
 import org.openfeed.Trades;
 import org.openfeed.Trades.Entry;
 import org.openfeed.VolumeAtPrice;
-import org.openfeed.client.MessageStats.StatType;
+import org.openfeed.client.api.impl.ConnectionStats;
+import org.openfeed.client.api.impl.MessageStats;
+import org.openfeed.client.api.impl.MessageStats.StatType;
 import org.openfeed.client.api.*;
-import org.openfeed.client.websocket.OpenfeedClientConfigImpl;
-import org.openfeed.client.websocket.PbUtil;
+import org.openfeed.client.api.impl.OpenfeedClientConfigImpl;
+import org.openfeed.client.api.impl.PbUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,28 +47,6 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         this.config = config;
         this.instrumentCache = instrumentCache;
         this.connectionStats = stats;
-    }
-
-    @Override
-    public void onEvent(OpenfeedClient client, OpenfeedEvent event) {
-        log.info("{}: Event: {} - {}", config.getClientId(), event.getType(), event.getMessage());
-        switch (event.getType()) {
-        case Connected:
-            if (config.getStatsDisplaySeconds() > 0) {
-                client.scheduleAtFixedRate(() -> {
-                    log.info("{}: connected: {} {}", config.getClientId(), client.isConnected(),
-                            getConnectionStats());
-                }, 5, config.getStatsDisplaySeconds(), TimeUnit.SECONDS);
-            }
-            break;
-        case Disconnected:
-            connectionStats.clear();
-            break;
-        case Login:
-            break;
-        default:
-            break;
-        }
     }
 
     public OpenfeedClientHandlerImpl(OpenfeedClientConfigImpl config, InstrumentCache instrumentCache) {

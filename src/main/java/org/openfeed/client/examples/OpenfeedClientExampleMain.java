@@ -1,4 +1,4 @@
-package org.openfeed.client;
+package org.openfeed.client.examples;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -9,9 +9,12 @@ import org.apache.commons.cli.ParseException;
 import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
 import org.openfeed.client.api.InstrumentCache;
-import org.openfeed.client.websocket.InstrumentCacheImpl;
-import org.openfeed.client.websocket.OpenfeedClientConfigImpl;
-import org.openfeed.client.websocket.OpenfeedClientWebSocket;
+import org.openfeed.client.api.OpenfeedClientEventHandler;
+import org.openfeed.client.api.OpenfeedClientHandler;
+import org.openfeed.client.api.impl.ConnectionStats;
+import org.openfeed.client.api.impl.InstrumentCacheImpl;
+import org.openfeed.client.api.impl.OpenfeedClientConfigImpl;
+import org.openfeed.client.api.impl.websocket.OpenfeedClientWebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,60 +166,13 @@ public class OpenfeedClientExampleMain {
     }
 
     public void start() throws CloneNotSupportedException, InterruptedException {
-        config.setClientId("client-0");
-        OpenfeedClientHandlerImpl clientHandler = new OpenfeedClientHandlerImpl(config, instrumentCache);
-        OpenfeedClientWebSocket client = new OpenfeedClientWebSocket(config, clientHandler);
+        config.setClientId("client");
+        ConnectionStats connectionStats = new ConnectionStats();
+        OpenfeedClientEventHandler eventHandler = new OpenfeedClientEventHandlerImpl(config,instrumentCache,connectionStats);
+        OpenfeedClientHandler clientHandler = new OpenfeedClientHandlerImpl(config, instrumentCache,connectionStats);
+        OpenfeedClientWebSocket client = new OpenfeedClientWebSocket(config, eventHandler, clientHandler);
 
-        client.connect();
-        executeCommands(client, clientHandler);
+        client.connectAndLogin();
     }
 
-    private void executeCommands(OpenfeedClientWebSocket client, OpenfeedClientHandlerImpl handler)
-            throws InterruptedException {
-
-        if (config.isInstrumentRequest()) {
-            if (config.getSymbols() != null) {
-                client.instrument(config.getSymbols());
-            }
-            if (config.getMarketIds() != null) {
-                client.instrumentMarketId(config.getMarketIds());
-            }
-            if (config.getExchanges() != null) {
-                for (String e : config.getExchanges()) {
-                    client.instrumentExchange(e);
-                }
-            }
-            if (config.getChannelIds() != null) {
-                for (int chId : config.getChannelIds()) {
-                    client.instrumentChannel(chId);
-                }
-            }
-        } else if (config.isInstrumentCrossReferenceRequest()) {
-            if (config.getSymbols() != null) {
-                client.instrumentReference(config.getSymbols());
-            }
-            if (config.getMarketIds() != null) {
-                client.instrumentReferenceMarketId(config.getMarketIds());
-            }
-            if (config.getExchanges() != null) {
-                for (String exchange : config.getExchanges()) {
-                    client.instrumentReferenceExchange(exchange);
-                }
-            }
-            if (config.getChannelIds() != null) {
-                for (int channelId : config.getChannelIds()) {
-                    client.instrumentReferenceChannel(channelId);
-                }
-            }
-        } else if (config.getSymbols() != null) {
-            client.subscribe(Service.REAL_TIME, config.getSubcriptionType(), config.getSymbols());
-        } else if (config.getMarketIds() != null) {
-            client.subscribe(Service.REAL_TIME, config.getSubcriptionType(), config.getMarketIds());
-        } else if (config.getExchanges() != null && config.getExchanges().length > 0) {
-            client.subscribeExchange(Service.REAL_TIME, config.getSubcriptionType(), config.getExchanges());
-        } else if (config.getChannelIds() != null && config.getChannelIds().length > 0) {
-            // Subscribe
-            client.subscribeChannel(Service.REAL_TIME, config.getSubcriptionType(), config.getChannelIds());
-        }
-    }
 }

@@ -9,7 +9,7 @@
 
 	mvn clean install
 
-An executable jar will be build in `target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar`, with the main class being [OpenfeedClientMain](src/main/java/org/openfeed/client/OpenfeedClientMain.java) 
+An executable jar will be build in `target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar`, with the main class being [OpenfeedClientExampleMain](src/main/java/org/openfeed/client/OpenfeedClientExampleMain.java) 
 
 ## Command line examples
 
@@ -61,31 +61,30 @@ client-0: Exchange < {"transactionTime":"1570465382000080120","exchange":true,"c
   
 ## API Usage
 
-The client API has two main interfaces:
+The client API has three main interfaces:
  	
-1. [OpenfeedClient.java](src/main/java/org/openfeed/client/OpenfeedClient.java)        - connect, subscribe methods
-2. [OpenfeedClientHandler.java](src/main/java/org/openfeed/client/OpenfeedClientHandler.java)  - Openfeed message handler
-
+1. [OpenfeedClient.java](src/main/java/org/openfeed/client/api/OpenfeedClient.java)        - connect, subscribe methods
+2. [OpenfeedClientHandler.java](src/main/java/org/openfeed/client/api/OpenfeedClientHandler.java)  - Openfeed message handler
+3. [OpenfeedClientEventHandler](src/main/java/org/openfeed/client/api/OpenfeedClientEventHandler.java) - Event callback
 ### Client Usage
 
 To use the client you must do the following:
 	
-1. Create a Client Message Handler, an example handler is provided: [OpenfeedClientHandlerImpl.java](src/main/java/org/openfeed/client/OpenfeedClientHandlerImpl.java)
-2. Create the web socket client and connect, see `OpenfeedClientMain.start()`
-3. Subscribe to symbols/exchanges using the OpenfeedClient interface, see see `OpenfeedClientMain.executeCommands()`.
+1. Create a Client Message Handler, an example handler is provided: [OpenfeedClientHandlerImpl.java](src/main/java/org/openfeed/client/examples/OpenfeedClientHandlerImpl.java)
+2. Create an Event Handler, an example handler is provided: [OpenfeedClientEventHandlerImpl](src/main/java/org/openfeed/client/examples/OpenfeedClientEventHandler.java).
+2. Create the web socket client and connect, see `OpenfeedClientExampleMain.start()`
+3. Subscribe to symbols/exchanges using the OpenfeedClient interface, see see `OpenfeedClientExampleMain.executeCommands()`.
 	
 To connect and subscribe to all of AMEX:
 
 ```java
-OpenfeedClientConfigImpl config = new OpenfeedClientConfigImpl();
-config.setUserName("<user name>");
-config.setPassword("<password>");
-        
-InstrumentCache instrumentCache = new InstrumentCacheImpl();
-OpenfeedClientHandlerImpl clientHandler = new OpenfeedClientHandlerImpl(config, instrumentCache);
-OpenfeedClientWebSocket client = new OpenfeedClientWebSocket(config, clientHandler);
-// Connect and Login
-client.connect();
+config.setClientId("client");
+ConnectionStats connectionStats = new ConnectionStats();
+OpenfeedClientEventHandler eventHandler = new OpenfeedClientEventHandlerImpl(config,instrumentCache,connectionStats);
+OpenfeedClientHandler clientHandler = new OpenfeedClientHandlerImpl(config, instrumentCache,connectionStats);
+OpenfeedClientWebSocket client = new OpenfeedClientWebSocket(config, eventHandler, clientHandler);
+// Connect
+client.connectAndLogin();
 // Subscribe to AMEX
 String exchanges = new String[] { "AMEX" };
 client.subscribeExchange(Service.REAL_TIME, config.getSubcriptionType(), exchanges);
@@ -99,11 +98,10 @@ The client will receive the following for each symbol:
 	 
 ### Notes:
 
-* The Protocol Buffer message definitions are in: [src/main/proto](src/main/proto)
-  * Client to server message definitions are in: [openfeed_api.proto](src/main/proto/openfeed_api.proto)
+* The Protocol Buffer message definitions are at: https://github.com/openfeed-org/proto.  The build will download them and put them in the proto directory.
+* Client to server message definitions are in: [openfeed_api.proto](./proto/openfeed_api.proto)
 * All times are in Epoch Nanoseconds 	
 * Exchange and Channel ids are listed in ExchangeId.java
-
 
 ### Trade Cancel and Trade Correction TradeId Matching
 

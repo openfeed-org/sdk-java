@@ -1,18 +1,21 @@
-package org.openfeed.client.websocket;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.openfeed.client.api.impl;
 
 import org.agrona.collections.Int2ObjectHashMap;
 import org.agrona.collections.Long2ObjectHashMap;
 import org.openfeed.SubscriptionRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Subscription {
-    enum SubscriptionState {
-        Subscribed, UnSubscribed;
+
+
+    public enum SubscriptionState {
+        Pending, Subscribed, UnSubscribed;
     }
     private String subscriptionId;
     private SubscriptionRequest request;
+    private  boolean exchangeSubscription;
     private String[] symbols;
     private long[] marketIds;
     private String[] exchanges;
@@ -26,26 +29,26 @@ public class Subscription {
             boolean exchangeSubscription) {
         this.subscriptionId = subscriptionId;
         this.request = subReq;
+        this.exchangeSubscription = exchangeSubscription;
         if (!exchangeSubscription) {
             this.symbols = values;
-            for (String symbol : values) {
-                symboltoState.put(symbol, SubscriptionState.Subscribed);
+            for (String symbol : this.symbols) {
+                symboltoState.put(symbol, SubscriptionState.Pending);
             }
         } else {
             this.exchanges = values;
             for (String exchange : exchanges) {
-                exchangetoState.put(exchange, SubscriptionState.Subscribed);
+                exchangetoState.put(exchange, SubscriptionState.Pending);
             }
         }
     }
-
 
     public Subscription(String subscriptionId, SubscriptionRequest subReq, long[] marketIds) {
         this.subscriptionId = subscriptionId;
         this.request = subReq;
         this.marketIds = marketIds;
         for (long id : marketIds) {
-            marketIdtoState.put(id, SubscriptionState.Subscribed);
+            marketIdtoState.put(id, SubscriptionState.Pending);
         }
     }
 
@@ -54,9 +57,38 @@ public class Subscription {
         this.request = subReq;
         this.channelIds = channelIds;
         for (int id : channelIds) {
-            channelIdtoState.put(id, SubscriptionState.Subscribed);
+            channelIdtoState.put(id, SubscriptionState.Pending);
         }
     }
+
+    public Subscription.SubscriptionState getStateSymbol(String symbol) {
+        return symboltoState.get(symbol);
+    }
+
+    public Subscription.SubscriptionState getStateMarketId(long marketId) {
+        return marketIdtoState.get(marketId);
+    }
+
+    public Subscription.SubscriptionState getStateExchange(String exchange) {
+        return exchangetoState.get(exchange);
+    }
+
+    public void updateStateSymbol(String symbol, SubscriptionState state) {
+        symboltoState.put(symbol, state);
+    }
+
+    public void updateStateMarketId(long marketId, SubscriptionState state) {
+        marketIdtoState.put(marketId, state);
+    }
+
+    public void updateStateExchange(String exchange, SubscriptionState state) {
+        exchangetoState.put(exchange,state);
+    }
+
+    public void updateStateChannel(int id, SubscriptionState state) {
+        channelIdtoState.put(id,state);
+    }
+
 
     public boolean markSymbolUnsubscribed(String symbol) {
         if (symboltoState.containsKey(symbol)) {
@@ -118,8 +150,35 @@ public class Subscription {
         return request;
     }
 
+    public boolean isExchange() {
+        return this.exchangeSubscription;
+    }
 
     public void setRequest(SubscriptionRequest request) {
         this.request = request;
     }
+
+    public String[] getSymbols() {
+        return symbols;
+    }
+
+    public long[] getMarketIds() {
+        return marketIds;
+    }
+
+    public String[] getExchanges() {
+        return exchanges;
+    }
+
+    public int[] getChannelIds() {
+        return channelIds;
+    }
+
+    public void setSubscriptionsToUnsubscribed() {
+        symboltoState.keySet().forEach( symbol -> symboltoState.put(symbol, SubscriptionState.UnSubscribed));
+        marketIdtoState.keySet().forEach( marketId -> marketIdtoState.put(marketId, SubscriptionState.UnSubscribed));
+        exchangetoState.keySet().forEach( exchange -> exchangetoState.put(exchange, SubscriptionState.UnSubscribed));
+        channelIdtoState.keySet().forEach( channelId -> channelIdtoState.put(channelId, SubscriptionState.UnSubscribed));
+    }
+
 }

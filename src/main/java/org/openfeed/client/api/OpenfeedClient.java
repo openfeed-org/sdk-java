@@ -1,24 +1,24 @@
 package org.openfeed.client.api;
 
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-
+import io.netty.channel.ChannelPromise;
 import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
-import org.openfeed.client.websocket.Subscription;
+import org.openfeed.client.api.impl.Subscription;
 
-import io.netty.channel.ChannelPromise;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 public interface OpenfeedClient {
 
     /**
-     * Connects and logins
+     * Blocking call to connect and login.
      */
-    void connect();
+    void connectAndLogin();
     void disconnect();
     String getToken();
     void logout();
     boolean isConnected();
+    boolean isReConnect();
 
     // Instrument
     void instrument(String... symbols);

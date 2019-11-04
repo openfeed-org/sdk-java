@@ -1,25 +1,10 @@
 package org.openfeed.client.api;
 
-import org.openfeed.HeartBeat;
-import org.openfeed.InstrumentDefinition;
-import org.openfeed.InstrumentReferenceResponse;
-import org.openfeed.InstrumentResponse;
-import org.openfeed.LoginResponse;
-import org.openfeed.LogoutResponse;
-import org.openfeed.MarketSnapshot;
-import org.openfeed.MarketStatus;
-import org.openfeed.MarketUpdate;
-import org.openfeed.Ohlc;
-import org.openfeed.SubscriptionResponse;
-import org.openfeed.VolumeAtPrice;
-
 import io.netty.channel.ChannelPromise;
-import org.openfeed.client.ConnectionStats;
+import org.openfeed.*;
+import org.openfeed.client.api.impl.ConnectionStats;
 
 public interface OpenfeedClientHandler {
-    // Connection Related Events
-    void onEvent(OpenfeedClient client, OpenfeedEvent event);
-
     // Request Responses
     void onLoginResponse(LoginResponse loginResponse);
     void onLogoutResponse(LogoutResponse logoutResponse);

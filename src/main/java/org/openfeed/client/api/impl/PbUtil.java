@@ -1,4 +1,4 @@
-package org.openfeed.client.websocket;
+package org.openfeed.client.api.impl;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;

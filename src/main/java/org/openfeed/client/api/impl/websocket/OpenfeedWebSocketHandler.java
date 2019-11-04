@@ -1,37 +1,26 @@
-package org.openfeed.client.websocket;
+package org.openfeed.client.api.impl.websocket;
 
-import java.io.ByteArrayInputStream;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.channel.*;
+import io.netty.channel.socket.SocketChannelConfig;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.websocketx.*;
+import io.netty.util.CharsetUtil;
 import org.openfeed.LoginResponse;
 import org.openfeed.LogoutResponse;
 import org.openfeed.OpenfeedGatewayMessage;
 import org.openfeed.Result;
 import org.openfeed.client.api.OpenfeedClientConfig;
 import org.openfeed.client.api.OpenfeedClientHandler;
+import org.openfeed.client.api.impl.PbUtil;
+import org.openfeed.client.api.impl.SubscriptionManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelConfig;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPromise;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.socket.SocketChannelConfig;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
-import io.netty.util.CharsetUtil;
+import java.io.ByteArrayInputStream;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object> {
     private static final Logger log = LoggerFactory.getLogger(OpenfeedWebSocketHandler.class);
@@ -40,15 +29,18 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
     private ChannelPromise handshakeFuture;
     private OpenfeedClientWebSocket client;
     private OpenfeedClientConfig config;
+    private final SubscriptionManagerImpl subscriptionManager;
     private OpenfeedClientHandler clientHandler;
 
-    public OpenfeedWebSocketHandler(OpenfeedClientConfig config, OpenfeedClientWebSocket client,
-            OpenfeedClientHandler clientHandler, WebSocketClientHandshaker handshaker) {
+    public OpenfeedWebSocketHandler(OpenfeedClientConfig config, OpenfeedClientWebSocket client, SubscriptionManagerImpl subscriptionManager,
+                                    OpenfeedClientHandler clientHandler, WebSocketClientHandshaker handshaker) {
         this.config = config;
+        this.subscriptionManager = subscriptionManager;
         this.clientHandler = clientHandler;
         this.handshaker = handshaker;
         this.client = client;
     }
+
 
     public ChannelFuture handshakeFuture() {
         return handshakeFuture;
@@ -145,7 +137,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
 
     private OpenfeedGatewayMessage decodeJson(String data) {
         try {
-            org.openfeed.OpenfeedGatewayMessage.Builder rsp = OpenfeedGatewayMessage.newBuilder();
+            OpenfeedGatewayMessage.Builder rsp = OpenfeedGatewayMessage.newBuilder();
             PbUtil.decode(data, rsp);
             return rsp.build();
         } catch (Exception e) {
@@ -167,20 +159,22 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
             if (loginResponse.getStatus().getResult() == Result.SUCCESS) {
                 log.debug("{}: Login successful: token {}", config.getClientId(), PbUtil.toJson(ofgm));
                 this.client.setToken(loginResponse.getToken());
+                this.client.completeLogin(true);
             } else {
                 log.error("{}: Login failed: {}", config.getClientId(), PbUtil.toJson(ofgm));
+                this.client.completeLogin(false);
             }
-            this.client.completeLogin(true);
             clientHandler.onLoginResponse(ofgm.getLoginResponse());
             break;
         case LOGOUTRESPONSE:
             LogoutResponse logout = ofgm.getLogoutResponse();
             if (logout.getStatus().getResult() == Result.SUCCESS) {
                 log.debug("{}: Logout successful: {}", config.getClientId(), PbUtil.toJson(ofgm));
+                this.client.completeLogout(true);
             } else {
                 log.error("{}: Logout not successful: {}", PbUtil.toJson(ofgm));
+                this.client.completeLogout(false);
             }
-            this.client.completeLogout(true);
             clientHandler.onLogoutResponse(ofgm.getLogoutResponse());
             break;
         case INSTRUMENTRESPONSE:
@@ -190,6 +184,8 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
             clientHandler.onInstrumentReferenceResponse(ofgm.getInstrumentReferenceResponse());
             break;
         case SUBSCRIPTIONRESPONSE:
+            // Update Subscription State
+            this.subscriptionManager.updateSubscriptionState(ofgm.getSubscriptionResponse());
             clientHandler.onSubscriptionResponse(ofgm.getSubscriptionResponse());
             break;
         case MARKETSTATUS:

@@ -1,4 +1,4 @@
-package org.openfeed.client;
+package org.openfeed.client.api.impl;
 
 import java.util.Map;
 

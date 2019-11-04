@@ -27,6 +27,7 @@ public interface OpenfeedClientConfig {
     SubscriptionType getSubcriptionType();
     boolean isInstrumentRequest();
     boolean isInstrumentCrossReferenceRequest();
+    int getRandomInstruments();
 
     // Logging
     boolean isLogAll();
@@ -39,6 +40,7 @@ public interface OpenfeedClientConfig {
     boolean isLogTradeCancel();
     boolean isLogTradeCorrection();
 
+    int getNumberOfConnections();
     int getStatsDisplaySeconds();
 
     enum WireProtocol {
