@@ -11,7 +11,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     private String clientId = UUID.randomUUID().toString();
     // Connection
-    private String host = "openfeed-stream-stage.aws.barchart.com";
+    private String host = "openfeed.aws.barchart.com";
     private int port = 80;
     private WireProtocol wireProtocol = WireProtocol.PB;
     private String userName = "";
