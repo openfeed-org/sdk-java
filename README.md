@@ -231,3 +231,11 @@ Below is an example for a Trade Correction for BYND (marketId = 9749991358094875
 }
 ```
 
+### Linux Operating System Settings
+
+Ensure these kernel parameters are set to 5M or greater.
+
+```
+net.core.rmem_max = 50331648
+net.core.wmem_max = 50331648
+```
