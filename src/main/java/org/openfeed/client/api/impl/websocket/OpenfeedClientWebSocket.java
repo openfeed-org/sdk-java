@@ -195,7 +195,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             // login
             login();
 
-            log.info("{}: Successfully connected to: {}", config.getClientId(), uri);
+            log.info("{}: Successfully connected to: {} from: {}", config.getClientId(), uri,channel.localAddress());
         } catch (Exception e) {
             log.error("{}: Could not connect to uri {} err: {}", config.getClientId(), uri, e.getMessage());
             reconnectOrShutdown();
