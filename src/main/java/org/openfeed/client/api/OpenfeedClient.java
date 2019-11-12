@@ -20,9 +20,9 @@ public interface OpenfeedClient {
     boolean isConnected();
     boolean isReConnect();
 
-    // Instrument
-    void instrument(String... symbols);
+    // Sends InstrumentRequest
     void instrumentMarketId(long... marketIds);
+    void instrument(String... symbols);
     ChannelPromise instrumentChannel(int channelId);
     ChannelPromise instrumentExchange(String exchange);
 
@@ -31,6 +31,9 @@ public interface OpenfeedClient {
     void instrumentReferenceMarketId(long... marketIds);
     ChannelPromise instrumentReferenceExchange(String exchange);
     ChannelPromise instrumentReferenceChannel(int channelId);
+
+    // Sends ExchangeRequest which will list available exchanges.
+    void exchangeRequest();
 
   /**
    * Subscribe for symbols.

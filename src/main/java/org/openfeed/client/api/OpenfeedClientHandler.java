@@ -12,6 +12,7 @@ public interface OpenfeedClientHandler {
     void onInstrumentReferenceResponse(InstrumentReferenceResponse instrumentReferenceResponse);
     // Promise to trigger end of instrument and/or instrument reference downloads
     void setInstrumentPromise(ChannelPromise promise);
+    void onExchangeResponse(ExchangeResponse exchangeResponse);
     void onSubscriptionResponse(SubscriptionResponse subscriptionResponse);
 
     // Streaming

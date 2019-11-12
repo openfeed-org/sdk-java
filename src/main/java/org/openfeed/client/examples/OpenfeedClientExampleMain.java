@@ -40,6 +40,8 @@ public class OpenfeedClientExampleMain {
         options.addOption(Option.builder("e").hasArg().desc("Exchange(s) to subscribe too, comma separated.").build());
         options.addOption(Option.builder("chids").hasArg()
                 .desc("Openfeed Chanel Id(s) to subscribe too, comma separated.").build());
+        options.addOption(Option.builder("er")
+                .desc("Send ExchangeRequest to list available Openfeed exchanges").build());
         // Types
         options.addOption(Option.builder("qp").desc("Quote Participant Subscription").build());
         options.addOption(Option.builder("t").desc("Trades Subscription").build());
@@ -119,6 +121,9 @@ public class OpenfeedClientExampleMain {
         }
         if (cmdLine.hasOption("irx")) {
             config.setInstrumentCrossReferenceRequest(true);
+        }
+        if (cmdLine.hasOption("er")) {
+            config.setExchangeRequest(true);
         }
         if (cmdLine.hasOption("host")) {
             config.setHost(cmdLine.getOptionValue("host"));

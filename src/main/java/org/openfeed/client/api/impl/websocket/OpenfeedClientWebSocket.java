@@ -441,6 +441,18 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
     @Override
+    public void exchangeRequest() {
+        if (!isLoggedIn()) {
+            throw new RuntimeException("Not logged in.");
+        }
+        log.info("{}: ExchangeReq : {}", config.getClientId());
+        ExchangeRequest request = ExchangeRequest.newBuilder().setCorrelationId(correlationId++).
+                setToken(token).build();
+        OpenfeedGatewayRequest req = request().setExchangeRequest(request).build();
+        send(req);
+    }
+
+    @Override
     public ChannelPromise instrumentReferenceExchange(String exchange) {
         if (!isLoggedIn()) {
             throw new RuntimeException("Not logged in.");

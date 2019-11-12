@@ -17,7 +17,7 @@ public interface OpenfeedClientConfig {
     boolean isReconnect();
     long getReconnectDelaySec();
 
-    // Subscriptions
+    // Subscriptions/Requests
 	String[] getSymbols();
     long[] getMarketIds();
     String[] getExchanges();
@@ -27,6 +27,7 @@ public interface OpenfeedClientConfig {
     SubscriptionType getSubcriptionType();
     boolean isInstrumentRequest();
     boolean isInstrumentCrossReferenceRequest();
+    boolean isExchangeRequest();
     int getRandomInstruments();
 
     // Logging
@@ -39,9 +40,12 @@ public interface OpenfeedClientConfig {
     boolean isLogTrade();
     boolean isLogTradeCancel();
     boolean isLogTradeCorrection();
+    boolean isLogSymbol(String symbol);
 
     int getNumberOfConnections();
     int getStatsDisplaySeconds();
+
+
 
     enum WireProtocol {
         PB, JSON

@@ -154,64 +154,67 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
             log.info("< {}", PbUtil.toJson(ofgm));
         }
         switch (ofgm.getDataCase()) {
-        case LOGINRESPONSE:
-            LoginResponse loginResponse = ofgm.getLoginResponse();
-            if (loginResponse.getStatus().getResult() == Result.SUCCESS) {
-                log.debug("{}: Login successful: token {}", config.getClientId(), PbUtil.toJson(ofgm));
-                this.client.setToken(loginResponse.getToken());
-                this.client.completeLogin(true);
-            } else {
-                log.error("{}: Login failed: {}", config.getClientId(), PbUtil.toJson(ofgm));
-                this.client.completeLogin(false);
-            }
-            clientHandler.onLoginResponse(ofgm.getLoginResponse());
-            break;
-        case LOGOUTRESPONSE:
-            LogoutResponse logout = ofgm.getLogoutResponse();
-            if (logout.getStatus().getResult() == Result.SUCCESS) {
-                log.debug("{}: Logout successful: {}", config.getClientId(), PbUtil.toJson(ofgm));
-                this.client.completeLogout(true);
-            } else {
-                log.error("{}: Logout not successful: {}", PbUtil.toJson(ofgm));
-                this.client.completeLogout(false);
-            }
-            clientHandler.onLogoutResponse(ofgm.getLogoutResponse());
-            break;
-        case INSTRUMENTRESPONSE:
-            clientHandler.onInstrumentResponse(ofgm.getInstrumentResponse());
-            break;
-        case INSTRUMENTREFERENCERESPONSE:
-            clientHandler.onInstrumentReferenceResponse(ofgm.getInstrumentReferenceResponse());
-            break;
-        case SUBSCRIPTIONRESPONSE:
-            // Update Subscription State
-            this.subscriptionManager.updateSubscriptionState(ofgm.getSubscriptionResponse());
-            clientHandler.onSubscriptionResponse(ofgm.getSubscriptionResponse());
-            break;
-        case MARKETSTATUS:
-            clientHandler.onMarketStatus(ofgm.getMarketStatus());
-            break;
-        case HEARTBEAT:
-            clientHandler.onHeartBeat(ofgm.getHeartBeat());
-            break;
-        case INSTRUMENTDEFINITION:
-            clientHandler.onInstrumentDefinition(ofgm.getInstrumentDefinition());
-            break;
-        case MARKETSNAPSHOT:
-            clientHandler.onMarketSnapshot(ofgm.getMarketSnapshot());
-            break;
-        case MARKETUPDATE:
-            clientHandler.onMarketUpdate(ofgm.getMarketUpdate());
-            break;
-        case VOLUMEATPRICE:
-            clientHandler.onVolumeAtPrice(ofgm.getVolumeAtPrice());
-            break;
-        case OHLC:
-            clientHandler.onOhlc(ofgm.getOhlc());
-            break;
-        default:
-        case DATA_NOT_SET:
-            break;
+            case LOGINRESPONSE:
+                LoginResponse loginResponse = ofgm.getLoginResponse();
+                if (loginResponse.getStatus().getResult() == Result.SUCCESS) {
+                    log.debug("{}: Login successful: token {}", config.getClientId(), PbUtil.toJson(ofgm));
+                    this.client.setToken(loginResponse.getToken());
+                    this.client.completeLogin(true);
+                } else {
+                    log.error("{}: Login failed: {}", config.getClientId(), PbUtil.toJson(ofgm));
+                    this.client.completeLogin(false);
+                }
+                clientHandler.onLoginResponse(ofgm.getLoginResponse());
+                break;
+            case LOGOUTRESPONSE:
+                LogoutResponse logout = ofgm.getLogoutResponse();
+                if (logout.getStatus().getResult() == Result.SUCCESS) {
+                    log.debug("{}: Logout successful: {}", config.getClientId(), PbUtil.toJson(ofgm));
+                    this.client.completeLogout(true);
+                } else {
+                    log.error("{}: Logout not successful: {}", PbUtil.toJson(ofgm));
+                    this.client.completeLogout(false);
+                }
+                clientHandler.onLogoutResponse(ofgm.getLogoutResponse());
+                break;
+            case INSTRUMENTRESPONSE:
+                clientHandler.onInstrumentResponse(ofgm.getInstrumentResponse());
+                break;
+            case INSTRUMENTREFERENCERESPONSE:
+                clientHandler.onInstrumentReferenceResponse(ofgm.getInstrumentReferenceResponse());
+                break;
+            case EXCHANGERESPONSE:
+                clientHandler.onExchangeResponse(ofgm.getExchangeResponse());
+                break;
+            case SUBSCRIPTIONRESPONSE:
+                // Update Subscription State
+                this.subscriptionManager.updateSubscriptionState(ofgm.getSubscriptionResponse());
+                clientHandler.onSubscriptionResponse(ofgm.getSubscriptionResponse());
+                break;
+            case MARKETSTATUS:
+                clientHandler.onMarketStatus(ofgm.getMarketStatus());
+                break;
+            case HEARTBEAT:
+                clientHandler.onHeartBeat(ofgm.getHeartBeat());
+                break;
+            case INSTRUMENTDEFINITION:
+                clientHandler.onInstrumentDefinition(ofgm.getInstrumentDefinition());
+                break;
+            case MARKETSNAPSHOT:
+                clientHandler.onMarketSnapshot(ofgm.getMarketSnapshot());
+                break;
+            case MARKETUPDATE:
+                clientHandler.onMarketUpdate(ofgm.getMarketUpdate());
+                break;
+            case VOLUMEATPRICE:
+                clientHandler.onVolumeAtPrice(ofgm.getVolumeAtPrice());
+                break;
+            case OHLC:
+                clientHandler.onOhlc(ofgm.getOhlc());
+                break;
+            default:
+            case DATA_NOT_SET:
+                break;
         }
 
     }

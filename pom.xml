@@ -73,6 +73,8 @@
                         <configuration>
                             <url>https://raw.githubusercontent.com/openfeed-org/proto/master/openfeed_instrument.proto</url>
                             <outputDirectory>proto</outputDirectory>
+                            <skipCache>true</skipCache>
+                            <overwrite>true</overwrite>
                         </configuration>
                     </execution>
                     <execution>
@@ -84,6 +86,8 @@
                         <configuration>
                             <url>https://raw.githubusercontent.com/openfeed-org/proto/master/openfeed.proto</url>
                             <outputDirectory>proto</outputDirectory>
+                            <skipCache>true</skipCache>
+                            <overwrite>true</overwrite>
                         </configuration>
                     </execution>
                     <execution>
@@ -95,6 +99,8 @@
                         <configuration>
                             <url>https://raw.githubusercontent.com/openfeed-org/proto/master/openfeed_api.proto</url>
                             <outputDirectory>proto</outputDirectory>
+                            <skipCache>true</skipCache>
+                            <overwrite>true</overwrite>
                         </configuration>
                     </execution>
                 </executions>

@@ -88,7 +88,10 @@ public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandle
                     client.instrumentReferenceChannel(channelId);
                 }
             }
-        } else if (config.getSymbols() != null) {
+        } else if (config.isExchangeRequest()) {
+            client.exchangeRequest();
+        }
+        else if (config.getSymbols() != null) {
             client.subscribe(Service.REAL_TIME, config.getSubcriptionType(), config.getSymbols());
         } else if (config.getMarketIds() != null) {
             client.subscribe(Service.REAL_TIME, config.getSubcriptionType(), config.getMarketIds());

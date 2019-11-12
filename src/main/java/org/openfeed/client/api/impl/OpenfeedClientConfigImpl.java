@@ -4,6 +4,7 @@ import com.google.common.base.MoreObjects;
 import org.openfeed.SubscriptionType;
 import org.openfeed.client.api.OpenfeedClientConfig;
 
+import java.util.Set;
 import java.util.UUID;
 
 public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
@@ -28,6 +29,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private SubscriptionType subcriptionType = SubscriptionType.QUOTE;
     private boolean instrumentRequest;
     private boolean instrumentCrossReferenceRequest;
+    private boolean exchangeRequest;
     private int randomInstruments;
     // logging
     private boolean logAll;
@@ -39,6 +41,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private boolean logTrade;
     private boolean logTradeCancel;
     private boolean logTradeCorrection;
+    private Set<String> logSymbols;
     //
     private int numberOfConnections = 1;
     private int statsDisplaySeconds = 30;
@@ -179,6 +182,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     @Override
     public boolean isLogInstrument() {
         return logInstrument;
+    }
+
+    @Override
+    public boolean isExchangeRequest() {
+        return exchangeRequest;
+    }
+
+    public void setExchangeRequest(boolean exchangeRequest) {
+        this.exchangeRequest = exchangeRequest;
     }
 
     @Override
@@ -339,4 +351,18 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     public void setLogTradeCorrection(boolean v) {
         this.logTradeCorrection = v;
     }
+
+    public Set<String> getLogSymbols() {
+        return logSymbols;
+    }
+
+    public void setLogSymbols(Set<String> logSymbols) {
+        this.logSymbols = logSymbols;
+    }
+
+    @Override
+    public boolean isLogSymbol(String s) {
+        return logSymbols.contains(s);
+    }
+
 }

@@ -3,25 +3,8 @@ package org.openfeed.client.examples;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
-import org.openfeed.BestBidOffer;
-import org.openfeed.HeartBeat;
-import org.openfeed.InstrumentDefinition;
-import org.openfeed.InstrumentReferenceResponse;
-import org.openfeed.InstrumentResponse;
-import org.openfeed.LoginResponse;
-import org.openfeed.LogoutResponse;
-import org.openfeed.MarketSnapshot;
-import org.openfeed.MarketStatus;
-import org.openfeed.MarketUpdate;
-import org.openfeed.Ohlc;
-import org.openfeed.Result;
-import org.openfeed.SubscriptionResponse;
-import org.openfeed.Trade;
-import org.openfeed.TradeCancel;
-import org.openfeed.TradeCorrection;
-import org.openfeed.Trades;
+import org.openfeed.*;
 import org.openfeed.Trades.Entry;
-import org.openfeed.VolumeAtPrice;
 import org.openfeed.client.api.impl.ConnectionStats;
 import org.openfeed.client.api.impl.MessageStats;
 import org.openfeed.client.api.impl.MessageStats.StatType;
@@ -298,6 +281,11 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     @Override
     public void setInstrumentPromise(ChannelPromise promise) {
         this.instrumentDownloadPromise = promise;
+    }
+
+    @Override
+    public void onExchangeResponse(ExchangeResponse exchangeResponse) {
+        log.info("{}: < {}", config.getClientId(), PbUtil.toJson(exchangeResponse));
     }
 
     @Override
