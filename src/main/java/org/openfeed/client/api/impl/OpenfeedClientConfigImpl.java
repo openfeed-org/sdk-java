@@ -55,6 +55,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.userName = this.userName;
         o.password = this.password;
         o.reconnect = this.reconnect;
+        o.reconnectDelaySec = this.reconnectDelaySec;
         //
         o.symbols = this.symbols;
         o.marketIds = this.marketIds;
@@ -65,7 +66,9 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.instrumentRequest = this.instrumentRequest;
         o.instrumentCrossReferenceRequest = this.instrumentCrossReferenceRequest;
         o.randomInstruments = this.randomInstruments;
+        o.exchangeRequest = this.exchangeRequest;
         //
+        o.randomInstruments = this.randomInstruments;
         o.logAll = this.logAll;
         o.logHeartBeat = this.logHeartBeat;
         o.logInstrument = this.logInstrument;
@@ -75,6 +78,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.logTrade = this.logTrade;
         o.logTradeCancel = this.logTradeCancel;
         o.logTradeCorrection = this.logTradeCorrection;
+        o.logSymbols = this.logSymbols;
         //
         o.numberOfConnections = this.numberOfConnections;
         o.statsDisplaySeconds = this.statsDisplaySeconds;
