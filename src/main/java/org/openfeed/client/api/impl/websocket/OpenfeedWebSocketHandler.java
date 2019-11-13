@@ -115,7 +115,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(bis);
                 handleResponse(rsp);
             } catch (Exception e) {
-                log.error("{}: Could not process message: {}", ctx.channel().remoteAddress(), e.getMessage());
+                log.error("{}: Could not process message: ", ctx.channel().remoteAddress(), e);
             }
         } else if (frame instanceof PongWebSocketFrame) {
             log.info("WebSocket Client received pong");

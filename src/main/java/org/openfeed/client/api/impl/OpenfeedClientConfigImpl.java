@@ -362,7 +362,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     @Override
     public boolean isLogSymbol(String s) {
-        return logSymbols.contains(s);
+        return logSymbols != null ? logSymbols.contains(s) : false;
     }
 
 }
