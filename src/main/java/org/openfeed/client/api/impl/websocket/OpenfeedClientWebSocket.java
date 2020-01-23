@@ -328,11 +328,11 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         this.token = token;
     }
 
-    public void completeLogin(boolean success) {
+    public void completeLogin(boolean success,String error) {
         if (success) {
             this.loginFuture.setSuccess();
         } else {
-            this.loginFuture.setFailure(null);
+            this.loginFuture.setFailure(new RuntimeException(error));
         }
     }
 

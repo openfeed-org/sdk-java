@@ -159,10 +159,11 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 if (loginResponse.getStatus().getResult() == Result.SUCCESS) {
                     log.debug("{}: Login successful: token {}", config.getClientId(), PbUtil.toJson(ofgm));
                     this.client.setToken(loginResponse.getToken());
-                    this.client.completeLogin(true);
+                    this.client.completeLogin(true,null);
                 } else {
-                    log.error("{}: Login failed: {}", config.getClientId(), PbUtil.toJson(ofgm));
-                    this.client.completeLogin(false);
+                    String error = config.getClientId() + ": Login failed: " + PbUtil.toJson(ofgm);
+                    log.error("{}",error);
+                    this.client.completeLogin(false,error);
                 }
                 clientHandler.onLoginResponse(ofgm.getLoginResponse());
                 break;
