@@ -81,6 +81,11 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
     @Override
+    public long getCorrelationId() {
+        return this.correlationId;
+    }
+
+    @Override
     public void run() {
         while (running.get()) {
             if (!connected.get()) {
@@ -254,6 +259,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         }
         reconnectOrShutdown();
     }
+
+
 
     private void login() {
         LoginRequest request = LoginRequest.newBuilder().setCorrelationId(correlationId++)
@@ -716,5 +723,10 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     public Collection<Subscription> getSubscriptions() {
         Collection<Subscription> subscriptions = subscriptionManager.getSubscriptions();
         return subscriptions;
+    }
+
+    @Override
+    public Subscription getSubscription(String subscriptionId) {
+        return this.subscriptionManager.getSubscriptionId(subscriptionId);
     }
 }

@@ -163,6 +163,11 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
+    public Subscription getSubscriptionId(String subscriptionId) {
+        return subscriptionId == null ? null : this.subscriptionIdToSubscription.get(subscriptionId);
+    }
+
+    @Override
     public void removeSubscription(long[] marketIds) {
         for (long id : marketIds) {
             Subscription sub = marketIdToSubscription.remove(id);

@@ -15,6 +15,7 @@ public interface OpenfeedClient {
      */
     void connectAndLogin();
     void disconnect();
+    long getCorrelationId();
     String getToken();
     void logout();
     boolean isConnected();
@@ -55,7 +56,20 @@ public interface OpenfeedClient {
     void unSubscribeExchange(Service service, String[] exchanges);
     void unSubscribeChannel(Service service, int[] channelIds);
 
+    /**
+     * Returns all subscriptions.
+     *
+     * @return Subscriptions
+     */
     Collection<Subscription> getSubscriptions();
+
+    /**
+     * Get subscription by Id
+     *
+     * @param subscriptionId Subscription Id returned by subscribe* methods.
+     * @return Subscription
+     */
+    Subscription getSubscription(String subscriptionId);
 
     void schedule(Runnable task, long delay, TimeUnit timeUnit);
     void scheduleAtFixedRate(Runnable task, long delay, long interval, TimeUnit timeUnit);

@@ -23,5 +23,6 @@ public interface SubscriptionManager {
     void removeSubscriptionExchange(String[] exchanges);
     void removeSubscriptionChannel(int[] channelIds);
 
+    Subscription getSubscriptionId(String subscriptionId);
     Collection<Subscription> getSubscriptions();
 }
