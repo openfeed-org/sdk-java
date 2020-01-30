@@ -1,4 +1,4 @@
-<configuration scan="false" scanPeriod="120 seconds" debug="false">
+<configuration debug="false">
 
 
 	<property name="LOG_DIR" value="log" />

@@ -203,13 +203,17 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             log.info("{}: Successfully connected to: {} from: {}", config.getClientId(), uri,channel.localAddress());
         } catch (Exception e) {
             log.error("{}: Could not connect to uri {} err: {}", config.getClientId(), uri, e.getMessage());
-            reconnectOrShutdown();
+            reconnectOrShutdown(false);
         }
     }
 
-    private void reconnectOrShutdown() {
+    private void reconnectOrShutdown(boolean shutdown) {
         closeConnection();
-        if (!config.isReconnect()) {
+        if (!config.isReconnect() || shutdown) {
+            if(!running.get()) {
+                // Already shutdown
+                return;
+            }
             this.running.set(false);
             log.warn("{}: Closing and shutting down.", config.getClientId());
             shutdown();
@@ -254,10 +258,10 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public void disconnect() {
-        if (!connected.get()) {
-            return;
+        if(isLoggedIn()) {
+            logout();
         }
-        reconnectOrShutdown();
+        reconnectOrShutdown(true);
     }
 
 
