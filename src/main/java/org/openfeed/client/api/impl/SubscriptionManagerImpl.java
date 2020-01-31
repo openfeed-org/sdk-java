@@ -208,7 +208,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     public void updateSubscriptionState(SubscriptionResponse subscriptionResponse) {
         Subscription subscription = this.correlationIdToSubscription.get(subscriptionResponse.getCorrelationId());
         if (subscription == null) {
-            log.warn("No subscription found for: {}", subscriptionResponse);
+            // Probably an unsubscribe
+            log.debug("No subscription found for: {}", subscriptionResponse);
             return;
         }
         boolean success = subscriptionResponse.getStatus().getResult() == Result.SUCCESS ? true : false;

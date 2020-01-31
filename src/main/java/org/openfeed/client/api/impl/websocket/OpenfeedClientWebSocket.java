@@ -203,7 +203,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             log.info("{}: Successfully connected to: {} from: {}", config.getClientId(), uri,channel.localAddress());
         } catch (Exception e) {
             log.error("{}: Could not connect to uri {} err: {}", config.getClientId(), uri, e.getMessage());
-            reconnectOrShutdown(false);
+            reconnectOrShutdown(config.isReconnect() ? false : true);
         }
     }
 
@@ -258,10 +258,12 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public void disconnect() {
+        this.connected.set(false);
+        this.token = null;
         if(isLoggedIn()) {
             logout();
         }
-        reconnectOrShutdown(true);
+        reconnectOrShutdown(config.isReconnect() ? false : true);
     }
 
 
@@ -312,6 +314,9 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
     public void send(OpenfeedGatewayRequest req) {
+        if(!isConnected()) {
+            return;
+        }
         logRequest(req);
         if (config.getWireProtocol() == OpenfeedClientConfig.WireProtocol.JSON) {
             String data = PbUtil.toJson(req);
