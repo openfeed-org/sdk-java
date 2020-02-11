@@ -40,6 +40,7 @@ public interface OpenfeedClientConfig {
     boolean isLogTrade();
     boolean isLogTradeCancel();
     boolean isLogTradeCorrection();
+    boolean isLogPrettyPrint();
     boolean isLogSymbol(String symbol);
 
     int getNumberOfConnections();

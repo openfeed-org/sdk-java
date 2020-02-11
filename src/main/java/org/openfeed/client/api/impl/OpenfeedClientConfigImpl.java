@@ -41,6 +41,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private boolean logTrade;
     private boolean logTradeCancel;
     private boolean logTradeCorrection;
+    private boolean logPrettyPrint;
     private Set<String> logSymbols;
     //
     private int numberOfConnections = 1;
@@ -367,6 +368,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     @Override
     public boolean isLogSymbol(String s) {
         return logSymbols != null ? logSymbols.contains(s) : false;
+    }
+
+    @Override
+    public boolean isLogPrettyPrint() {
+        return logPrettyPrint;
+    }
+
+    public void setLogPrettyPrint(boolean logPrettyPrint) {
+        this.logPrettyPrint = logPrettyPrint;
     }
 
 }
