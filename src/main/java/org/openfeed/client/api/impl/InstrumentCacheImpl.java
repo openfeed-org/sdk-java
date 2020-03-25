@@ -1,5 +1,8 @@
 package org.openfeed.client.api.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,6 +20,7 @@ public class InstrumentCacheImpl implements InstrumentCache {
 
     private Map<String, Long> symbolToMarketId = new Object2LongHashMap<String>(Long.MIN_VALUE);
     private Map<Long, InstrumentDefinition> marketIdToInstrument = new Long2ObjectHashMap<InstrumentDefinition>();
+    private Map<Integer, List<InstrumentDefinition>> channelIdToInstrument = new Int2ObjectHashMap<List<InstrumentDefinition>>();
     private Map<String, Map<Long, InstrumentDefinition>> exchangeCodeToInstruments = new ConcurrentHashMap<String, Map<Long, InstrumentDefinition>>();
     private Map<Integer, InstrumentDefinition> sequentialIdToInstrument = new Int2ObjectHashMap<>();
     private int sequentialId = -1;
@@ -25,6 +29,9 @@ public class InstrumentCacheImpl implements InstrumentCache {
     public void addInstrument(InstrumentDefinition definition) {
         this.symbolToMarketId.put(definition.getSymbol(), definition.getMarketId());
         this.marketIdToInstrument.put(definition.getMarketId(), definition);
+        // By Channel
+        List<InstrumentDefinition> l = this.channelIdToInstrument.computeIfAbsent(definition.getChannel(),k -> new ArrayList<InstrumentDefinition>());
+        l.add(definition);
         // By Exchange
         String ecode = definition.getExchangeCode();
         Map<Long, InstrumentDefinition> exchangeInsruments = exchangeCodeToInstruments.get(ecode);
@@ -41,6 +48,21 @@ public class InstrumentCacheImpl implements InstrumentCache {
     @Override
     public int getTotalNumberOfInstruments() {
         return this.sequentialIdToInstrument.size();
+    }
+
+    @Override
+    public Collection<InstrumentDefinition> getInstrumentsByChannel(int channelId) {
+        return this.channelIdToInstrument.get(channelId);
+    }
+
+    @Override
+    public Collection<InstrumentDefinition> getAllInstruments() {
+        return this.marketIdToInstrument.values();
+    }
+
+    @Override
+    public Integer[] getChannelIds() {
+        return this.channelIdToInstrument.keySet().toArray(new Integer[this.channelIdToInstrument.size()]);
     }
 
     @Override
