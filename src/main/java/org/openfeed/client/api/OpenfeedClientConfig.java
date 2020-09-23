@@ -2,6 +2,8 @@ package org.openfeed.client.api;
 
 import org.openfeed.SubscriptionType;
 
+import java.util.List;
+
 public interface OpenfeedClientConfig {
 
     // Unique Id for Client
@@ -24,7 +26,7 @@ public interface OpenfeedClientConfig {
     int[] getChannelIds();
 
     // Types
-    SubscriptionType getSubcriptionType();
+    SubscriptionType [] getSubscriptionTypes();
     boolean isInstrumentRequest();
     boolean isInstrumentCrossReferenceRequest();
     boolean isExchangeRequest();

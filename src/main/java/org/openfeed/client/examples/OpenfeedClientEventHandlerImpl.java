@@ -1,14 +1,11 @@
 package org.openfeed.client.examples;
 
-import org.openfeed.InstrumentDefinition;
 import org.openfeed.Service;
 import org.openfeed.client.api.*;
 import org.openfeed.client.api.impl.ConnectionStats;
-import org.openfeed.client.api.impl.websocket.OpenfeedClientWebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandler {
@@ -92,14 +89,14 @@ public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandle
             client.exchangeRequest();
         }
         else if (config.getSymbols() != null) {
-            client.subscribe(Service.REAL_TIME, config.getSubcriptionType(), config.getSymbols());
+            client.subscribe(Service.REAL_TIME, config.getSubscriptionTypes(), config.getSymbols());
         } else if (config.getMarketIds() != null) {
-            client.subscribe(Service.REAL_TIME, config.getSubcriptionType(), config.getMarketIds());
+            client.subscribe(Service.REAL_TIME, config.getSubscriptionTypes(), config.getMarketIds());
         } else if (config.getExchanges() != null && config.getExchanges().length > 0) {
-            client.subscribeExchange(Service.REAL_TIME, config.getSubcriptionType(), config.getExchanges());
+            client.subscribeExchange(Service.REAL_TIME, config.getSubscriptionTypes()[0], config.getExchanges());
         } else if (config.getChannelIds() != null && config.getChannelIds().length > 0) {
             // Subscribe
-            client.subscribeChannel(Service.REAL_TIME, config.getSubcriptionType(), config.getChannelIds());
+            client.subscribeChannel(Service.REAL_TIME, config.getSubscriptionTypes()[0], config.getChannelIds());
         }
     }
 }

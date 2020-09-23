@@ -111,10 +111,10 @@ public class OpenfeedClientExampleMain {
             config.setChannelIds(ids);
         }
         if (cmdLine.hasOption("qp")) {
-            config.setSubscriptonType(SubscriptionType.QUOTE_PARTICIPANT);
+            config.addSubscriptonType(SubscriptionType.QUOTE_PARTICIPANT);
         }
         if (cmdLine.hasOption("t")) {
-            config.setSubscriptonType(SubscriptionType.TRADES);
+            config.addSubscriptonType(SubscriptionType.TRADES);
         }
         if (cmdLine.hasOption("ir")) {
             config.setInstrumentRequest(true);

@@ -4,8 +4,7 @@ import com.google.common.base.MoreObjects;
 import org.openfeed.SubscriptionType;
 import org.openfeed.client.api.OpenfeedClientConfig;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private static final long RECONNECT_TIMEOUT_WAIT_SEC = 2;
@@ -26,7 +25,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private String[] exchanges;
     private int[] channelIds;
     //
-    private SubscriptionType subcriptionType = SubscriptionType.QUOTE;
+    private Set<SubscriptionType> subscriptionTypes = new HashSet<>();
     private boolean instrumentRequest;
     private boolean instrumentCrossReferenceRequest;
     private boolean exchangeRequest;
@@ -47,7 +46,6 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private int numberOfConnections = 1;
     private int statsDisplaySeconds = 30;
 
-
     public OpenfeedClientConfigImpl dup() throws CloneNotSupportedException {
         OpenfeedClientConfigImpl o = new OpenfeedClientConfigImpl();
         o.host = this.host;
@@ -63,7 +61,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.exchanges = this.exchanges;
         o.channelIds = this.channelIds;
         //
-        o.subcriptionType = this.subcriptionType;
+        o.subscriptionTypes.addAll(this.subscriptionTypes);
         o.instrumentRequest = this.instrumentRequest;
         o.instrumentCrossReferenceRequest = this.instrumentCrossReferenceRequest;
         o.randomInstruments = this.randomInstruments;
@@ -253,28 +251,23 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         this.numberOfConnections = numberOfConnections;
     }
 
-    public void setSubscriptonType(SubscriptionType type) {
-        this.subcriptionType = type;
+    @Override
+    public SubscriptionType [] getSubscriptionTypes() {
+        return subscriptionTypes.toArray(new SubscriptionType[0]);
+    }
 
+    public void addSubscriptonType(SubscriptionType type) {
+        this.subscriptionTypes.add(type);
     }
 
     public void setInstrumentRequest(boolean b) {
         this.instrumentRequest = b;
-
     }
 
     public void setInstrumentCrossReferenceRequest(boolean b) {
         this.instrumentCrossReferenceRequest = b;
     }
 
-    @Override
-    public SubscriptionType getSubcriptionType() {
-        return subcriptionType;
-    }
-
-    public void setSubcriptionType(SubscriptionType subcriptionType) {
-        this.subcriptionType = subcriptionType;
-    }
 
     @Override
     public boolean isInstrumentRequest() {

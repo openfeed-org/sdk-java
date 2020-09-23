@@ -37,7 +37,7 @@ public interface OpenfeedClient {
     void exchangeRequest();
 
   /**
-   * Subscribe for symbols.
+   * Subscribe by Symbol(s).
    * 
    * @param service          Type of service, Realtime, Delayed etc...
    * @param subscriptionType Quote, Depth, etc..
@@ -45,15 +45,57 @@ public interface OpenfeedClient {
    * @return Unique Id for subscription
    */
     String subscribe(Service service, SubscriptionType subscriptionType, String[] symbols);
+
+    /**
+     * Subscribe by Symbol(s) with multiple subscription types.  The subscription types will apply to all symbols.
+     *
+     * @param service
+     * @param subscriptionTypes
+     * @param symbols
+     * @return Unique Id for subscription
+     */
+    String subscribe(Service service, SubscriptionType [] subscriptionTypes, String[] symbols);
+
+    /**
+     * Subscribe by Market Id(s).
+     *
+     * @param service
+     * @param subscriptionType
+     * @param marketIds
+     * @return Unique Id for subscription
+     */
     String subscribe(Service service, SubscriptionType subscriptionType, long[] marketIds);
+    String subscribe(Service service, SubscriptionType [] subscriptionTypes, long[] marketIds);
+
+    /**
+     *
+     * @param service
+     * @param subscriptionType
+     * @param exchanges
+     * @return
+     */
     String subscribeExchange(Service service, SubscriptionType subscriptionType, String[] exchanges);
+
+    /**
+     *
+     * @param service
+     * @param subscriptionType
+     * @param channelIds
+     * @return
+     */
     String subscribeChannel(Service service, SubscriptionType subscriptionType, int[] channelIds);
     String subscribeSnapshot(String[] symbols, int intervalSec);
 
     // Un subscribe
     void unSubscribe(Service service, String[] symbols);
+    void unSubscribe(Service service,SubscriptionType subscriptionType, String[] symbols);
+    //
     void unSubscribe(Service service, long[] openfeedIds);
+    void unSubscribe(Service service,SubscriptionType subscriptionType, long[] openfeedIds);
+    //
     void unSubscribeExchange(Service service, String[] exchanges);
+    void unSubscribeExchange(Service service, SubscriptionType subscriptionType, String[] exchanges);
+    //
     void unSubscribeChannel(Service service, int[] channelIds);
 
     /**

@@ -3,7 +3,7 @@ package org.openfeed.client.api.impl;
 public class MessageStats {
 
     public enum StatType {
-        instrument, snapshot, update, bbo, nbbo, trade
+        instrument, snapshot, update, bbo, nbbo, trade,ohlc
     }
 
     private long numInstruments;
@@ -12,6 +12,7 @@ public class MessageStats {
     private long numBbo;
     private long numNBbo;
     private long numTrades;
+    private long numOHLC;
     private String exchangeCode;
 
     public MessageStats(String exchangeCode) {
@@ -28,6 +29,7 @@ public class MessageStats {
         numBbo = 0;
         numNBbo = 0;
         numTrades = 0;
+        numOHLC = 0;
     }
 
 
@@ -55,13 +57,18 @@ public class MessageStats {
         this.numNBbo++;
     }
 
+    public void incrOHLC() {
+        this.numOHLC++;
+    }
+
     @Override
     public String toString() {
         String ec = exchangeCode != null ? "exch: " + exchangeCode + " " : "";
         return ec +
                 "inst: " + numInstruments + " snp: " + numSnapshots + " upd: " + numUpdates + " bbo: " + numBbo
                 + " nbbo: " + numNBbo
-                + " trd: " + numTrades;
+                + " trd: " + numTrades
+                + " ohlc: " + numOHLC;
     }
 
 
