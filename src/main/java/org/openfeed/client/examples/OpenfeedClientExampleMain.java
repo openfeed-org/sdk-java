@@ -34,15 +34,17 @@ public class OpenfeedClientExampleMain {
         options.addOption(Option.builder("u").hasArg().required().desc("user name").build());
         options.addOption(Option.builder("p").hasArg().required().desc("password").build());
         // Subscriptions
-        options.addOption(Option.builder("s").hasArg().desc("Symbol(s) to subscribe too, comma separated.").build());
+        options.addOption(Option.builder("s").hasArg().desc("Symbol(s) to subscribe too, comma separated. Defaults to quote subscription.").build());
         options.addOption(
-                Option.builder("ids").hasArg().desc("Openfeed Id(s) to subscribe too, comma separated.").build());
-        options.addOption(Option.builder("e").hasArg().desc("Exchange(s) to subscribe too, comma separated.").build());
+                Option.builder("ids").hasArg().desc("Openfeed Id(s) to subscribe too, comma separated.  Defaults to quote subscription.").build());
+        options.addOption(Option.builder("e").hasArg().desc("Exchange(s) to subscribe too, comma separated.  Defaults to quote subscription.").build());
         options.addOption(Option.builder("chids").hasArg()
                 .desc("Openfeed Chanel Id(s) to subscribe too, comma separated.").build());
         options.addOption(Option.builder("er")
                 .desc("Send ExchangeRequest to list available Openfeed exchanges").build());
-        // Types
+        // Subscription Types
+        options.addOption(Option.builder("st").hasArg()
+                .desc("Subscription Types, comma separated, defaults to quote.  [quote,quote_participant,depth_price,depth_order,trades,cumlative_volume,ohlc]]").build());
         options.addOption(Option.builder("qp").desc("Quote Participant Subscription").build());
         options.addOption(Option.builder("t").desc("Trades Subscription").build());
         // Instruments
@@ -109,6 +111,13 @@ public class OpenfeedClientExampleMain {
                 ids[i] = (Integer.parseInt(vs[i]));
             }
             config.setChannelIds(ids);
+        }
+        if (cmdLine.hasOption("st")) {
+            v = cmdLine.getOptionValue("st");
+            String[] types = v.split(",");
+            for(String t : types) {
+                config.addSubscriptonType(SubscriptionType.valueOf(t.toUpperCase()));
+            }
         }
         if (cmdLine.hasOption("qp")) {
             config.addSubscriptonType(SubscriptionType.QUOTE_PARTICIPANT);

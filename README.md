@@ -13,11 +13,13 @@ An executable jar will be build in `target/openfeed-client-1.0.0-SNAPSHOT-shaded
 
 ## Command line examples
 
-```
+### Display Command Line Help
+
+```shell
 java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -h
 ```
 
-### To connect and subscribe for IBM and display updates
+### To connect and subscribe for IBM quotes and display updates
 
 ```shell
 java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -s IBM -lu
@@ -33,6 +35,12 @@ java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <passwor
 
 ```shell
 java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -t -s AAPL,IBM -lu
+```  
+
+### Subscribe for OHLC and Price Level Depth for ESZ0
+
+```shell
+java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -s ESZ0 -st depth_price,ohlc 
 ```  
 
 ### Get all instruments for NYSE and display them.

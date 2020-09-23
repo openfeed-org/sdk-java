@@ -75,6 +75,7 @@ public interface OpenfeedClient {
      * @return
      */
     String subscribeExchange(Service service, SubscriptionType subscriptionType, String[] exchanges);
+    String subscribeExchange(Service service, SubscriptionType [] subscriptionTypes, String[] exchanges);
 
     /**
      *

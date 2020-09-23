@@ -14,21 +14,23 @@ public class Subscription {
         Pending, Subscribed, UnSubscribed;
     }
     private String subscriptionId;
+    private long correlationId;
     private SubscriptionRequest request;
     private  boolean exchangeSubscription;
     private String[] symbols;
-    private long[] marketIds;
+    private Long[] marketIds;
     private String[] exchanges;
-    private int[] channelIds;
+    private Integer [] channelIds;
     private Map<String, SubscriptionState> symboltoState = new HashMap<>();
     private Map<Long, SubscriptionState> marketIdtoState = new Long2ObjectHashMap<SubscriptionState>();
     private Map<String, SubscriptionState> exchangetoState = new HashMap<>();
     private Map<Integer, SubscriptionState> channelIdtoState = new Int2ObjectHashMap<SubscriptionState>();
 
     public Subscription(String subscriptionId, SubscriptionRequest subReq, String[] values,
-            boolean exchangeSubscription) {
+            long correlationId, boolean exchangeSubscription) {
         this.subscriptionId = subscriptionId;
         this.request = subReq;
+        this.correlationId  = correlationId;
         this.exchangeSubscription = exchangeSubscription;
         if (!exchangeSubscription) {
             this.symbols = values;
@@ -43,18 +45,20 @@ public class Subscription {
         }
     }
 
-    public Subscription(String subscriptionId, SubscriptionRequest subReq, long[] marketIds) {
+    public Subscription(String subscriptionId, SubscriptionRequest subReq, Long [] marketIds, long correlationId) {
         this.subscriptionId = subscriptionId;
         this.request = subReq;
+        this.correlationId  = correlationId;
         this.marketIds = marketIds;
         for (long id : marketIds) {
             marketIdtoState.put(id, SubscriptionState.Pending);
         }
     }
 
-    public Subscription(String subscriptionId, SubscriptionRequest subReq, int[] channelIds) {
+    public Subscription(String subscriptionId, SubscriptionRequest subReq, Integer [] channelIds, long correlationId) {
         this.subscriptionId = subscriptionId;
         this.request = subReq;
+        this.correlationId  = correlationId;
         this.channelIds = channelIds;
         for (int id : channelIds) {
             channelIdtoState.put(id, SubscriptionState.Pending);
@@ -162,7 +166,7 @@ public class Subscription {
         return symbols;
     }
 
-    public long[] getMarketIds() {
+    public Long[] getMarketIds() {
         return marketIds;
     }
 
@@ -170,7 +174,7 @@ public class Subscription {
         return exchanges;
     }
 
-    public int[] getChannelIds() {
+    public Integer [] getChannelIds() {
         return channelIds;
     }
 

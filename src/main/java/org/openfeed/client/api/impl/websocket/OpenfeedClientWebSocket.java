@@ -495,10 +495,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         SubscriptionRequest.Builder request = SubscriptionRequest.newBuilder().setCorrelationId(correlationId++)
                 .setToken(token).setService(service);
         for (String symbol : syms) {
-//            if(this.subscriptionManager.isSubscribed(symbol) ) {
-//                log.warn("Already subscribed to: {}",symbol);
-//                continue;
-//            }
             Builder subReq = SubscriptionRequest.Request.newBuilder().setSymbol(symbol);
             // Subscription Type
             subReq.addSubscriptionType(subType);
@@ -509,8 +505,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             return null;
         }
         SubscriptionRequest subReq = request.build();
-        String subscriptionId = createSubscriptionId(config.getUserName(), service, correlationId, "symbol");
-        subscriptionManager.addSubscription(subscriptionId, subReq, symbols);
+        String subscriptionId = createSubscriptionId(config.getUserName(), service, new SubscriptionType[] {subType},syms.toArray(new String[0]));
+        subscriptionManager.addSubscription(subscriptionId, subReq, symbols,correlationId);
         OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
         send(req);
         return subscriptionId;
@@ -528,20 +524,16 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         log.info("{}: Subscribe Symbol: {}", config.getClientId(), Arrays.asList(syms.toArray()));
         SubscriptionRequest.Builder request = SubscriptionRequest.newBuilder().setCorrelationId(correlationId++)
                 .setToken(token).setService(service);
+        // Subcription Types
+        Set<SubscriptionType> subTypes = new HashSet<>();
+        subTypes.addAll(Arrays.asList(subscriptionTypes));
+        if(subTypes.size() == 0) {
+            subTypes.add(SubscriptionType.QUOTE);
+        }
         for (String symbol : syms) {
-            // TODO
-//            if(this.subscriptionManager.isSubscribed(symbol) ) {
-//                log.warn("Already subscribed to: {}",symbol);
-//                continue;
-//            }
             Builder subReq = SubscriptionRequest.Request.newBuilder().setSymbol(symbol);
             // Subscription Types
-            if(subscriptionTypes != null && subscriptionTypes.length > 0) {
-                Arrays.stream(subscriptionTypes).forEach( type -> subReq.addSubscriptionType(type));
-            }
-            else {
-                subReq.addSubscriptionType(SubscriptionType.QUOTE);
-            }
+            subTypes.forEach( type -> subReq.addSubscriptionType(type));
             request.addRequests(subReq);
         }
         if(request.getRequestsCount() == 0) {
@@ -549,8 +541,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             return null;
         }
         SubscriptionRequest subReq = request.build();
-        String subscriptionId = createSubscriptionId(config.getUserName(), service, correlationId, "symbol");
-        subscriptionManager.addSubscription(subscriptionId, subReq, symbols);
+        String subscriptionId = createSubscriptionId(config.getUserName(), service, subTypes.toArray(new SubscriptionType[0]),syms.toArray(new String[0]));
+        subscriptionManager.addSubscription(subscriptionId, subReq, syms.toArray(new String[0]),correlationId);
         OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
         send(req);
         return subscriptionId;
@@ -558,8 +550,50 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
 
 
-    private String createSubscriptionId(String userName, Service service, long correlationId, String type) {
-        return userName + ":" + service.getNumber() + ":" + correlationId;
+    private String createSubscriptionId(String userName, Service service, SubscriptionType [] subscriptionTypes, String [] symbols) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(userName);
+        sb.append(":");
+        sb.append(service.getNumber());
+        sb.append(":");
+        sb.append(subscriptionTypes);
+        sb.append(":");
+        sb.append(symbols);
+        return sb.toString();
+    }
+
+    private String createSubscriptionId(String userName, Service service, SubscriptionType [] subscriptionTypes, Long [] ids) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(userName);
+        sb.append(":");
+        sb.append(service.getNumber());
+        sb.append(":");
+        sb.append(subscriptionTypes);
+        sb.append(":");
+        sb.append(ids);
+        return sb.toString();
+    }
+
+    private String createSubscriptionId(String userName, Service service, SubscriptionType [] subscriptionTypes, Integer [] ids) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(userName);
+        sb.append(":");
+        sb.append(service.getNumber());
+        sb.append(":");
+        sb.append(subscriptionTypes);
+        sb.append(":");
+        sb.append(ids);
+        return sb.toString();
+    }
+
+    private String createSubscriptionId(String userName, Service service,  String [] symbols) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(userName);
+        sb.append(":");
+        sb.append(service.getNumber());
+        sb.append(":");
+        sb.append(symbols);
+        return sb.toString();
     }
 
     @Override
@@ -576,18 +610,13 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         SubscriptionRequest.Builder request = SubscriptionRequest.newBuilder().setCorrelationId(correlationId++)
                 .setToken(token).setService(service);
         for (Long id : ids) {
-            // TODO
-//            if(this.subscriptionManager.isSubscribed(id) ) {
-//                log.warn("Already subscribed to: {}",id);
-//                continue;
-//            }
             Builder subReq = SubscriptionRequest.Request.newBuilder().setMarketId(id);
             subReq.addSubscriptionType(subType);
             request.addRequests(subReq);
         }
         SubscriptionRequest subReq = request.build();
-        String subscriptionId = createSubscriptionId(config.getUserName(), service, correlationId, "marketId");
-        subscriptionManager.addSubscription(subscriptionId, subReq, marketIds);
+        String subscriptionId = createSubscriptionId(config.getUserName(), service,new SubscriptionType[] {subType},ids.toArray(new Long[0]));
+        subscriptionManager.addSubscription(subscriptionId, subReq, ids.toArray(new Long[0]),correlationId);
         OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
         send(req);
         return subscriptionId;
@@ -605,23 +634,21 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         log.info("{}: Subscribe Openfeed Id: {}", config.getClientId(), Arrays.asList(ids));
         SubscriptionRequest.Builder request = SubscriptionRequest.newBuilder().setCorrelationId(correlationId++)
                 .setToken(token).setService(service);
+        // Subscription Types
+        Set<SubscriptionType> subTypes = new HashSet<>();
+        subTypes.addAll(Arrays.asList(subscriptionTypes));
+        if(subTypes.size() == 0) {
+            subTypes.add(SubscriptionType.QUOTE);
+        }
         for (Long id : ids) {
-//            if(this.subscriptionManager.isSubscribed(id) ) {
-//                log.warn("Already subscribed to: {}",id);
-//                continue;
-//            }
             Builder subReq = SubscriptionRequest.Request.newBuilder().setMarketId(id);
-            if(subscriptionTypes != null && subscriptionTypes.length > 0) {
-                Arrays.stream(subscriptionTypes).forEach( type -> subReq.addSubscriptionType(type));
-            }
-            else {
-                subReq.addSubscriptionType(SubscriptionType.QUOTE);
-            }
+            // Subscription Types
+            subTypes.forEach( type -> subReq.addSubscriptionType(type));
             request.addRequests(subReq);
         }
         SubscriptionRequest subReq = request.build();
-        String subscriptionId = createSubscriptionId(config.getUserName(), service, correlationId, "marketId");
-        subscriptionManager.addSubscription(subscriptionId, subReq, marketIds);
+        String subscriptionId = createSubscriptionId(config.getUserName(), service,subTypes.toArray(new SubscriptionType[0]),ids.toArray(new Long[0]));
+        subscriptionManager.addSubscription(subscriptionId, subReq, ids.toArray(new Long[0]),correlationId);
         OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
         send(req);
         return subscriptionId;
@@ -640,19 +667,47 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         SubscriptionRequest.Builder request = SubscriptionRequest.newBuilder().setCorrelationId(correlationId++)
                 .setToken(token).setService(service);
         for (String exchange : exchs) {
-//            if(this.subscriptionManager.isSubscribedExchange(exchange) ) {
-//                log.warn("Already subscribed to: {}",exchange);
-//                continue;
-//            }
             log.info("{}: Subscribe Exchange: {}", config.getClientId(), exchange);
             Builder subReq = SubscriptionRequest.Request.newBuilder().setExchange(exchange);
-            // Subscription Types
+            // Subscription Type
             subReq.addSubscriptionType(subType);
             request.addRequests(subReq);
         }
         SubscriptionRequest subReq = request.build();
-        String subscriptionId = createSubscriptionId(config.getUserName(), service, correlationId, "exchange");
-        subscriptionManager.addSubscriptionExchange(subscriptionId, subReq, exchanges);
+        String subscriptionId = createSubscriptionId(config.getUserName(), service,new SubscriptionType[] {subType}, exchs.toArray(new String[0]));
+        subscriptionManager.addSubscriptionExchange(subscriptionId, subReq, exchs.toArray(new String[0]),correlationId);
+        OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
+        send(req);
+        return subscriptionId;
+    }
+
+    @Override
+    public String subscribeExchange(Service service, SubscriptionType [] subscriptionTypes, String[] exchanges) {
+        if (!isLoggedIn()) {
+            throw new RuntimeException("Not logged in.");
+        }
+        // Eliminate dups
+        Set<String> exchs = new HashSet<>();
+        exchs.addAll(Arrays.asList(exchanges));
+
+        SubscriptionRequest.Builder request = SubscriptionRequest.newBuilder().setCorrelationId(correlationId++)
+                .setToken(token).setService(service);
+        // Subscription Types
+        Set<SubscriptionType> subTypes = new HashSet<>();
+        subTypes.addAll(Arrays.asList(subscriptionTypes));
+        if(subTypes.size() == 0) {
+            subTypes.add(SubscriptionType.QUOTE);
+        }
+        for (String exchange : exchs) {
+            log.info("{}: Subscribe Exchange: {}", config.getClientId(), exchange);
+            Builder subReq = SubscriptionRequest.Request.newBuilder().setExchange(exchange);
+            // Subscription Types
+            subTypes.forEach( type -> subReq.addSubscriptionType(type));
+            request.addRequests(subReq);
+        }
+        SubscriptionRequest subReq = request.build();
+        String subscriptionId = createSubscriptionId(config.getUserName(), service,subTypes.toArray(new SubscriptionType[0]),exchs.toArray(new String[0]));
+        subscriptionManager.addSubscriptionExchange(subscriptionId, subReq, exchs.toArray(new String[0]),correlationId);
         OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
         send(req);
         return subscriptionId;
@@ -667,13 +722,10 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         Set<Integer> ids = new HashSet<>();
         Arrays.stream(channelIds).forEach( id -> ids.add(id));
 
+        SubscriptionType subType = subscriptionType != null ? subscriptionType : SubscriptionType.QUOTE;
         SubscriptionRequest.Builder request = SubscriptionRequest.newBuilder().setCorrelationId(correlationId++)
                 .setToken(token).setService(service);
         for (Integer id : ids) {
-            if(this.subscriptionManager.isSubscribedChannel(id) ) {
-                log.warn("Already subscribed to: {}",id);
-                continue;
-            }
             log.info("{}: Subscribe Channel: {}", config.getClientId(), id);
             Builder subReq = SubscriptionRequest.Request.newBuilder().setChannelId(id);
             if (subscriptionType != null) {
@@ -682,8 +734,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             request.addRequests(subReq);
         }
         SubscriptionRequest subReq = request.build();
-        String subscriptionId = createSubscriptionId(config.getUserName(), service, correlationId, "channel");
-        subscriptionManager.addSubscriptionChannel(subscriptionId, subReq, channelIds);
+        String subscriptionId = createSubscriptionId(config.getUserName(), service,new SubscriptionType[] {subType},ids.toArray(new Integer[0]));
+        subscriptionManager.addSubscriptionChannel(subscriptionId, subReq, ids.toArray(new Integer[0]),correlationId);
         OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
         send(req);
         return subscriptionId;
@@ -707,9 +759,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             request.addRequests(subReq);
         }
         SubscriptionRequest subReq = request.build();
-        String subscriptionId = createSubscriptionId(config.getUserName(), Service.REAL_TIME_SNAPSHOT, correlationId,
-                "snapshot");
-        subscriptionManager.addSubscription(subscriptionId, subReq, symbols);
+        String subscriptionId = createSubscriptionId(config.getUserName(), Service.REAL_TIME_SNAPSHOT, syms.toArray(new String[0]));
+        subscriptionManager.addSubscription(subscriptionId, subReq,syms.toArray(new String[0]),correlationId);
         OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
         send(req);
         return subscriptionId;
@@ -870,6 +921,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public Subscription getSubscription(String subscriptionId) {
-        return this.subscriptionManager.getSubscriptionId(subscriptionId);
+        return this.subscriptionManager.getSubscription(subscriptionId);
     }
 }

@@ -241,6 +241,8 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
 
     @Override
     public void onOhlc(Ohlc ohlc) {
+        connectionStats.getMessageStats().incrOHLC();
+        updateExchangeStats(ohlc.getMarketId(), StatType.ohlc);
         log.info("{}: < {}", config.getClientId(), PbUtil.toJson(ohlc));
     }
 
@@ -271,6 +273,9 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                 break;
             case update:
                 stats.incrUpdates();
+                break;
+                case ohlc:
+                stats.incrOHLC();
                 break;
             default:
                 break;

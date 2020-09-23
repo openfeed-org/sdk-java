@@ -76,8 +76,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public void addSubscription(String subscriptionId, SubscriptionRequest subReq, String[] symbols) {
-        Subscription subscription = new Subscription(subscriptionId, subReq, symbols, false);
+    public void addSubscription(String subscriptionId, SubscriptionRequest subReq, String[] symbols,long correlationId) {
+        Subscription subscription = new Subscription(subscriptionId, subReq, symbols,correlationId, false);
         subscriptionIdToSubscription.put(subscriptionId, subscription);
         correlationIdToSubscription.put(subReq.getCorrelationId(), subscription);
         for (String s : symbols) {
@@ -86,8 +86,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public void addSubscription(String subscriptionId, SubscriptionRequest subReq, long[] marketIds) {
-        Subscription subscription = new Subscription(subscriptionId, subReq, marketIds);
+    public void addSubscription(String subscriptionId, SubscriptionRequest subReq, Long [] marketIds,long correlationId) {
+        Subscription subscription = new Subscription(subscriptionId, subReq, marketIds,correlationId);
         subscriptionIdToSubscription.put(subscriptionId, subscription);
         correlationIdToSubscription.put(subReq.getCorrelationId(), subscription);
         for (long id : marketIds) {
@@ -96,8 +96,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public void addSubscriptionExchange(String subscriptionId, SubscriptionRequest subReq, String[] exchanges) {
-        Subscription subscription = new Subscription(subscriptionId, subReq, exchanges, true);
+    public void addSubscriptionExchange(String subscriptionId, SubscriptionRequest subReq, String[] exchanges,long correlationId) {
+        Subscription subscription = new Subscription(subscriptionId, subReq, exchanges,correlationId, true);
         subscriptionIdToSubscription.put(subscriptionId, subscription);
         correlationIdToSubscription.put(subReq.getCorrelationId(), subscription);
         for (String exchange : exchanges) {
@@ -106,8 +106,8 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public void addSubscriptionChannel(String subscriptionId, SubscriptionRequest subReq, int[] channelIds) {
-        Subscription subscription = new Subscription(subscriptionId, subReq, channelIds);
+    public void addSubscriptionChannel(String subscriptionId, SubscriptionRequest subReq, Integer[] channelIds,long correlationId) {
+        Subscription subscription = new Subscription(subscriptionId, subReq, channelIds,correlationId);
         subscriptionIdToSubscription.put(subscriptionId, subscription);
         correlationIdToSubscription.put(subReq.getCorrelationId(), subscription);
         for (int id : channelIds) {
@@ -163,7 +163,7 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
-    public Subscription getSubscriptionId(String subscriptionId) {
+    public Subscription getSubscription(String subscriptionId) {
         return subscriptionId == null ? null : this.subscriptionIdToSubscription.get(subscriptionId);
     }
 

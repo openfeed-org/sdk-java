@@ -1,6 +1,7 @@
 package org.openfeed.client.examples;
 
 import org.openfeed.Service;
+import org.openfeed.SubscriptionType;
 import org.openfeed.client.api.*;
 import org.openfeed.client.api.impl.ConnectionStats;
 import org.slf4j.Logger;
@@ -89,14 +90,29 @@ public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandle
             client.exchangeRequest();
         }
         else if (config.getSymbols() != null) {
-            client.subscribe(Service.REAL_TIME, config.getSubscriptionTypes(), config.getSymbols());
+            if(config.getSubscriptionTypes().length > 0 ) {
+                client.subscribe(Service.REAL_TIME,config.getSubscriptionTypes(), config.getSymbols());
+            }
+            else {
+                client.subscribe(Service.REAL_TIME, SubscriptionType.QUOTE, config.getSymbols());
+            }
         } else if (config.getMarketIds() != null) {
-            client.subscribe(Service.REAL_TIME, config.getSubscriptionTypes(), config.getMarketIds());
+            if(config.getSubscriptionTypes().length > 0 ) {
+                client.subscribe(Service.REAL_TIME,config.getSubscriptionTypes(), config.getMarketIds());
+            }
+            else {
+                client.subscribe(Service.REAL_TIME,SubscriptionType.QUOTE, config.getMarketIds());
+            }
         } else if (config.getExchanges() != null && config.getExchanges().length > 0) {
-            client.subscribeExchange(Service.REAL_TIME, config.getSubscriptionTypes()[0], config.getExchanges());
+            if(config.getSubscriptionTypes().length > 0 ) {
+                client.subscribeExchange(Service.REAL_TIME,config.getSubscriptionTypes(), config.getExchanges());
+            }
+            else {
+                client.subscribeExchange(Service.REAL_TIME, SubscriptionType.QUOTE, config.getExchanges());
+            }
         } else if (config.getChannelIds() != null && config.getChannelIds().length > 0) {
             // Subscribe
-            client.subscribeChannel(Service.REAL_TIME, config.getSubscriptionTypes()[0], config.getChannelIds());
+            client.subscribeChannel(Service.REAL_TIME, SubscriptionType.QUOTE, config.getChannelIds());
         }
     }
 }
