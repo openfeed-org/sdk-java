@@ -3,7 +3,7 @@ package org.openfeed.client.api.impl;
 public class MessageStats {
 
     public enum StatType {
-        instrument, snapshot, update, bbo, nbbo, trade,ohlc
+        instrument, snapshot, update, bbo, nbbo, trade, ohlc, depth_price, depth_order;
     }
 
     private long numInstruments;
@@ -13,6 +13,8 @@ public class MessageStats {
     private long numNBbo;
     private long numTrades;
     private long numOHLC;
+    private long numDepthPrice;
+    private long numDepthOrder;
     private String exchangeCode;
 
     public MessageStats(String exchangeCode) {
@@ -30,6 +32,8 @@ public class MessageStats {
         numNBbo = 0;
         numTrades = 0;
         numOHLC = 0;
+        numDepthPrice = 0;
+        numDepthOrder = 0;
     }
 
 
@@ -61,6 +65,14 @@ public class MessageStats {
         this.numOHLC++;
     }
 
+    public void incrDepthPrice() {
+        this.numDepthPrice++;
+    }
+
+    public void incrDepthOrder() {
+        this.numDepthOrder++;
+    }
+
     @Override
     public String toString() {
         String ec = exchangeCode != null ? "exch: " + exchangeCode + " " : "";
@@ -68,7 +80,9 @@ public class MessageStats {
                 "inst: " + numInstruments + " snp: " + numSnapshots + " upd: " + numUpdates + " bbo: " + numBbo
                 + " nbbo: " + numNBbo
                 + " trd: " + numTrades
-                + " ohlc: " + numOHLC;
+                + " ohlc: " + numOHLC
+                + " depthPrice: " + numDepthPrice
+                + " depthOrder: " + numDepthOrder;
     }
 
 

@@ -40,6 +40,7 @@ public interface OpenfeedClientConfig {
     boolean isLogUpdate();
     boolean isLogBbo();
     boolean isLogTrade();
+    boolean isLogDepth();
     boolean isLogTradeCancel();
     boolean isLogTradeCorrection();
     boolean isLogPrettyPrint();

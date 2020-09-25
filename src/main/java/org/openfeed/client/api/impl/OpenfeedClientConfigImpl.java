@@ -38,6 +38,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private boolean logUpdates;
     private boolean logBbo;
     private boolean logTrade;
+    private boolean logDepth;
     private boolean logTradeCancel;
     private boolean logTradeCorrection;
     private boolean logPrettyPrint;
@@ -75,6 +76,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.logUpdates = this.logUpdates;
         o.logBbo = this.logBbo;
         o.logTrade = this.logTrade;
+        o.logDepth = this.logDepth;
         o.logTradeCancel = this.logTradeCancel;
         o.logTradeCorrection = this.logTradeCorrection;
         o.logSymbols = this.logSymbols;
@@ -169,6 +171,11 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     }
 
     @Override
+    public boolean isLogDepth() {
+        return this.logDepth;
+    }
+
+    @Override
     public boolean isLogTradeCancel() {
         return this.logTradeCancel;
     }
@@ -180,6 +187,10 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     public void setLogTrade(boolean logTrades) {
         this.logTrade = logTrades;
+    }
+
+    public void setLogDepth(boolean v) {
+        this.logDepth = v;
     }
 
     @Override
