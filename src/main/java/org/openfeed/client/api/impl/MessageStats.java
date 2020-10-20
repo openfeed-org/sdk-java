@@ -16,6 +16,9 @@ public class MessageStats {
     private long numDepthPrice;
     private long numDepthOrder;
     private String exchangeCode;
+    private long defSizeBytes = 0;
+    private long snapSizeBytes = 0;
+    private long updSizeBytes = 0;
 
     public MessageStats(String exchangeCode) {
         this.exchangeCode = exchangeCode;
@@ -34,6 +37,7 @@ public class MessageStats {
         numOHLC = 0;
         numDepthPrice = 0;
         numDepthOrder = 0;
+        defSizeBytes = snapSizeBytes = updSizeBytes = 0;
     }
 
 
@@ -73,6 +77,54 @@ public class MessageStats {
         this.numDepthOrder++;
     }
 
+    public long getNumInstruments() {
+        return numInstruments;
+    }
+
+    public long getNumSnapshots() {
+        return numSnapshots;
+    }
+
+    public long getNumUpdates() {
+        return numUpdates;
+    }
+
+    public long getNumBbo() {
+        return numBbo;
+    }
+
+    public long getNumNBbo() {
+        return numNBbo;
+    }
+
+    public long getNumTrades() {
+        return numTrades;
+    }
+
+    public long getNumOHLC() {
+        return numOHLC;
+    }
+
+    public long getNumDepthPrice() {
+        return numDepthPrice;
+    }
+
+    public long getNumDepthOrder() {
+        return numDepthOrder;
+    }
+
+    public void addDefSizeBytes(int v) {
+        this.defSizeBytes += v;
+    }
+
+    public void addSnapSizeBytes(int v) {
+        this.snapSizeBytes += v;
+    }
+
+    public void addUpdSizeBytes(int v) {
+        this.updSizeBytes += v;
+    }
+
     @Override
     public String toString() {
         String ec = exchangeCode != null ? "exch: " + exchangeCode + " " : "";
@@ -82,7 +134,10 @@ public class MessageStats {
                 + " trd: " + numTrades
                 + " ohlc: " + numOHLC
                 + " depthPrice: " + numDepthPrice
-                + " depthOrder: " + numDepthOrder;
+                + " depthOrder: " + numDepthOrder
+                + " aveDefSizeBytes: " + (numInstruments > 0 ? (defSizeBytes/numInstruments) : 0)
+                + " aveSnapSizeBytes: " + (numSnapshots > 0 ? (snapSizeBytes/numSnapshots) : 0)
+                + " aveUpdSizeBytes: " + (numUpdates > 0 ? (updSizeBytes/numUpdates) : 0);
     }
 
 
