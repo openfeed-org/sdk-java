@@ -213,6 +213,9 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
             case OHLC:
                 clientHandler.onOhlc(ofgm.getOhlc());
                 break;
+            case INSTRUMENTACTION:
+                clientHandler.onInstrumentAction(ofgm.getInstrumentAction());
+                break;
             default:
             case DATA_NOT_SET:
                 break;

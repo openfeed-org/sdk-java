@@ -23,7 +23,7 @@ public interface OpenfeedClientHandler {
     void onMarketUpdate(MarketUpdate update);
     void onVolumeAtPrice(VolumeAtPrice cumulativeVolume);
     void onOhlc(Ohlc ohlc);
+    void onInstrumentAction(InstrumentAction instrumentAction);
 
     ConnectionStats getConnectionStats();
-
 }

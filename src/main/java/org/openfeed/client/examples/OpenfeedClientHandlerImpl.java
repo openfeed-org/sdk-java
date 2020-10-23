@@ -246,6 +246,11 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         log.info("{}: < {}", config.getClientId(), PbUtil.toJson(ohlc));
     }
 
+    @Override
+    public void onInstrumentAction(InstrumentAction instrumentAction) {
+        log.info("{}: < {}", config.getClientId(), PbUtil.toJson(instrumentAction));
+    }
+
     private long getNowNs() {
         Instant now = Instant.now();
         return TimeUnit.SECONDS.toNanos(now.getEpochSecond()) + now.getNano();
