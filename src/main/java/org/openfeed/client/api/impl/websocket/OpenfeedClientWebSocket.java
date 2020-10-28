@@ -165,7 +165,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                         public void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline p = ch.pipeline();
                             p.addLast(new HttpClientCodec());
-                            p.addLast(new HttpObjectAggregator(8192));
+                            p.addLast(new HttpObjectAggregator(512 * 1024));
                             p.addLast(webSocketHandler);
                         }
                     });

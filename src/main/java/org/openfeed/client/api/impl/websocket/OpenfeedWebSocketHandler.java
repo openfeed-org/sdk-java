@@ -55,9 +55,9 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         Map<ChannelOption<?>, Object> options = socketConfig.getOptions();
         StringBuilder sb = new StringBuilder(ctx.channel().remoteAddress() + ": Options\n");
         for (Entry<ChannelOption<?>, Object> opt : options.entrySet()) {
-            sb.append("\t" + opt.getKey() + "=" + opt.getValue() + "\n");
+            sb.append(opt.getKey() + "=" + opt.getValue() + ",");
         }
-        log.debug("{}", sb.toString());
+        log.info("{}", sb.toString());
     }
 
     @Override
