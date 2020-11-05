@@ -1,6 +1,7 @@
 package org.openfeed.client.api.impl;
 
 import com.google.common.base.MoreObjects;
+import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
 import org.openfeed.client.api.OpenfeedClientConfig;
 
@@ -24,6 +25,8 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private long[] marketIds;
     private String[] exchanges;
     private int[] channelIds;
+    //
+    private Service service = Service.REAL_TIME;
     //
     private Set<SubscriptionType> subscriptionTypes = new HashSet<>();
     private boolean instrumentRequest;
@@ -135,6 +138,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     public void setSymbols(String[] symbols) {
         this.symbols = symbols;
+    }
+
+    @Override
+    public Service getService() {
+        return this.service;
+    }
+
+    public void setService(Service service) {
+        this.service = service;
     }
 
     @Override
@@ -348,6 +360,8 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     public long getReconnectDelaySec() {
         return this.reconnectDelaySec;
     }
+
+   
 
     public void setReconnectDelaySec(long sec) {
         this.reconnectDelaySec = sec;

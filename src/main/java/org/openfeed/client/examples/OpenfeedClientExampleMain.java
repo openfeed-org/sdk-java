@@ -42,6 +42,9 @@ public class OpenfeedClientExampleMain {
                 .desc("Openfeed Chanel Id(s) to subscribe too, comma separated.").build());
         options.addOption(Option.builder("er")
                 .desc("Send ExchangeRequest to list available Openfeed exchanges").build());
+        // Service
+        options.addOption(Option.builder("service").hasArg()
+                .desc("Service type, defaults to REALTIME.  [REALTIME,DELAYED]").build());
         // Subscription Types
         options.addOption(Option.builder("st").hasArg()
                 .desc("Subscription Types, comma separated, defaults to quote.  [quote,quote_participant,depth_price,depth_order,trades,cumlative_volume,ohlc]]").build());
@@ -111,6 +114,16 @@ public class OpenfeedClientExampleMain {
                 ids[i] = (Integer.parseInt(vs[i]));
             }
             config.setChannelIds(ids);
+        }
+        if (cmdLine.hasOption("service")) {
+            v = cmdLine.getOptionValue("service");
+            Service service = null;
+            try {
+                service = Service.valueOf(v);
+                config.setService(service);
+            } catch(Exception e) {
+                log.error("Invalid Service type: {} err: {}",v,e.getMessage());
+            }
         }
         if (cmdLine.hasOption("st")) {
             v = cmdLine.getOptionValue("st");

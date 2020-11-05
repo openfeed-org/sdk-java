@@ -91,28 +91,28 @@ public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandle
         }
         else if (config.getSymbols() != null) {
             if(config.getSubscriptionTypes().length > 0 ) {
-                client.subscribe(Service.REAL_TIME,config.getSubscriptionTypes(), config.getSymbols());
+                client.subscribe(config.getService(),config.getSubscriptionTypes(), config.getSymbols());
             }
             else {
-                client.subscribe(Service.REAL_TIME, SubscriptionType.QUOTE, config.getSymbols());
+                client.subscribe(config.getService(), SubscriptionType.QUOTE, config.getSymbols());
             }
         } else if (config.getMarketIds() != null) {
             if(config.getSubscriptionTypes().length > 0 ) {
-                client.subscribe(Service.REAL_TIME,config.getSubscriptionTypes(), config.getMarketIds());
+                client.subscribe(config.getService(),config.getSubscriptionTypes(), config.getMarketIds());
             }
             else {
-                client.subscribe(Service.REAL_TIME,SubscriptionType.QUOTE, config.getMarketIds());
+                client.subscribe(config.getService(),SubscriptionType.QUOTE, config.getMarketIds());
             }
         } else if (config.getExchanges() != null && config.getExchanges().length > 0) {
             if(config.getSubscriptionTypes().length > 0 ) {
-                client.subscribeExchange(Service.REAL_TIME,config.getSubscriptionTypes(), config.getExchanges());
+                client.subscribeExchange(config.getService(),config.getSubscriptionTypes(), config.getExchanges());
             }
             else {
-                client.subscribeExchange(Service.REAL_TIME, SubscriptionType.QUOTE, config.getExchanges());
+                client.subscribeExchange(config.getService(), SubscriptionType.QUOTE, config.getExchanges());
             }
         } else if (config.getChannelIds() != null && config.getChannelIds().length > 0) {
             // Subscribe
-            client.subscribeChannel(Service.REAL_TIME, SubscriptionType.QUOTE, config.getChannelIds());
+            client.subscribeChannel(config.getService(), SubscriptionType.QUOTE, config.getChannelIds());
         }
     }
 }

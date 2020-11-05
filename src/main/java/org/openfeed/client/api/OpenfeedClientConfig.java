@@ -1,5 +1,6 @@
 package org.openfeed.client.api;
 
+import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
 
 import java.util.List;
@@ -18,6 +19,9 @@ public interface OpenfeedClientConfig {
     // Re-connects if the connection is dropped. Defaults to true.
     boolean isReconnect();
     long getReconnectDelaySec();
+
+    // Service Type
+    Service getService();
 
     // Subscriptions/Requests
 	String[] getSymbols();
@@ -48,6 +52,7 @@ public interface OpenfeedClientConfig {
 
     int getNumberOfConnections();
     int getStatsDisplaySeconds();
+
 
 
 
