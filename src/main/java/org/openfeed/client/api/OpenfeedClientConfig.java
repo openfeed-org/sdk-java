@@ -47,6 +47,7 @@ public interface OpenfeedClientConfig {
     boolean isLogDepth();
     boolean isLogTradeCancel();
     boolean isLogTradeCorrection();
+    boolean isLogOhlc();
     boolean isLogPrettyPrint();
     boolean isLogSymbol(String symbol);
 

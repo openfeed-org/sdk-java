@@ -44,6 +44,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private boolean logDepth;
     private boolean logTradeCancel;
     private boolean logTradeCorrection;
+    private boolean logOhlc;
     private boolean logPrettyPrint;
     private Set<String> logSymbols;
     //
@@ -195,6 +196,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     @Override
     public boolean isLogTradeCorrection() {
         return this.logTradeCorrection;
+    }
+
+    @Override
+    public boolean isLogOhlc() {
+        return this.logOhlc;
+    }
+
+    public void setLogOhlc(boolean logOhlc) {
+        this.logOhlc = logOhlc;
     }
 
     public void setLogTrade(boolean logTrades) {

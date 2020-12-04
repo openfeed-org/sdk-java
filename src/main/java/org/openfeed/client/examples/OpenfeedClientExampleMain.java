@@ -64,6 +64,7 @@ public class OpenfeedClientExampleMain {
         options.addOption(Option.builder("lu").desc("log updates").build());
         options.addOption(Option.builder("lt").desc("log trades").build());
         options.addOption(Option.builder("ltc").desc("log trade cancel").build());
+        options.addOption(Option.builder("lo").desc("log ohlc").build());
         options.addOption(Option.builder("ltco").desc("log trade correction").build());
         //
         options.addOption(Option.builder("h").desc("help").build());
@@ -173,6 +174,9 @@ public class OpenfeedClientExampleMain {
         }
         if (cmdLine.hasOption("ltco")) {
             config.setLogTradeCorrection(true);
+        }
+        if (cmdLine.hasOption("lo")) {
+            config.setLogOhlc(true);
         }
         if (cmdLine.hasOption("h")) {
             printHelp();

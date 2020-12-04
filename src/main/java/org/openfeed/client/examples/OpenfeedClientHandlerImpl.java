@@ -243,7 +243,9 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     public void onOhlc(Ohlc ohlc) {
         connectionStats.getMessageStats().incrOHLC();
         updateExchangeStats(ohlc.getMarketId(), StatType.ohlc);
-        log.info("{}: < {}", config.getClientId(), PbUtil.toJson(ohlc));
+        if(config.isLogOhlc()) {
+            log.info("{}: < {}", config.getClientId(), PbUtil.toJson(ohlc));
+        }
     }
 
     @Override
