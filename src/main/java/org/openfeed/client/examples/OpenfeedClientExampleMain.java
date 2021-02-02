@@ -13,6 +13,7 @@ import org.openfeed.client.api.OpenfeedClientEventHandler;
 import org.openfeed.client.api.OpenfeedClientHandler;
 import org.openfeed.client.api.impl.ConnectionStats;
 import org.openfeed.client.api.impl.InstrumentCacheImpl;
+import org.openfeed.client.api.impl.MarketsManagerImpl;
 import org.openfeed.client.api.impl.OpenfeedClientConfigImpl;
 import org.openfeed.client.api.impl.websocket.OpenfeedClientWebSocket;
 import org.slf4j.Logger;
@@ -66,6 +67,7 @@ public class OpenfeedClientExampleMain {
         options.addOption(Option.builder("ltc").desc("log trade cancel").build());
         options.addOption(Option.builder("lo").desc("log ohlc").build());
         options.addOption(Option.builder("ltco").desc("log trade correction").build());
+        options.addOption(Option.builder("ld").desc("log depth").build());
         //
         options.addOption(Option.builder("h").desc("help").build());
         CommandLineParser cmdParser = new org.apache.commons.cli.DefaultParser();
@@ -178,6 +180,9 @@ public class OpenfeedClientExampleMain {
         if (cmdLine.hasOption("lo")) {
             config.setLogOhlc(true);
         }
+        if (cmdLine.hasOption("ld")) {
+            config.setLogDepth(true);
+        }
         if (cmdLine.hasOption("h")) {
             printHelp();
             System.exit(1);
@@ -199,8 +204,9 @@ public class OpenfeedClientExampleMain {
     public void start() throws CloneNotSupportedException, InterruptedException {
         config.setClientId("client");
         ConnectionStats connectionStats = new ConnectionStats();
+        MarketsManagerImpl marketsManager = new MarketsManagerImpl();
         OpenfeedClientEventHandler eventHandler = new OpenfeedClientEventHandlerImpl(config,instrumentCache,connectionStats);
-        OpenfeedClientHandler clientHandler = new OpenfeedClientHandlerImpl(config, instrumentCache,connectionStats);
+        OpenfeedClientHandler clientHandler = new OpenfeedClientHandlerImpl(config, instrumentCache,connectionStats,marketsManager);
         OpenfeedClientWebSocket client = new OpenfeedClientWebSocket(config, eventHandler, clientHandler);
 
         client.connectAndLogin();

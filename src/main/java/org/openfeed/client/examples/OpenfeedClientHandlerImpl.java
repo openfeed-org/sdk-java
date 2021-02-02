@@ -21,19 +21,21 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     private OpenfeedClientConfig config;
     private InstrumentCache instrumentCache;
     private ConnectionStats connectionStats;
+    private MarketsManager marketsManager;
     private int awaitingNumDefinitions;
     private ChannelPromise instrumentDownloadPromise;
     private int numDefinitions;
 
     public OpenfeedClientHandlerImpl(OpenfeedClientConfig config, InstrumentCache instrumentCache,
-            ConnectionStats stats) {
+            ConnectionStats stats,MarketsManager marketsManager) {
         this.config = config;
         this.instrumentCache = instrumentCache;
         this.connectionStats = stats;
+        this.marketsManager = marketsManager;
     }
 
-    public OpenfeedClientHandlerImpl(OpenfeedClientConfigImpl config, InstrumentCache instrumentCache) {
-        this(config, instrumentCache, new ConnectionStats());
+    public OpenfeedClientHandlerImpl(OpenfeedClientConfigImpl config, InstrumentCache instrumentCache,MarketsManager marketsManager) {
+        this(config, instrumentCache, new ConnectionStats(),marketsManager);
     }
 
     @Override
@@ -98,6 +100,8 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
             }
         }
         updateExchangeStats(definition.getMarketId(), StatType.instrument);
+
+        marketsManager.createMarket(definition);
     }
 
     @Override
@@ -107,6 +111,14 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         }
         connectionStats.getMessageStats().incrSnapshots();
         updateExchangeStats(snapshot.getMarketId(), StatType.snapshot);
+
+        MarketState market = marketsManager.getMarket(snapshot.getMarketId());
+        market.apply(snapshot);
+        if(config.isLogDepth()) {
+            if(config.isLogDepth()) {
+                log.info("SNAPSHOT DEPTH:\n{}",market.getDepthPriceLevel());
+            }
+        }
     }
 
     @Override
@@ -125,6 +137,10 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         if (config.isLogUpdate()) {
             log.info("{}: {}: < {}", config.getClientId(), symbol, PbUtil.toJson(update));
         }
+
+        MarketState market = marketsManager.getMarket(update.getMarketId());
+        market.apply(update);
+
         switch (update.getDataCase()) {
         case BBO:
             BestBidOffer bbo = update.getBbo();
@@ -152,6 +168,9 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         case DEPTHORDER:
             break;
         case DEPTHPRICELEVEL:
+            if(config.isLogDepth()) {
+                log.info("{}",market.getDepthPriceLevel());
+            }
             break;
         case DIVIDENDSINCOMEDISTRIBUTIONS:
             break;

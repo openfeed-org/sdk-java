@@ -40,7 +40,7 @@ java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <passwor
 ### Subscribe for OHLC and Price Level Depth for ESZ0
 
 ```shell
-java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -s ESZ0 -st depth_price,ohlc 
+java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -s ESZ0 -st depth_price,ohlc -ls -ld
 ```  
 
 ### Get all instruments for NYSE and display them.
