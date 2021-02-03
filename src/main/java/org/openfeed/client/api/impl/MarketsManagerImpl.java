@@ -5,6 +5,8 @@ import org.openfeed.InstrumentDefinition;
 import org.openfeed.client.api.MarketState;
 import org.openfeed.client.api.MarketsManager;
 
+import java.util.Optional;
+
 public class MarketsManagerImpl implements MarketsManager  {
 
     private final Long2ObjectHashMap<MarketState> markets = new Long2ObjectHashMap<MarketState>();
@@ -17,7 +19,8 @@ public class MarketsManagerImpl implements MarketsManager  {
     }
 
     @Override
-    public MarketState getMarket(long marketId) {
-        return this.markets.get(marketId);
+    public Optional<MarketState> getMarket(long marketId) {
+        MarketState marketState = this.markets.get(marketId);
+        return marketState != null  ? Optional.of(marketState) : Optional.empty();
     }
 }

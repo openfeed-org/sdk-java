@@ -36,10 +36,12 @@ public class MarketState {
     public DepthPriceLevel getDepthPriceLevel() { return this.depthPriceLevel;}
 
     public void apply(MarketSnapshot snapshot) {
-        // clear
-        depthPriceLevel.clear();
-        for(AddPriceLevel l  : snapshot.getPriceLevelsList()) {
-            depthPriceLevel.add(l);
+        if(depthPriceLevel != null) {
+            // clear
+            depthPriceLevel.clear();
+            for (AddPriceLevel l : snapshot.getPriceLevelsList()) {
+                depthPriceLevel.add(l);
+            }
         }
     }
 

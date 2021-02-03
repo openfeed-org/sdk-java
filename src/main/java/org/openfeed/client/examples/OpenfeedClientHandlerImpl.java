@@ -1,6 +1,7 @@
 package org.openfeed.client.examples;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.openfeed.*;
@@ -112,11 +113,13 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         connectionStats.getMessageStats().incrSnapshots();
         updateExchangeStats(snapshot.getMarketId(), StatType.snapshot);
 
-        MarketState market = marketsManager.getMarket(snapshot.getMarketId());
-        market.apply(snapshot);
-        if(config.isLogDepth()) {
-            if(config.isLogDepth()) {
-                log.info("SNAPSHOT DEPTH:\n{}",market.getDepthPriceLevel());
+        Optional<MarketState> market = marketsManager.getMarket(snapshot.getMarketId());
+        if (market.isPresent()) {
+            market.get().apply(snapshot);
+            if (config.isLogDepth()) {
+                if (config.isLogDepth()) {
+                    log.info("SNAPSHOT DEPTH:\n{}", market.get().getDepthPriceLevel());
+                }
             }
         }
     }
@@ -138,8 +141,13 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
             log.info("{}: {}: < {}", config.getClientId(), symbol, PbUtil.toJson(update));
         }
 
-        MarketState market = marketsManager.getMarket(update.getMarketId());
-        market.apply(update);
+        Optional<MarketState> market = marketsManager.getMarket(update.getMarketId());
+        if (market.isPresent()) {
+            market.get().apply(update);
+            if(config.isLogDepth()) {
+                log.info("{}",market.get().getDepthPriceLevel());
+            }
+        }
 
         switch (update.getDataCase()) {
         case BBO:
@@ -168,9 +176,6 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         case DEPTHORDER:
             break;
         case DEPTHPRICELEVEL:
-            if(config.isLogDepth()) {
-                log.info("{}",market.getDepthPriceLevel());
-            }
             break;
         case DIVIDENDSINCOMEDISTRIBUTIONS:
             break;
