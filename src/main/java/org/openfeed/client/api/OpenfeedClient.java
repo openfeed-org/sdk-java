@@ -85,6 +85,9 @@ public interface OpenfeedClient {
      * @return
      */
     String subscribeChannel(Service service, SubscriptionType subscriptionType, int[] channelIds);
+    String subscribeChannel(Service service, SubscriptionType [] subscriptionType, int[] channelIds);
+    /**
+     */
     String subscribeSnapshot(String[] symbols, int intervalSec);
 
     // Un subscribe

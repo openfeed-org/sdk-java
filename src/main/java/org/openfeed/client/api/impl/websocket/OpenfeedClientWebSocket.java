@@ -742,6 +742,37 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
     @Override
+    public String subscribeChannel(Service service, SubscriptionType[] subscriptionTypes, int[] channelIds) {
+        if (!isLoggedIn()) {
+            throw new RuntimeException("Not logged in.");
+        }
+        // Eliminate dups
+        Set<Integer> ids = new HashSet<>();
+        Arrays.stream(channelIds).forEach( id -> ids.add(id));
+
+        SubscriptionRequest.Builder request = SubscriptionRequest.newBuilder().setCorrelationId(correlationId++)
+                .setToken(token).setService(service);
+        // Subscription Types
+        Set<SubscriptionType> subTypes = new HashSet<>();
+        subTypes.addAll(Arrays.asList(subscriptionTypes));
+        if(subTypes.size() == 0) {
+            subTypes.add(SubscriptionType.QUOTE);
+        }
+        for (Integer id : ids) {
+            log.info("{}: Subscribe Channel: {}", config.getClientId(), id);
+            Builder subReq = SubscriptionRequest.Request.newBuilder().setChannelId(id);
+            subTypes.forEach( type -> subReq.addSubscriptionType(type));
+            request.addRequests(subReq);
+        }
+        SubscriptionRequest subReq = request.build();
+        String subscriptionId = createSubscriptionId(config.getUserName(), service,subTypes.toArray(new SubscriptionType[0]),ids.toArray(new Integer[0]));
+        subscriptionManager.addSubscriptionChannel(subscriptionId, subReq, ids.toArray(new Integer[0]),correlationId);
+        OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
+        send(req);
+        return subscriptionId;
+    }
+
+    @Override
     public String subscribeSnapshot(String[] symbols, int intervalSec) {
         if (!isLoggedIn()) {
             throw new RuntimeException("Not logged in.");

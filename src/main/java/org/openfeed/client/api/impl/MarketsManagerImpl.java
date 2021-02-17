@@ -11,12 +11,12 @@ public class MarketsManagerImpl implements MarketsManager  {
 
     private final Long2ObjectHashMap<MarketState> markets = new Long2ObjectHashMap<MarketState>();
 
-
     @Override
     public MarketState createMarket(InstrumentDefinition definition) {
         MarketState state = markets.computeIfAbsent(definition.getMarketId(), key -> new MarketState(definition));
         return state;
     }
+
 
     @Override
     public Optional<MarketState> getMarket(long marketId) {
