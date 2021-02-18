@@ -774,6 +774,11 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public String subscribeSnapshot(String[] symbols, int intervalSec) {
+        return subscribeSnapshot(Service.REAL_TIME_SNAPSHOT,symbols,intervalSec);
+    }
+
+    @Override
+    public String subscribeSnapshot(Service service, String[] symbols, int intervalSec) {
         if (!isLoggedIn()) {
             throw new RuntimeException("Not logged in.");
         }
@@ -782,7 +787,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         Arrays.stream(symbols).forEach( s -> syms.add(s));
 
         SubscriptionRequest.Builder request = SubscriptionRequest.newBuilder().setCorrelationId(correlationId++)
-                .setToken(token).setService(Service.REAL_TIME_SNAPSHOT);
+                .setToken(token).setService(service);
         for (String symbol : syms) {
             log.info("{}: Subscribe Snapshot: {}", config.getClientId(), symbol);
             Builder subReq = SubscriptionRequest.Request.newBuilder().setSymbol(symbol)

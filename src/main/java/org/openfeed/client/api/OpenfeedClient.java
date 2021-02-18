@@ -86,9 +86,21 @@ public interface OpenfeedClient {
      */
     String subscribeChannel(Service service, SubscriptionType subscriptionType, int[] channelIds);
     String subscribeChannel(Service service, SubscriptionType [] subscriptionType, int[] channelIds);
+
     /**
+     * Subscribe for Realtime Snapshots at specific interval
      */
     String subscribeSnapshot(String[] symbols, int intervalSec);
+
+    /**
+     * Subscribe for Snapshots
+     *
+     * @param service  Realtime, Delayed
+     * @param symbols  Symbols
+     * @param intervalSec  Interval in seconds
+     * @return
+     */
+    String subscribeSnapshot(Service service, String[] symbols, int intervalSec);
 
     // Un subscribe
     void unSubscribe(Service service, String[] symbols);
