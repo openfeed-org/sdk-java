@@ -6,6 +6,10 @@ public class MessageStats {
         instrument, snapshot, update, bbo, nbbo, trade, ohlc, depth_price, depth_order;
     }
 
+    private int channel;
+    private  String exchangeCode;
+    private String id = "";
+    //
     private long numInstruments;
     private long numSnapshots;
     private long numUpdates;
@@ -15,13 +19,17 @@ public class MessageStats {
     private long numOHLC;
     private long numDepthPrice;
     private long numDepthOrder;
-    private String exchangeCode;
     private long defSizeBytes = 0;
     private long snapSizeBytes = 0;
     private long updSizeBytes = 0;
 
-    public MessageStats(String exchangeCode) {
+
+    public static String makeExchangeKey(int channel, String exchange) { return channel + ":"+ exchange; }
+
+    public MessageStats(int channel,String exchangeCode) {
+        this.channel = channel;
         this.exchangeCode = exchangeCode;
+        this.id = channel + ":"+exchangeCode;
     }
 
     public MessageStats() {
@@ -40,6 +48,9 @@ public class MessageStats {
         defSizeBytes = snapSizeBytes = updSizeBytes = 0;
     }
 
+    public int getChannel() { return this.channel; }
+    public String getExchangeCode() {return this.exchangeCode; }
+    public String getId() { return this.id; }
 
     public void incrInstruments() {
         this.numInstruments++;
@@ -127,9 +138,9 @@ public class MessageStats {
 
     @Override
     public String toString() {
-        String ec = exchangeCode != null ? "exch: " + exchangeCode + " " : "";
+        String ec = getId();
         return ec +
-                "inst: " + numInstruments + " snp: " + numSnapshots + " upd: " + numUpdates + " bbo: " + numBbo
+                " inst: " + numInstruments + " snp: " + numSnapshots + " upd: " + numUpdates + " bbo: " + numBbo
                 + " nbbo: " + numNBbo
                 + " trd: " + numTrades
                 + " ohlc: " + numOHLC

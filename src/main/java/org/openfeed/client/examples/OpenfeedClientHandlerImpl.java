@@ -28,15 +28,15 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     private int numDefinitions;
 
     public OpenfeedClientHandlerImpl(OpenfeedClientConfig config, InstrumentCache instrumentCache,
-            ConnectionStats stats,MarketsManager marketsManager) {
+                                     ConnectionStats stats, MarketsManager marketsManager) {
         this.config = config;
         this.instrumentCache = instrumentCache;
         this.connectionStats = stats;
         this.marketsManager = marketsManager;
     }
 
-    public OpenfeedClientHandlerImpl(OpenfeedClientConfigImpl config, InstrumentCache instrumentCache,MarketsManager marketsManager) {
-        this(config, instrumentCache, new ConnectionStats(),marketsManager);
+    public OpenfeedClientHandlerImpl(OpenfeedClientConfigImpl config, InstrumentCache instrumentCache, MarketsManager marketsManager) {
+        this(config, instrumentCache, new ConnectionStats(), marketsManager);
     }
 
     @Override
@@ -59,10 +59,10 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     @Override
     public void onInstrumentReferenceResponse(InstrumentReferenceResponse instrumentReferenceResponse) {
         log.debug("{}: < {}", config.getClientId(), PbUtil.toJson(instrumentReferenceResponse));
-        log.info("{}/{}/{}  ofExc: {} ddf: {} ddfExc: {} ddfBaseCode: {}", instrumentReferenceResponse.getSymbol(),instrumentReferenceResponse.getChannelId(),instrumentReferenceResponse.getMarketId(),
-                instrumentReferenceResponse.getExchange(),instrumentReferenceResponse.getDdfSymbol(),instrumentReferenceResponse.getDdfExchange(),
+        log.info("{}/{}/{}  ofExc: {} ddf: {} ddfExc: {} ddfBaseCode: {}", instrumentReferenceResponse.getSymbol(), instrumentReferenceResponse.getChannelId(), instrumentReferenceResponse.getMarketId(),
+                instrumentReferenceResponse.getExchange(), instrumentReferenceResponse.getDdfSymbol(), instrumentReferenceResponse.getDdfExchange(),
                 instrumentReferenceResponse.getDdfBaseCode()
-                );
+        );
     }
 
     @Override
@@ -144,117 +144,117 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         Optional<MarketState> market = marketsManager.getMarket(update.getMarketId());
         if (market.isPresent()) {
             market.get().apply(update);
-            if(config.isLogDepth()) {
-                log.info("{}",market.get().getDepthPriceLevel());
+            if (config.isLogDepth()) {
+                log.info("{}", market.get().getDepthPriceLevel());
             }
         }
 
         switch (update.getDataCase()) {
-        case BBO:
-            BestBidOffer bbo = update.getBbo();
-            if (bbo.getRegional()) {
-                // Regional/Participant Quote
-                connectionStats.getMessageStats().incrBbo();
-                updateExchangeStats(update.getMarketId(), StatType.bbo);
-            } else {
-                // NBBO for Equities
-                connectionStats.getMessageStats().incrNBbo();
-                updateExchangeStats(update.getMarketId(), StatType.nbbo);
-            }
-            if (config.isLogBbo()) {
-                log.info("{}: {}: < {}", config.getClientId(), symbol, PbUtil.toJson(update));
-            }
-            break;
-        case CAPITALDISTRIBUTIONS:
-            break;
-        case CLEARBOOK:
-            break;
-        case CLOSE:
-            break;
-        case DATA_NOT_SET:
-            break;
-        case DEPTHORDER:
-            break;
-        case DEPTHPRICELEVEL:
-            break;
-        case DIVIDENDSINCOMEDISTRIBUTIONS:
-            break;
-        case HIGH:
-            break;
-        case INDEX:
-            break;
-        case INSTRUMENTSTATUS:
-            break;
-        case LAST:
-            break;
-        case LOW:
-            break;
-        case MARKETSUMMARY:
-            break;
-        case MONETARYVALUE:
-            break;
-        case NETASSETVALUE:
-            break;
-        case NEWS:
-            break;
-        case NUMBEROFTRADES:
-            break;
-        case OPEN:
-            break;
-        case OPENINTEREST:
-            break;
-        case PREVCLOSE:
-            break;
-        case SETTLEMENT:
-            break;
-        case SHARESOUTSTANDING:
-            break;
-        case TRADES:
-            connectionStats.getMessageStats().incrTrades();
-            updateExchangeStats(update.getMarketId(), StatType.trade);
-            Trades trades = update.getTrades();
-            for (Entry te : trades.getTradesList()) {
-                switch (te.getDataCase()) {
-                case TRADE:
-                    Trade trade = te.getTrade();
-                    String tradeId = trade.getTradeId().toStringUtf8();
-                    if (config.isLogTrade()) {
-                        log.info("{}: {}/{}/{}: Trade tradeId: {}  < {}", config.getClientId(), symbol,
-                                update.getMarketId(), definition.getChannel(), tradeId, PbUtil.toJson(update));
-                    }
-                    break;
-                case TRADECANCEL:
-                    TradeCancel cancel = te.getTradeCancel();
-                    tradeId = cancel.getTradeId().toStringUtf8();
-                    if (config.isLogTradeCancel()) {
-                        log.info("{}: {}/{}/{}: Cancel tradeId: {} < {}", config.getClientId(), symbol,
-                                update.getMarketId(), definition.getChannel(), tradeId, PbUtil.toJson(update));
-                    }
-                    break;
-                case TRADECORRECTION:
-                    TradeCorrection correction = te.getTradeCorrection();
-                    tradeId = correction.getTradeId().toStringUtf8();
-                    if (config.isLogTradeCorrection()) {
-                        log.info("{}: {}/{}/{}: Correction tradeId: {} < {}", config.getClientId(), symbol,
-                                update.getMarketId(), definition.getChannel(), tradeId, PbUtil.toJson(update));
-                    }
-                    break;
-                default:
-                case DATA_NOT_SET:
-                    break;
+            case BBO:
+                BestBidOffer bbo = update.getBbo();
+                if (bbo.getRegional()) {
+                    // Regional/Participant Quote
+                    connectionStats.getMessageStats().incrBbo();
+                    updateExchangeStats(update.getMarketId(), StatType.bbo);
+                } else {
+                    // NBBO for Equities
+                    connectionStats.getMessageStats().incrNBbo();
+                    updateExchangeStats(update.getMarketId(), StatType.nbbo);
                 }
-            }
-            break;
-        case VOLUME:
-            break;
-        case VWAP:
-            break;
-        case YEARHIGH:
-            break;
-        case YEARLOW:
-            break;
-        default:
-            break;
+                if (config.isLogBbo()) {
+                    log.info("{}: {}: < {}", config.getClientId(), symbol, PbUtil.toJson(update));
+                }
+                break;
+            case CAPITALDISTRIBUTIONS:
+                break;
+            case CLEARBOOK:
+                break;
+            case CLOSE:
+                break;
+            case DATA_NOT_SET:
+                break;
+            case DEPTHORDER:
+                break;
+            case DEPTHPRICELEVEL:
+                break;
+            case DIVIDENDSINCOMEDISTRIBUTIONS:
+                break;
+            case HIGH:
+                break;
+            case INDEX:
+                break;
+            case INSTRUMENTSTATUS:
+                break;
+            case LAST:
+                break;
+            case LOW:
+                break;
+            case MARKETSUMMARY:
+                break;
+            case MONETARYVALUE:
+                break;
+            case NETASSETVALUE:
+                break;
+            case NEWS:
+                break;
+            case NUMBEROFTRADES:
+                break;
+            case OPEN:
+                break;
+            case OPENINTEREST:
+                break;
+            case PREVCLOSE:
+                break;
+            case SETTLEMENT:
+                break;
+            case SHARESOUTSTANDING:
+                break;
+            case TRADES:
+                connectionStats.getMessageStats().incrTrades();
+                updateExchangeStats(update.getMarketId(), StatType.trade);
+                Trades trades = update.getTrades();
+                for (Entry te : trades.getTradesList()) {
+                    switch (te.getDataCase()) {
+                        case TRADE:
+                            Trade trade = te.getTrade();
+                            String tradeId = trade.getTradeId().toStringUtf8();
+                            if (config.isLogTrade()) {
+                                log.info("{}: {}/{}/{}: Trade tradeId: {}  < {}", config.getClientId(), symbol,
+                                        update.getMarketId(), definition.getChannel(), tradeId, PbUtil.toJson(update));
+                            }
+                            break;
+                        case TRADECANCEL:
+                            TradeCancel cancel = te.getTradeCancel();
+                            tradeId = cancel.getTradeId().toStringUtf8();
+                            if (config.isLogTradeCancel()) {
+                                log.info("{}: {}/{}/{}: Cancel tradeId: {} < {}", config.getClientId(), symbol,
+                                        update.getMarketId(), definition.getChannel(), tradeId, PbUtil.toJson(update));
+                            }
+                            break;
+                        case TRADECORRECTION:
+                            TradeCorrection correction = te.getTradeCorrection();
+                            tradeId = correction.getTradeId().toStringUtf8();
+                            if (config.isLogTradeCorrection()) {
+                                log.info("{}: {}/{}/{}: Correction tradeId: {} < {}", config.getClientId(), symbol,
+                                        update.getMarketId(), definition.getChannel(), tradeId, PbUtil.toJson(update));
+                            }
+                            break;
+                        default:
+                        case DATA_NOT_SET:
+                            break;
+                    }
+                }
+                break;
+            case VOLUME:
+                break;
+            case VWAP:
+                break;
+            case YEARHIGH:
+                break;
+            case YEARLOW:
+                break;
+            default:
+                break;
         }
     }
 
@@ -267,7 +267,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     public void onOhlc(Ohlc ohlc) {
         connectionStats.getMessageStats().incrOHLC();
         updateExchangeStats(ohlc.getMarketId(), StatType.ohlc);
-        if(config.isLogOhlc()) {
+        if (config.isLogOhlc()) {
             log.info("{}: < {}", config.getClientId(), PbUtil.toJson(ohlc));
         }
     }
@@ -285,31 +285,37 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     private void updateExchangeStats(long marketId, MessageStats.StatType type) {
         InstrumentDefinition def = instrumentCache.getInstrument(marketId);
         if (def != null) {
-            MessageStats stats = connectionStats.getExchangeMessageStats(def.getExchangeCode());
+            MessageStats stats = connectionStats.getExchangeMessageStats(def.getChannel(), def.getExchangeCode());
             switch (type) {
-            case instrument:
-                stats.incrInstruments();
-                break;
-            case bbo:
-                stats.incrBbo();
-                break;
-            case nbbo:
-                stats.incrNBbo();
-                break;
-            case snapshot:
-                stats.incrSnapshots();
-                break;
-            case trade:
-                stats.incrTrades();
-                break;
-            case update:
-                stats.incrUpdates();
-                break;
+                case instrument:
+                    stats.incrInstruments();
+                    break;
+                case bbo:
+                    stats.incrBbo();
+                    break;
+                case nbbo:
+                    stats.incrNBbo();
+                    break;
+                case snapshot:
+                    stats.incrSnapshots();
+                    break;
+                case trade:
+                    stats.incrTrades();
+                    break;
+                case update:
+                    stats.incrUpdates();
+                    break;
                 case ohlc:
-                stats.incrOHLC();
-                break;
-            default:
-                break;
+                    stats.incrOHLC();
+                    break;
+                case depth_price:
+                    stats.incrDepthPrice();
+                    break;
+                case depth_order:
+                    stats.incrDepthOrder();
+                    break;
+                default:
+                    break;
             }
         }
     }
