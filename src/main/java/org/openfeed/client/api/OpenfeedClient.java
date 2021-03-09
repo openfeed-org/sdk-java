@@ -1,6 +1,7 @@
 package org.openfeed.client.api;
 
 import io.netty.channel.ChannelPromise;
+import org.openfeed.InstrumentDefinition;
 import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
 import org.openfeed.client.api.impl.Subscription;
@@ -76,6 +77,7 @@ public interface OpenfeedClient {
      */
     String subscribeExchange(Service service, SubscriptionType subscriptionType, String[] exchanges);
     String subscribeExchange(Service service, SubscriptionType [] subscriptionTypes, String[] exchanges);
+    String subscribeExchange(Service service, SubscriptionType [] subscriptionTypes, InstrumentDefinition.InstrumentType [] instrumentTypes, String[] exchanges);
 
     /**
      *

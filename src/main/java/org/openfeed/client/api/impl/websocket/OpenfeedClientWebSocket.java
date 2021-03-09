@@ -683,6 +683,11 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public String subscribeExchange(Service service, SubscriptionType [] subscriptionTypes, String[] exchanges) {
+        return subscribeExchange(service,subscriptionTypes,new InstrumentDefinition.InstrumentType[0],exchanges);
+    }
+
+    @Override
+    public String subscribeExchange(Service service, SubscriptionType[] subscriptionTypes, InstrumentDefinition.InstrumentType[] instrumentTypes, String[] exchanges) {
         if (!isLoggedIn()) {
             throw new RuntimeException("Not logged in.");
         }
@@ -703,6 +708,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             Builder subReq = SubscriptionRequest.Request.newBuilder().setExchange(exchange);
             // Subscription Types
             subTypes.forEach( type -> subReq.addSubscriptionType(type));
+            // Instrument Types
+            Arrays.stream(instrumentTypes).forEach( type -> subReq.addInstrumentType(type));
             request.addRequests(subReq);
         }
         SubscriptionRequest subReq = request.build();

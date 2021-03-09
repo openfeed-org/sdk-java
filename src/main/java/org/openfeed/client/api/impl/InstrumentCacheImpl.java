@@ -24,6 +24,16 @@ public class InstrumentCacheImpl implements InstrumentCache {
     private Map<String, Map<Long, InstrumentDefinition>> exchangeCodeToInstruments = new ConcurrentHashMap<String, Map<Long, InstrumentDefinition>>();
     private Map<Integer, InstrumentDefinition> sequentialIdToInstrument = new Int2ObjectHashMap<>();
     private int sequentialId = -1;
+    //
+    private int typeForex;
+    private int typeIndex;
+    private int typeEquity;
+    private int typeFuture;
+    private int typeOption;
+    private int typeSpread;
+    private int typeMutualFund;
+    private int typeMoneyMarket;
+    private int typeUnknown;
 
     @Override
     public void addInstrument(InstrumentDefinition definition) {
@@ -43,6 +53,36 @@ public class InstrumentCacheImpl implements InstrumentCache {
         // By Sequential Id
         sequentialId++;
         sequentialIdToInstrument.put(sequentialId, definition);
+        switch(definition.getInstrumentType()) {
+            case FOREX:
+                this.typeForex++;
+                break;
+            case INDEX:
+                this.typeIndex++;
+                break;
+            case EQUITY:
+                this.typeEquity++;
+                break;
+            case FUTURE:
+                this.typeFuture++;
+                break;
+            case OPTION:
+                this.typeOption++;
+                break;
+            case SPREAD:
+                this.typeSpread++;
+                break;
+            case MUTUAL_FUND:
+                this.typeMutualFund++;
+                break;
+            case MONEY_MARKET_FUND:
+                this.typeMoneyMarket++;
+                break;
+            case UNRECOGNIZED:
+            case UNKNOWN_INSTRUMENT_TYPE:
+                this.typeUnknown++;
+                break;
+        }
     }
 
     @Override
@@ -73,7 +113,9 @@ public class InstrumentCacheImpl implements InstrumentCache {
     @Override
     public void dump() {
         log.info("TotalInstruments: {}", sequentialIdToInstrument.size());
-                
+        log.info("Types: unknown: {} forex: {} index: {} equity: {} future: {} option: {} spread: {} mutualFund: {} moneyMarket: {}",
+                typeUnknown,typeForex,typeIndex,typeEquity,typeFuture,typeOption,typeSpread,typeMutualFund,typeMoneyMarket);
+
         exchangeCodeToInstruments.forEach((exchangeCode, instruments) -> {
             log.info("{}: numInst: {}", exchangeCode, instruments.size());
         });
