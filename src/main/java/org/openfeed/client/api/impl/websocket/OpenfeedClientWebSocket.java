@@ -750,6 +750,11 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public String subscribeChannel(Service service, SubscriptionType[] subscriptionTypes, int[] channelIds) {
+        return subscribeChannel(service,subscriptionTypes,new InstrumentDefinition.InstrumentType[0],channelIds);
+    }
+
+    @Override
+    public String subscribeChannel(Service service, SubscriptionType[] subscriptionTypes, InstrumentDefinition.InstrumentType[] instrumentTypes, int[] channelIds) {
         if (!isLoggedIn()) {
             throw new RuntimeException("Not logged in.");
         }
@@ -769,6 +774,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             log.info("{}: Subscribe Channel: {}", config.getClientId(), id);
             Builder subReq = SubscriptionRequest.Request.newBuilder().setChannelId(id);
             subTypes.forEach( type -> subReq.addSubscriptionType(type));
+            // Instrument Types
+            Arrays.stream(instrumentTypes).forEach( type -> subReq.addInstrumentType(type));
             request.addRequests(subReq);
         }
         SubscriptionRequest subReq = request.build();
