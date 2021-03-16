@@ -1,5 +1,6 @@
 package org.openfeed.client.api;
 
+import org.openfeed.InstrumentDefinition;
 import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
 
@@ -29,8 +30,8 @@ public interface OpenfeedClientConfig {
     String[] getExchanges();
     int[] getChannelIds();
 
-    // Types
     SubscriptionType [] getSubscriptionTypes();
+    InstrumentDefinition.InstrumentType [] getInstrumentTypes();
     boolean isInstrumentRequest();
     boolean isInstrumentCrossReferenceRequest();
     boolean isExchangeRequest();

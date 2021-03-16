@@ -700,9 +700,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         // Subscription Types
         Set<SubscriptionType> subTypes = new HashSet<>();
         subTypes.addAll(Arrays.asList(subscriptionTypes));
-        if(subTypes.size() == 0) {
-            subTypes.add(SubscriptionType.QUOTE);
-        }
         for (String exchange : exchs) {
             log.info("{}: Subscribe Exchange: {}", config.getClientId(), exchange);
             Builder subReq = SubscriptionRequest.Request.newBuilder().setExchange(exchange);
@@ -767,9 +764,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         // Subscription Types
         Set<SubscriptionType> subTypes = new HashSet<>();
         subTypes.addAll(Arrays.asList(subscriptionTypes));
-        if(subTypes.size() == 0) {
-            subTypes.add(SubscriptionType.QUOTE);
-        }
         for (Integer id : ids) {
             log.info("{}: Subscribe Channel: {}", config.getClientId(), id);
             Builder subReq = SubscriptionRequest.Request.newBuilder().setChannelId(id);

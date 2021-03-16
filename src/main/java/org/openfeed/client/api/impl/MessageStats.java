@@ -3,7 +3,7 @@ package org.openfeed.client.api.impl;
 public class MessageStats {
 
     public enum StatType {
-        instrument, snapshot, update, bbo, nbbo, trade, ohlc, depth_price, depth_order;
+        instrument, snapshot, update, bbo, nbbo, trade, trade_correction, trade_cancel, ohlc, depth_price, depth_order;
     }
 
     private int channel;
@@ -16,6 +16,8 @@ public class MessageStats {
     private long numBbo;
     private long numNBbo;
     private long numTrades;
+    private long numTradeCorrection;
+    private long numTradeCancel;
     private long numOHLC;
     private long numDepthPrice;
     private long numDepthOrder;
@@ -41,7 +43,7 @@ public class MessageStats {
         numUpdates = 0;
         numBbo = 0;
         numNBbo = 0;
-        numTrades = 0;
+        numTrades = numTradeCorrection = numTradeCancel = 0;
         numOHLC = 0;
         numDepthPrice = 0;
         numDepthOrder = 0;
@@ -72,6 +74,13 @@ public class MessageStats {
         this.numTrades++;
     }
 
+    public void incrTradeCorrection() {
+        this.numTradeCorrection++;
+    }
+
+    public void incrTradeCancel() {
+        this.numTradeCancel++;
+    }
     public void incrNBbo() {
         this.numNBbo++;
     }
@@ -111,7 +120,14 @@ public class MessageStats {
     public long getNumTrades() {
         return numTrades;
     }
-
+    
+    public long getNumTradeCorrection() {
+        return numTradeCorrection;
+    }
+    
+    public long getNumTradeCAncel() {
+        return numTradeCancel;
+    }
     public long getNumOHLC() {
         return numOHLC;
     }
@@ -143,6 +159,8 @@ public class MessageStats {
                 " inst: " + numInstruments + " snp: " + numSnapshots + " upd: " + numUpdates + " bbo: " + numBbo
                 + " nbbo: " + numNBbo
                 + " trd: " + numTrades
+                + " trdCorr: " + numTradeCorrection
+                + " trdCancel: " + numTradeCancel
                 + " ohlc: " + numOHLC
                 + " depthPrice: " + numDepthPrice
                 + " depthOrder: " + numDepthOrder

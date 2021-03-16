@@ -6,6 +6,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.openfeed.InstrumentDefinition;
 import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
 import org.openfeed.client.api.InstrumentCache;
@@ -48,7 +49,10 @@ public class OpenfeedClientExampleMain {
                 .desc("Service type, defaults to REALTIME.  [REALTIME,DELAYED]").build());
         // Subscription Types
         options.addOption(Option.builder("st").hasArg()
-                .desc("Subscription Types, comma separated, defaults to quote.  [quote,quote_participant,depth_price,depth_order,trades,cumlative_volume,ohlc]]").build());
+                .desc("Subscription Types, comma separated, defaults to quote.  [quote,quote_participant,depth_price,depth_order,trades,cumlative_volume,ohlc]").build());
+        // Instrument types
+        options.addOption(Option.builder("it").hasArg()
+                .desc("Instrument Types, comma separated.  []]").build());
         options.addOption(Option.builder("qp").desc("Quote Participant Subscription").build());
         options.addOption(Option.builder("t").desc("Trades Subscription").build());
         // Instruments
@@ -133,6 +137,13 @@ public class OpenfeedClientExampleMain {
             String[] types = v.split(",");
             for(String t : types) {
                 config.addSubscriptonType(SubscriptionType.valueOf(t.toUpperCase()));
+            }
+        }
+        if (cmdLine.hasOption("it")) {
+            v = cmdLine.getOptionValue("it");
+            String[] types = v.split(",");
+            for(String t : types) {
+                config.addInstrumentType(InstrumentDefinition.InstrumentType.valueOf(t.toUpperCase()));
             }
         }
         if (cmdLine.hasOption("qp")) {

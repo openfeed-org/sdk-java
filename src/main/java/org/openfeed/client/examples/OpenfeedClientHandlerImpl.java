@@ -174,8 +174,12 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
             case DATA_NOT_SET:
                 break;
             case DEPTHORDER:
+                connectionStats.getMessageStats().incrDepthOrder();
+                updateExchangeStats(update.getMarketId(), StatType.depth_order);
                 break;
             case DEPTHPRICELEVEL:
+                connectionStats.getMessageStats().incrDepthPrice();
+                updateExchangeStats(update.getMarketId(), StatType.depth_price);
                 break;
             case DIVIDENDSINCOMEDISTRIBUTIONS:
                 break;
@@ -210,12 +214,12 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
             case SHARESOUTSTANDING:
                 break;
             case TRADES:
-                connectionStats.getMessageStats().incrTrades();
-                updateExchangeStats(update.getMarketId(), StatType.trade);
                 Trades trades = update.getTrades();
                 for (Entry te : trades.getTradesList()) {
                     switch (te.getDataCase()) {
                         case TRADE:
+                            connectionStats.getMessageStats().incrTrades();
+                            updateExchangeStats(update.getMarketId(), StatType.trade);
                             Trade trade = te.getTrade();
                             String tradeId = trade.getTradeId().toStringUtf8();
                             if (config.isLogTrade()) {
@@ -224,6 +228,8 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                             }
                             break;
                         case TRADECANCEL:
+                            connectionStats.getMessageStats().incrTradeCancel();
+                            updateExchangeStats(update.getMarketId(), StatType.trade_cancel);
                             TradeCancel cancel = te.getTradeCancel();
                             tradeId = cancel.getTradeId().toStringUtf8();
                             if (config.isLogTradeCancel()) {
@@ -232,6 +238,8 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                             }
                             break;
                         case TRADECORRECTION:
+                            connectionStats.getMessageStats().incrTradeCorrection();
+                            updateExchangeStats(update.getMarketId(), StatType.trade_correction);
                             TradeCorrection correction = te.getTradeCorrection();
                             tradeId = correction.getTradeId().toStringUtf8();
                             if (config.isLogTradeCorrection()) {
@@ -301,6 +309,12 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                     break;
                 case trade:
                     stats.incrTrades();
+                    break;
+                case trade_correction:
+                    stats.incrTradeCorrection();
+                    break;
+                case trade_cancel:
+                    stats.incrTradeCancel();
                     break;
                 case update:
                     stats.incrUpdates();

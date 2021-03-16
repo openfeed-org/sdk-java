@@ -1,6 +1,7 @@
 package org.openfeed.client.api.impl;
 
 import com.google.common.base.MoreObjects;
+import org.openfeed.InstrumentDefinition;
 import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
 import org.openfeed.client.api.OpenfeedClientConfig;
@@ -29,6 +30,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private Service service = Service.REAL_TIME;
     //
     private Set<SubscriptionType> subscriptionTypes = new HashSet<>();
+    private Set<InstrumentDefinition.InstrumentType> instrumentTypes = new HashSet<>();
     private boolean instrumentRequest;
     private boolean instrumentCrossReferenceRequest;
     private boolean exchangeRequest;
@@ -67,6 +69,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.channelIds = this.channelIds;
         //
         o.subscriptionTypes.addAll(this.subscriptionTypes);
+        o.instrumentTypes.addAll(this.instrumentTypes);
         o.instrumentRequest = this.instrumentRequest;
         o.instrumentCrossReferenceRequest = this.instrumentCrossReferenceRequest;
         o.randomInstruments = this.randomInstruments;
@@ -92,7 +95,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("server", host + ":" + port).add("protocl", wireProtocol)
+        return MoreObjects.toStringHelper(this).add("server", host + ":" + port).add("userName", userName)
                 .toString();
     }
 
@@ -291,6 +294,35 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     public void addSubscriptonType(SubscriptionType type) {
         this.subscriptionTypes.add(type);
+    }
+
+    public void setSubTypes(String [] types) {
+        if(types == null) {
+            return;
+        }
+        for(String t : types) {
+            SubscriptionType st = SubscriptionType.valueOf(t.toUpperCase());
+            addSubscriptonType(st);
+        }
+    }
+
+    @Override
+    public InstrumentDefinition.InstrumentType[] getInstrumentTypes() {
+        return this.instrumentTypes.toArray(new InstrumentDefinition.InstrumentType[0]);
+    }
+
+    public void addInstrumentType(InstrumentDefinition.InstrumentType type) {
+        this.instrumentTypes.add(type);
+    }
+
+    public void setIntTypes(String [] types) {
+        if(types == null) {
+            return;
+        }
+        for(String t : types) {
+            InstrumentDefinition.InstrumentType it = InstrumentDefinition.InstrumentType.valueOf(t.toUpperCase());
+            addInstrumentType(it);
+        }
     }
 
     public void setInstrumentRequest(boolean b) {

@@ -47,7 +47,7 @@ public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandle
 
 
     private void executeCommands(OpenfeedClient client) {
-        if(client.isReConnect()) {
+        if (client.isReConnect()) {
             // The client will re-subscribe on re-connect.
             return;
         }
@@ -88,31 +88,22 @@ public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandle
             }
         } else if (config.isExchangeRequest()) {
             client.exchangeRequest();
-        }
-        else if (config.getSymbols() != null) {
-            if(config.getSubscriptionTypes().length > 0 ) {
-                client.subscribe(config.getService(),config.getSubscriptionTypes(), config.getSymbols());
-            }
-            else {
+        } else if (config.getSymbols() != null) {
+            if (config.getSubscriptionTypes().length > 0) {
+                client.subscribe(config.getService(), config.getSubscriptionTypes(), config.getSymbols());
+            } else {
                 client.subscribe(config.getService(), SubscriptionType.QUOTE, config.getSymbols());
             }
         } else if (config.getMarketIds() != null) {
-            if(config.getSubscriptionTypes().length > 0 ) {
-                client.subscribe(config.getService(),config.getSubscriptionTypes(), config.getMarketIds());
-            }
-            else {
-                client.subscribe(config.getService(),SubscriptionType.QUOTE, config.getMarketIds());
+            if (config.getSubscriptionTypes().length > 0) {
+                client.subscribe(config.getService(), config.getSubscriptionTypes(), config.getMarketIds());
+            } else {
+                client.subscribe(config.getService(), SubscriptionType.QUOTE, config.getMarketIds());
             }
         } else if (config.getExchanges() != null && config.getExchanges().length > 0) {
-            if(config.getSubscriptionTypes().length > 0 ) {
-                client.subscribeExchange(config.getService(),config.getSubscriptionTypes(), config.getExchanges());
-            }
-            else {
-                client.subscribeExchange(config.getService(), SubscriptionType.QUOTE, config.getExchanges());
-            }
+            client.subscribeExchange(config.getService(), config.getSubscriptionTypes(), config.getInstrumentTypes(), config.getExchanges());
         } else if (config.getChannelIds() != null && config.getChannelIds().length > 0) {
-            // Subscribe
-            client.subscribeChannel(config.getService(), SubscriptionType.QUOTE, config.getChannelIds());
+            client.subscribeChannel(config.getService(), config.getSubscriptionTypes(), config.getInstrumentTypes(), config.getChannelIds());
         }
     }
 }
