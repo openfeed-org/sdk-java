@@ -3,6 +3,7 @@ package org.openfeed.client.api;
 import io.netty.channel.ChannelPromise;
 import org.openfeed.InstrumentDefinition;
 import org.openfeed.Service;
+import org.openfeed.SubscriptionRequest;
 import org.openfeed.SubscriptionType;
 import org.openfeed.client.api.impl.Subscription;
 
@@ -69,6 +70,12 @@ public interface OpenfeedClient {
     String subscribe(Service service, SubscriptionType [] subscriptionTypes, long[] marketIds);
 
     /**
+     * Send a pre-build SubscriptionRequest
+     * @param request SubscriptionRequest
+     */
+    void subscribe(SubscriptionRequest request);
+
+    /**
      *
      * @param service
      * @param subscriptionType
@@ -104,6 +111,7 @@ public interface OpenfeedClient {
      * @return
      */
     String subscribeSnapshot(Service service, String[] symbols, int intervalSec);
+
 
     // Un subscribe
     void unSubscribe(Service service, String[] symbols);

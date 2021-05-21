@@ -655,6 +655,15 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
     @Override
+    public void subscribe(SubscriptionRequest request) {
+        if (!isLoggedIn()) {
+            throw new RuntimeException("Not logged in.");
+        }
+        OpenfeedGatewayRequest req = request().setSubscriptionRequest(request).build();
+        send(req);
+    }
+
+    @Override
     public String subscribeExchange(Service service, SubscriptionType subscriptionType, String[] exchanges) {
         if (!isLoggedIn()) {
             throw new RuntimeException("Not logged in.");
