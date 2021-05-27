@@ -54,12 +54,9 @@ public interface OpenfeedClientConfig {
 
     int getNumberOfConnections();
     int getStatsDisplaySeconds();
-
-
-
+    boolean isWireStats();
 
     enum WireProtocol {
         PB, JSON
     }
-
 }

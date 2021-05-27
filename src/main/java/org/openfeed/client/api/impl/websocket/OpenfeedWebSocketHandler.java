@@ -15,12 +15,14 @@ import org.openfeed.client.api.OpenfeedClientConfig;
 import org.openfeed.client.api.OpenfeedClientHandler;
 import org.openfeed.client.api.impl.PbUtil;
 import org.openfeed.client.api.impl.SubscriptionManagerImpl;
+import org.openfeed.client.api.impl.WireStats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object> {
     private static final Logger log = LoggerFactory.getLogger(OpenfeedWebSocketHandler.class);
@@ -31,6 +33,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
     private OpenfeedClientConfig config;
     private final SubscriptionManagerImpl subscriptionManager;
     private OpenfeedClientHandler clientHandler;
+    private WireStats stats;
 
     public OpenfeedWebSocketHandler(OpenfeedClientConfig config, OpenfeedClientWebSocket client, SubscriptionManagerImpl subscriptionManager,
                                     OpenfeedClientHandler clientHandler, WebSocketClientHandshaker handshaker) {
@@ -41,6 +44,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         this.client = client;
     }
 
+    public WireStats getStats() { return this.stats; }
 
     public ChannelFuture handshakeFuture() {
         return handshakeFuture;
@@ -58,11 +62,23 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
             sb.append(opt.getKey() + "=" + opt.getValue() + ",");
         }
         log.info("{}", sb.toString());
+        if (this.config.isWireStats()) {
+            this.stats = new WireStats();
+        }
+    }
+
+    private void logStats() {
+        log.info("{}",this.stats);
+        this.stats.reset();
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         handshaker.handshake(ctx.channel());
+        if(this.config.isWireStats()) {
+            // Track some wire metrics
+            ctx.channel().eventLoop().scheduleAtFixedRate(this::logStats,1,1, TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -104,6 +120,10 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 final int offset;
                 ByteBuf binBuf = frame.content();
                 final int length = binBuf.readableBytes();
+                if(this.config.isWireStats()) {
+                    this.stats.update(length);
+                }
+
                 if (binBuf.hasArray()) {
                     array = binBuf.array();
                     offset = binBuf.arrayOffset() + binBuf.readerIndex();
@@ -222,5 +242,6 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         }
 
     }
+
 
 }
