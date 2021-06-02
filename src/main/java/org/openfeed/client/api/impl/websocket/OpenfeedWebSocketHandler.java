@@ -190,10 +190,8 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
             case LOGOUTRESPONSE:
                 LogoutResponse logout = ofgm.getLogoutResponse();
                 if (logout.getStatus().getResult() == Result.SUCCESS) {
-                    log.debug("{}: Logout successful: {}", config.getClientId(), PbUtil.toJson(ofgm));
                     this.client.completeLogout(true);
                 } else {
-                    log.error("{}: Logout not successful: {}", PbUtil.toJson(ofgm));
                     this.client.completeLogout(false);
                 }
                 clientHandler.onLogoutResponse(ofgm.getLogoutResponse());

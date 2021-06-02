@@ -357,6 +357,9 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
     public void completeLogout(boolean success) {
+        if(this.logoutFuture == null || logoutFuture.isDone()) {
+            return;
+        }
         if (success) {
             this.logoutFuture.setSuccess();
             this.token = null;
