@@ -16,10 +16,12 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
+import org.agrona.collections.Long2ObjectHashMap;
 import org.openfeed.*;
 import org.openfeed.SubscriptionRequest.Request.Builder;
 import org.openfeed.client.api.*;
 import org.openfeed.client.api.OpenfeedEvent.EventType;
+import org.openfeed.client.api.impl.InstrumentCacheImpl;
 import org.openfeed.client.api.impl.PbUtil;
 import org.openfeed.client.api.impl.Subscription;
 import org.openfeed.client.api.impl.SubscriptionManagerImpl;
@@ -30,10 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -64,6 +63,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private AtomicBoolean connected = new AtomicBoolean(false);
     private AtomicBoolean reconnectInProgress = new AtomicBoolean(false);
     private int numSuccessLogins = 0;
+    private Map<Long, String> marketIdToSymbol = new Long2ObjectHashMap<>();
 
     public OpenfeedClientWebSocket(OpenfeedClientConfig config, OpenfeedClientEventHandler eventHandler, OpenfeedClientHandler clientHandler) {
         this.config = config;
@@ -458,6 +458,20 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         send(req);
         return channel.newPromise();
     }
+
+    @Override
+    public String getSymbol(long marketId) {
+        return marketIdToSymbol.get(marketId);
+    }
+
+    public void addMapping(InstrumentDefinition def) {
+        this.marketIdToSymbol.put(def.getMarketId(),def.getSymbol());
+        String ddfSymbol = InstrumentCache.getDdfSymbol(def);
+        if(ddfSymbol != null) {
+            this.marketIdToSymbol.put(def.getMarketId(),ddfSymbol);
+        }
+    }
+
 
     @Override
     public void exchangeRequest() {
@@ -979,4 +993,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     public Subscription getSubscription(String subscriptionId) {
         return this.subscriptionManager.getSubscription(subscriptionId);
     }
+
+
 }

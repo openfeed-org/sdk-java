@@ -7,10 +7,7 @@ import io.netty.channel.socket.SocketChannelConfig;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
-import org.openfeed.LoginResponse;
-import org.openfeed.LogoutResponse;
-import org.openfeed.OpenfeedGatewayMessage;
-import org.openfeed.Result;
+import org.openfeed.*;
 import org.openfeed.client.api.OpenfeedClientConfig;
 import org.openfeed.client.api.OpenfeedClientHandler;
 import org.openfeed.client.api.impl.PbUtil;
@@ -217,6 +214,8 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 clientHandler.onHeartBeat(ofgm.getHeartBeat());
                 break;
             case INSTRUMENTDEFINITION:
+                InstrumentDefinition def = ofgm.getInstrumentDefinition();
+                this.client.addMapping(def);
                 clientHandler.onInstrumentDefinition(ofgm.getInstrumentDefinition());
                 break;
             case MARKETSNAPSHOT:

@@ -4,6 +4,8 @@ import org.openfeed.InstrumentDefinition;
 import java.util.Collection;
 
 public interface InstrumentCache {
+
+
     void addInstrument(InstrumentDefinition definition);
 
     InstrumentDefinition getInstrument(long marketId);
@@ -21,4 +23,17 @@ public interface InstrumentCache {
     Collection<InstrumentDefinition> getInstrumentsByChannel(int channelId);
 
     void dump();
+
+    String VENDOR_BARCHART = "Barchart";
+     static String getDdfSymbol(InstrumentDefinition i) {
+        if (i.getSymbolsCount() > 0) {
+            for (InstrumentDefinition.Symbol s : i.getSymbolsList()) {
+                if (s.getVendor().equals(VENDOR_BARCHART)) {
+                    return s.getSymbol();
+                }
+            }
+        }
+        return null;
+    }
+
 }
