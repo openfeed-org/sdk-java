@@ -10,6 +10,7 @@ import io.netty.util.CharsetUtil;
 import org.openfeed.*;
 import org.openfeed.client.api.OpenfeedClientConfig;
 import org.openfeed.client.api.OpenfeedClientHandler;
+import org.openfeed.client.api.impl.OpenfeedClientConfigImpl;
 import org.openfeed.client.api.impl.PbUtil;
 import org.openfeed.client.api.impl.SubscriptionManagerImpl;
 import org.openfeed.client.api.impl.WireStats;
@@ -27,12 +28,12 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
     private final WebSocketClientHandshaker handshaker;
     private ChannelPromise handshakeFuture;
     private OpenfeedClientWebSocket client;
-    private OpenfeedClientConfig config;
+    private OpenfeedClientConfigImpl config;
     private final SubscriptionManagerImpl subscriptionManager;
     private OpenfeedClientHandler clientHandler;
     private WireStats stats;
 
-    public OpenfeedWebSocketHandler(OpenfeedClientConfig config, OpenfeedClientWebSocket client, SubscriptionManagerImpl subscriptionManager,
+    public OpenfeedWebSocketHandler(OpenfeedClientConfigImpl config, OpenfeedClientWebSocket client, SubscriptionManagerImpl subscriptionManager,
                                     OpenfeedClientHandler clientHandler, WebSocketClientHandshaker handshaker) {
         this.config = config;
         this.subscriptionManager = subscriptionManager;
@@ -188,7 +189,12 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 LogoutResponse logout = ofgm.getLogoutResponse();
                 if (logout.getStatus().getResult() == Result.SUCCESS) {
                     this.client.completeLogout(true);
-                } else {
+                } else if(logout.getStatus().getResult() == Result.DUPLICATE_LOGIN ) {
+                    log.error("{}: Duplicate Login, stopping client: {}",config.getClientId(),PbUtil.toJson(ofgm));
+                    this.config.setReconnect(false);
+                    this.client.disconnect();
+                }
+                else {
                     this.client.completeLogout(false);
                 }
                 clientHandler.onLogoutResponse(ofgm.getLogoutResponse());

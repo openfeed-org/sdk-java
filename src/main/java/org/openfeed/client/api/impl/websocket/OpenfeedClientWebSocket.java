@@ -21,10 +21,7 @@ import org.openfeed.*;
 import org.openfeed.SubscriptionRequest.Request.Builder;
 import org.openfeed.client.api.*;
 import org.openfeed.client.api.OpenfeedEvent.EventType;
-import org.openfeed.client.api.impl.InstrumentCacheImpl;
-import org.openfeed.client.api.impl.PbUtil;
-import org.openfeed.client.api.impl.Subscription;
-import org.openfeed.client.api.impl.SubscriptionManagerImpl;
+import org.openfeed.client.api.impl.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +40,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private static final long LOGIN_WAIT_SEC = 15;
     private static final int BUF_SIZE_ENCODE = 1 * 1024;
     private static final int RCV_BUF_SIZE = 10 * (1024 * 1024);
-    private final OpenfeedClientConfig config;
+    private final OpenfeedClientConfigImpl config;
     private Bootstrap clientBookstrap;
     private EventLoopGroup clientEventLoopGroup;
     private OpenfeedWebSocketHandler webSocketHandler;
@@ -65,7 +62,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private int numSuccessLogins = 0;
     private Map<Long, String> marketIdToSymbol = new Long2ObjectHashMap<>();
 
-    public OpenfeedClientWebSocket(OpenfeedClientConfig config, OpenfeedClientEventHandler eventHandler, OpenfeedClientHandler clientHandler) {
+    public OpenfeedClientWebSocket(OpenfeedClientConfigImpl config, OpenfeedClientEventHandler eventHandler, OpenfeedClientHandler clientHandler) {
         this.config = config;
         this.eventHandler = eventHandler;
         this.clientHandler = clientHandler;
