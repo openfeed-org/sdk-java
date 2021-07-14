@@ -53,6 +53,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private int numberOfConnections = 1;
     private int statsDisplaySeconds = 30;
     private boolean wireStats = false;
+    private boolean disableClientOnDuplicateLogin = true;
 
     public OpenfeedClientConfigImpl dup() throws CloneNotSupportedException {
         OpenfeedClientConfigImpl o = new OpenfeedClientConfigImpl();
@@ -372,6 +373,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     @Override
     public boolean isWireStats() {
         return this.wireStats;
+    }
+
+    @Override
+    public boolean isDisableClientOnDuplicateLogin() {
+        return this.disableClientOnDuplicateLogin;
+    }
+
+    public void setDisableClientOnDuplicateLogin(boolean v) {
+        this.disableClientOnDuplicateLogin = v;
     }
 
     public void setWireStats(boolean v) {

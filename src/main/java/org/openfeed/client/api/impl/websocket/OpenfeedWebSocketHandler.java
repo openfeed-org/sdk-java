@@ -42,7 +42,9 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         this.client = client;
     }
 
-    public WireStats getStats() { return this.stats; }
+    public WireStats getStats() {
+        return this.stats;
+    }
 
     public ChannelFuture handshakeFuture() {
         return handshakeFuture;
@@ -66,16 +68,16 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
     }
 
     private void logStats() {
-        log.info("{}",this.stats);
+        log.info("{}", this.stats);
         this.stats.reset();
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         handshaker.handshake(ctx.channel());
-        if(this.config.isWireStats()) {
+        if (this.config.isWireStats()) {
             // Track some wire metrics
-            ctx.channel().eventLoop().scheduleAtFixedRate(this::logStats,1,1, TimeUnit.SECONDS);
+            ctx.channel().eventLoop().scheduleAtFixedRate(this::logStats, 1, 1, TimeUnit.SECONDS);
         }
     }
 
@@ -118,7 +120,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 final int offset;
                 ByteBuf binBuf = frame.content();
                 final int length = binBuf.readableBytes();
-                if(this.config.isWireStats()) {
+                if (this.config.isWireStats()) {
                     this.stats.update(length);
                 }
 
@@ -177,11 +179,11 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 if (loginResponse.getStatus().getResult() == Result.SUCCESS) {
                     log.debug("{}: Login successful: token {}", config.getClientId(), PbUtil.toJson(ofgm));
                     this.client.setToken(loginResponse.getToken());
-                    this.client.completeLogin(true,null);
+                    this.client.completeLogin(true, null);
                 } else {
                     String error = config.getClientId() + ": Login failed: " + PbUtil.toJson(ofgm);
-                    log.error("{}",error);
-                    this.client.completeLogin(false,error);
+                    log.error("{}", error);
+                    this.client.completeLogin(false, error);
                 }
                 clientHandler.onLoginResponse(ofgm.getLoginResponse());
                 break;
@@ -189,12 +191,12 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 LogoutResponse logout = ofgm.getLogoutResponse();
                 if (logout.getStatus().getResult() == Result.SUCCESS) {
                     this.client.completeLogout(true);
-                } else if(logout.getStatus().getResult() == Result.DUPLICATE_LOGIN ) {
-                    log.error("{}: Duplicate Login, stopping client: {}",config.getClientId(),PbUtil.toJson(ofgm));
+                } else if (logout.getStatus().getResult() == Result.DUPLICATE_LOGIN &&
+                        config.isDisableClientOnDuplicateLogin()) {
+                    log.error("{}: Duplicate Login, stopping client: {}", config.getClientId(), PbUtil.toJson(ofgm));
                     this.config.setReconnect(false);
                     this.client.disconnect();
-                }
-                else {
+                } else {
                     this.client.completeLogout(false);
                 }
                 clientHandler.onLogoutResponse(ofgm.getLogoutResponse());

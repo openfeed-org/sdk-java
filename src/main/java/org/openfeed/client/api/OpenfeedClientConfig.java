@@ -55,6 +55,7 @@ public interface OpenfeedClientConfig {
     int getNumberOfConnections();
     int getStatsDisplaySeconds();
     boolean isWireStats();
+    boolean isDisableClientOnDuplicateLogin();
 
     enum WireProtocol {
         PB, JSON
