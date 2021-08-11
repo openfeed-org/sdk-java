@@ -9,7 +9,7 @@ import org.openfeed.client.api.OpenfeedClientConfig;
 import java.util.*;
 
 public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
-    private static final long RECONNECT_TIMEOUT_WAIT_SEC = 2;
+    private static final long RECONNECT_TIMEOUT_WAIT_MS = 2000;
 
     private String clientId = UUID.randomUUID().toString();
     // Connection
@@ -19,7 +19,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private String userName = "";
     private String password = "";
     private boolean reconnect = true;
-    private long reconnectDelaySec = RECONNECT_TIMEOUT_WAIT_SEC;
+    private long reconnectDelayMs = RECONNECT_TIMEOUT_WAIT_MS;
 
     // Subscriptions
     private String[] symbols = null;
@@ -63,7 +63,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.userName = this.userName;
         o.password = this.password;
         o.reconnect = this.reconnect;
-        o.reconnectDelaySec = this.reconnectDelaySec;
+        o.reconnectDelayMs = this.reconnectDelayMs;
         //
         o.symbols = this.symbols;
         o.marketIds = this.marketIds;
@@ -420,14 +420,14 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     }
 
     @Override
-    public long getReconnectDelaySec() {
-        return this.reconnectDelaySec;
+    public long getReconnectDelayMs() {
+        return this.reconnectDelayMs;
     }
 
    
 
-    public void setReconnectDelaySec(long sec) {
-        this.reconnectDelaySec = sec;
+    public void setReconnectDelayMs(long sec) {
+        this.reconnectDelayMs = sec;
     }
 
     public void setLogTradeCancel(boolean v) {

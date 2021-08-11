@@ -19,7 +19,7 @@ public interface OpenfeedClientConfig {
 	String getPassword();
     // Re-connects if the connection is dropped. Defaults to true.
     boolean isReconnect();
-    long getReconnectDelaySec();
+    long getReconnectDelayMs();
 
     // Service Type
     Service getService();

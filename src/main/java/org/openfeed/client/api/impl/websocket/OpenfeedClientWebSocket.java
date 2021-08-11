@@ -86,16 +86,16 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     public void run() {
         while (running.get()) {
             if (!connected.get()) {
-                log.info("{}: Attempting reconnection in {} seconds", config.getClientId(),
-                        config.getReconnectDelaySec());
+                log.info("{}: Attempting reconnection in {} ms", config.getClientId(),
+                        config.getReconnectDelayMs());
                 try {
-                    Thread.sleep(200 );
+                    Thread.sleep(config.getReconnectDelayMs() );
                 } catch (InterruptedException ignore) {
                 }
                 init();
                 attemptConnectAndLogin();
                 if (numSuccessLogins > 1 && isLoggedIn()) {
-//                    resubscribe();
+                    resubscribe();
                     reconnectInProgress.set(false);
                 }
             }
@@ -109,14 +109,13 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                 subscriptionManager.getSubscriptions().size());
         for (Subscription sub : subscriptionManager.getSubscriptions()) {
             SubscriptionRequest subReq = sub.getRequest();
-            if(subReq != null && this.token != null) {
-            // Use new correlationId
-            subReq = subReq.toBuilder().setToken(this.token).build();
-            // Save new request on Subscription
-            sub.setRequest(subReq);
-            OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
-            send(req);
-
+            if (subReq != null && this.token != null) {
+                // Use new correlationId
+                subReq = subReq.toBuilder().setToken(this.token).build();
+                // Save new request on Subscription
+                sub.setRequest(subReq);
+                OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
+                send(req);
             }
         }
     }
@@ -218,7 +217,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             log.warn("{}: Closing and shutting down.", config.getClientId());
             shutdown();
         } else {
-            log.info("{}: re-connecting in: {} seconds", config.getClientId(), config.getReconnectDelaySec());
+            log.info("{}: re-connecting in: {} ms", config.getClientId(), config.getReconnectDelayMs());
             reconnectInProgress.set(true);
         }
     }
