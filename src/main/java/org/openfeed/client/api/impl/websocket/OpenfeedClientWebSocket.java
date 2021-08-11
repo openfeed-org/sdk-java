@@ -89,13 +89,13 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                 log.info("{}: Attempting reconnection in {} seconds", config.getClientId(),
                         config.getReconnectDelaySec());
                 try {
-                    Thread.sleep(config.getReconnectDelaySec() * 1000);
+                    Thread.sleep(200 );
                 } catch (InterruptedException ignore) {
                 }
                 init();
                 attemptConnectAndLogin();
                 if (numSuccessLogins > 1 && isLoggedIn()) {
-                    resubscribe();
+//                    resubscribe();
                     reconnectInProgress.set(false);
                 }
             }
@@ -109,12 +109,15 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                 subscriptionManager.getSubscriptions().size());
         for (Subscription sub : subscriptionManager.getSubscriptions()) {
             SubscriptionRequest subReq = sub.getRequest();
+            if(subReq != null && this.token != null) {
             // Use new correlationId
             subReq = subReq.toBuilder().setToken(this.token).build();
             // Save new request on Subscription
             sub.setRequest(subReq);
             OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
             send(req);
+
+            }
         }
     }
 
