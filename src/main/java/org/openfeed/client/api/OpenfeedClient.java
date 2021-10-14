@@ -109,7 +109,6 @@ public interface OpenfeedClient {
      * Subscribe for Realtime Snapshots at specific interval
      */
     String subscribeSnapshot(String[] symbols, int intervalSec);
-
     /**
      * Subscribe for Snapshots
      *
@@ -119,6 +118,16 @@ public interface OpenfeedClient {
      * @return
      */
     String subscribeSnapshot(Service service, String[] symbols, int intervalSec);
+    /**
+     * Subscribes for Snapshot at the requested service type
+     *
+     * @param service Service Type, can be REAL_TIME_SNAPSHOT or DELAYED_SNAPSHOT
+     * @param subscriptionType  Subscription Type, can be Cumlative Volume
+     * @param symbols
+     * @param intervalSec
+     * @return
+     */
+    String subscribeSnapshot(Service service, SubscriptionType subscriptionType, String[] symbols, int intervalSec);
 
 
     // Un subscribe
