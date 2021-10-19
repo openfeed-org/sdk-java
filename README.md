@@ -85,7 +85,7 @@ The client API has three main interfaces:
 To use the client you must do the following:
 	
 1. Create a Client Message Handler, an example handler is provided: [OpenfeedClientHandlerImpl.java](src/main/java/org/openfeed/client/examples/OpenfeedClientHandlerImpl.java)
-2. Create an Event Handler, an example handler is provided: [OpenfeedClientEventHandlerImpl](src/main/java/org/openfeed/client/examples/OpenfeedClientEventHandler.java).
+2. Create an Event Handler, an example handler is provided: [OpenfeedClientEventHandlerImpl](src/main/java/org/openfeed/client/examples/OpenfeedClientEventHandlerImpl.java).
 2. Create the web socket client and connect, see `OpenfeedClientExampleMain.start()`
 3. Subscribe to symbols/exchanges using the OpenfeedClient interface, see see `OpenfeedClientExampleMain.executeCommands()`.
 	
