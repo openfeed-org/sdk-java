@@ -1,4 +1,7 @@
 log/*
 *.iml
-target/*
-proto/*
+target/
+proto/
+.settings/
+.project
+.classpath
