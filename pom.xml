@@ -77,7 +77,8 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://raw.githubusercontent.com/openfeed-org/proto/master/openfeed_instrument.proto</url>
+                            <url>https://raw.githubusercontent.com/openfeed-org/proto/master/openfeed_instrument.proto
+                            </url>
                             <outputDirectory>proto</outputDirectory>
                             <skipCache>true</skipCache>
                             <overwrite>true</overwrite>
@@ -117,7 +118,8 @@
                 <version>0.6.1</version>
                 <configuration>
                     <!-- Will download binary of protoc -->
-                    <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
+                    <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}
+                    </protocArtifact>
                     <protoSourceRoot>proto</protoSourceRoot>
                 </configuration>
                 <executions>
@@ -127,6 +129,22 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Main-Class>${mainClass}</Main-Class>
+                            <Build-Date>${maven.build.timestamp}</Build-Date>
+                            <Implementation-Vendor>Barchart</Implementation-Vendor>
+                            <Implementation-Title>${project.name}</Implementation-Title>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                            <Maven-Artifact>${project.groupId}:${project.artifactId}:${project.version}</Maven-Artifact>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -142,7 +160,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>${mainClass}</mainClass>
+                                        <mainClass>${mainClass}</mainClass>
                                 </transformer>
                             </transformers>
                             <filters>
@@ -169,12 +187,12 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.25</version>
+                <version>1.7.32</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.2.3</version>
+                <version>1.2.10</version>
             </dependency>
             <dependency>
                 <groupId>com.google.protobuf</groupId>
@@ -199,7 +217,7 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
-                <version>4.1.66.Final</version>
+                <version>4.1.68.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.hdrhistogram</groupId>

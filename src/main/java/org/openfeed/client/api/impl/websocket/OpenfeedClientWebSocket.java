@@ -61,11 +61,28 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private AtomicBoolean reconnectInProgress = new AtomicBoolean(false);
     private int numSuccessLogins = 0;
     private Map<Long, String> marketIdToSymbol = new Long2ObjectHashMap<>();
+    private final String clientVersion;
 
     public OpenfeedClientWebSocket(OpenfeedClientConfigImpl config, OpenfeedClientEventHandler eventHandler, OpenfeedClientHandler clientHandler) {
         this.config = config;
         this.eventHandler = eventHandler;
         this.clientHandler = clientHandler;
+        this.clientVersion = getClientVersion();
+    }
+
+    private String getClientVersion() {
+        Package jarPackage = this.getClass().getPackage();
+        String version = jarPackage.getImplementationVersion() != null ? jarPackage.getImplementationVersion() : "1.0.0";
+        StringBuilder sb = new StringBuilder();
+        sb.append("sdk-java"+":");
+        sb.append(version + ":");
+        sb.append(System.getProperty("java.version","") + ":");
+        sb.append(System.getProperty("java.vendor","")+ ":");
+        sb.append(System.getProperty("java.name","")+ ":");
+        sb.append(System.getProperty("os.name","")+ ":");
+        sb.append(System.getProperty("os.version","") + ":");
+        sb.append(System.getProperty("os.arch",""));
+        return sb.toString();
     }
 
     @Override
@@ -268,7 +285,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     private void login() {
         LoginRequest request = LoginRequest.newBuilder().setCorrelationId(correlationId++)
-                .setUsername(config.getUserName()).setPassword(config.getPassword()).build();
+                .setUsername(config.getUserName()).setPassword(config.getPassword()).setClientVersion(clientVersion).build();
         OpenfeedGatewayRequest ofreq = request().setLoginRequest(request).build();
         send(ofreq);
         this.loginFuture = this.channel.newPromise();
