@@ -14,9 +14,9 @@
     </scm>
 
     <properties>
-        <projectJavaVersion>10</projectJavaVersion>
+        <projectJavaVersion>11</projectJavaVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <protobuf.version>3.11.1</protobuf.version>
+        <protobuf.version>3.19.2</protobuf.version>
         <barchartNexusURL>https://nexus.barchart.com</barchartNexusURL>
         <barchartArchonURL>${barchartNexusURL}/content/groups/archon</barchartArchonURL>
         <barchartReleaseURL>${barchartNexusURL}/content/repositories/releases</barchartReleaseURL>
