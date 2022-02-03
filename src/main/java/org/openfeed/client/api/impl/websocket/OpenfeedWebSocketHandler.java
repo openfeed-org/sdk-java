@@ -61,7 +61,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         for (Entry<ChannelOption<?>, Object> opt : options.entrySet()) {
             sb.append(opt.getKey() + "=" + opt.getValue() + ",");
         }
-        log.info("{}", sb.toString());
+        log.debug("{}", sb.toString());
         if (this.config.isWireStats()) {
             this.stats = new WireStats();
         }
@@ -93,10 +93,10 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         if (!handshaker.isHandshakeComplete()) {
             try {
                 handshaker.finishHandshake(ch, (FullHttpResponse) msg);
-                log.info("WebSocket Client connected!");
+                log.info("{}: WebSocket Client connected!",config.getClientId());
                 handshakeFuture.setSuccess();
             } catch (WebSocketHandshakeException e) {
-                log.error("WebSocket Client failed to connect");
+                log.error("{}: WebSocket Client failed to connect",config.getClientId());
                 handshakeFuture.setFailure(e);
             }
             return;
@@ -171,10 +171,11 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
             return;
         }
         if (config.isLogAll()) {
-            log.info("< {}", PbUtil.toJson(ofgm));
+            logMsg(ofgm);
         }
         switch (ofgm.getDataCase()) {
             case LOGINRESPONSE:
+                log(ofgm);
                 LoginResponse loginResponse = ofgm.getLoginResponse();
                 if (loginResponse.getStatus().getResult() == Result.SUCCESS) {
                     log.debug("{}: Login successful: token {}", config.getClientId(), PbUtil.toJson(ofgm));
@@ -188,6 +189,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 clientHandler.onLoginResponse(ofgm.getLoginResponse());
                 break;
             case LOGOUTRESPONSE:
+                log(ofgm);
                 LogoutResponse logout = ofgm.getLogoutResponse();
                 if (logout.getStatus().getResult() == Result.SUCCESS) {
                     this.client.completeLogout(true);
@@ -202,23 +204,31 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 clientHandler.onLogoutResponse(ofgm.getLogoutResponse());
                 break;
             case INSTRUMENTRESPONSE:
+                log(ofgm);
                 clientHandler.onInstrumentResponse(ofgm.getInstrumentResponse());
                 break;
             case INSTRUMENTREFERENCERESPONSE:
+                log(ofgm);
                 clientHandler.onInstrumentReferenceResponse(ofgm.getInstrumentReferenceResponse());
                 break;
             case EXCHANGERESPONSE:
+                log(ofgm);
                 clientHandler.onExchangeResponse(ofgm.getExchangeResponse());
                 break;
             case SUBSCRIPTIONRESPONSE:
+                log(ofgm);
                 // Update Subscription State
                 this.subscriptionManager.updateSubscriptionState(ofgm.getSubscriptionResponse());
                 clientHandler.onSubscriptionResponse(ofgm.getSubscriptionResponse());
                 break;
             case MARKETSTATUS:
+                log(ofgm);
                 clientHandler.onMarketStatus(ofgm.getMarketStatus());
                 break;
             case HEARTBEAT:
+                if(config.isLogHeartBeat()) {
+                    logMsg(ofgm);
+                }
                 clientHandler.onHeartBeat(ofgm.getHeartBeat());
                 break;
             case INSTRUMENTDEFINITION:
@@ -246,6 +256,16 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 break;
         }
 
+    }
+
+    private void log(OpenfeedGatewayMessage ofmsg) {
+        if(config.isLogRequestResponse()) {
+            logMsg(ofmsg);
+        }
+    }
+
+    private void logMsg(OpenfeedGatewayMessage ofmsg) {
+        log.info("{} < {}", config.getClientId(), PbUtil.toJson(ofmsg));
     }
 
 

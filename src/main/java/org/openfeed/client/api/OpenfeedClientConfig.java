@@ -32,12 +32,14 @@ public interface OpenfeedClientConfig {
 
     SubscriptionType [] getSubscriptionTypes();
     InstrumentDefinition.InstrumentType [] getInstrumentTypes();
+    int getSnapshotIntervalSec();
     boolean isInstrumentRequest();
     boolean isInstrumentCrossReferenceRequest();
     boolean isExchangeRequest();
     int getRandomInstruments();
 
     // Logging
+    boolean isLogRequestResponse();
     boolean isLogAll();
     boolean isLogHeartBeat();
     boolean isLogInstrument();
@@ -56,6 +58,8 @@ public interface OpenfeedClientConfig {
     int getStatsDisplaySeconds();
     boolean isWireStats();
     boolean isDisableClientOnDuplicateLogin();
+
+
 
     enum WireProtocol {
         PB, JSON

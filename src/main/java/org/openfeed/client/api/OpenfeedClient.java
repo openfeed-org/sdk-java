@@ -71,9 +71,10 @@ public interface OpenfeedClient {
      *
      * @param service
      * @param subscriptionType
-     * @param marketIds
+     * @param marketId
      * @return Unique Id for subscription
      */
+    String subscribe(Service service, SubscriptionType subscriptionType, long marketId);
     String subscribe(Service service, SubscriptionType subscriptionType, long[] marketIds);
     String subscribe(Service service, SubscriptionType [] subscriptionTypes, long[] marketIds);
 
@@ -88,7 +89,7 @@ public interface OpenfeedClient {
      * @param service
      * @param subscriptionType
      * @param exchanges
-     * @return
+     * @return subscriptionId
      */
     String subscribeExchange(Service service, SubscriptionType subscriptionType, String[] exchanges);
     String subscribeExchange(Service service, SubscriptionType [] subscriptionTypes, String[] exchanges);
@@ -99,7 +100,7 @@ public interface OpenfeedClient {
      * @param service
      * @param subscriptionType
      * @param channelIds
-     * @return
+     * @return subscriptionId
      */
     String subscribeChannel(Service service, SubscriptionType subscriptionType, int[] channelIds);
     String subscribeChannel(Service service, SubscriptionType [] subscriptionType, int[] channelIds);
@@ -107,6 +108,9 @@ public interface OpenfeedClient {
 
     /**
      * Subscribe for Realtime Snapshots at specific interval
+     * @param  symbols Symbols
+     * @param  intervalSec  if 0 then only the latest snapshot is sent, otherwise send at specific interval.
+     * @return  subscriptionId
      */
     String subscribeSnapshot(String[] symbols, int intervalSec);
     /**
@@ -114,20 +118,21 @@ public interface OpenfeedClient {
      *
      * @param service  Realtime, Delayed
      * @param symbols  Symbols
-     * @param intervalSec  Interval in seconds
-     * @return
+     * @param intervalSec  if 0 then only the latest snapshot is sent, otherwise send at specific interval.
+     * @return  subscriptionId
      */
     String subscribeSnapshot(Service service, String[] symbols, int intervalSec);
     /**
      * Subscribes for Snapshot at the requested service type
      *
      * @param service Service Type, can be REAL_TIME_SNAPSHOT or DELAYED_SNAPSHOT
-     * @param subscriptionType  Subscription Type, can be Cumlative Volume
-     * @param symbols
-     * @param intervalSec
-     * @return
+     * @param subscriptionType  Subscription Type, can be Cumulative Volume
+     * @param symbols  Symbols
+     * @param intervalSec  if 0 then only the latest snapshot is sent, otherwise send at specific interval.
+     * @return subscriptionId
      */
     String subscribeSnapshot(Service service, SubscriptionType subscriptionType, String[] symbols, int intervalSec);
+    String subscribeSnapshot(Service service, SubscriptionType subscriptionType, long marketId, int intervalSec);
 
 
     // Un subscribe

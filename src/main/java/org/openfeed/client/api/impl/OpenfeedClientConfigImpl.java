@@ -31,11 +31,13 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     //
     private Set<SubscriptionType> subscriptionTypes = new HashSet<>();
     private Set<InstrumentDefinition.InstrumentType> instrumentTypes = new HashSet<>();
+    private int snapshotIntervalSec;
     private boolean instrumentRequest;
     private boolean instrumentCrossReferenceRequest;
     private boolean exchangeRequest;
     private int randomInstruments;
     // logging
+    private boolean logRequestResponse;
     private boolean logAll;
     private boolean logHeartBeat;
     private boolean logInstrument;
@@ -72,12 +74,14 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         //
         o.subscriptionTypes.addAll(this.subscriptionTypes);
         o.instrumentTypes.addAll(this.instrumentTypes);
+        o.snapshotIntervalSec = this.snapshotIntervalSec;
         o.instrumentRequest = this.instrumentRequest;
         o.instrumentCrossReferenceRequest = this.instrumentCrossReferenceRequest;
         o.randomInstruments = this.randomInstruments;
         o.exchangeRequest = this.exchangeRequest;
         //
         o.randomInstruments = this.randomInstruments;
+        o.logRequestResponse = this.logRequestResponse;
         o.logAll = this.logAll;
         o.logHeartBeat = this.logHeartBeat;
         o.logInstrument = this.logInstrument;
@@ -348,6 +352,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     }
 
     @Override
+    public boolean isLogRequestResponse() {
+        return logRequestResponse;
+    }
+
+    public void setLogRequestResponse(boolean logRequestResponse) {
+        this.logRequestResponse = logRequestResponse;
+    }
+
+    @Override
     public boolean isLogAll() {
         return this.logAll;
     }
@@ -460,4 +473,12 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         this.logPrettyPrint = logPrettyPrint;
     }
 
+    @Override
+    public int getSnapshotIntervalSec() {
+        return snapshotIntervalSec;
+    }
+
+    public void setSnapshotIntervalSec(int snapshotIntervalSec) {
+        this.snapshotIntervalSec = snapshotIntervalSec;
+    }
 }

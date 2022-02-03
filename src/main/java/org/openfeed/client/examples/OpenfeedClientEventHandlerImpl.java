@@ -7,6 +7,9 @@ import org.openfeed.client.api.impl.ConnectionStats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandler {
@@ -89,10 +92,16 @@ public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandle
         } else if (config.isExchangeRequest()) {
             client.exchangeRequest();
         } else if (config.getSymbols() != null) {
+            Set<SubscriptionType> subTypes = new HashSet<>();
             if (config.getSubscriptionTypes().length > 0) {
-                client.subscribe(config.getService(), config.getSubscriptionTypes(), config.getSymbols());
+                subTypes.addAll(List.of(config.getSubscriptionTypes()));
             } else {
-                client.subscribe(config.getService(), SubscriptionType.QUOTE, config.getSymbols());
+                subTypes.add(SubscriptionType.QUOTE);
+            }
+            if (config.getService() == Service.REAL_TIME_SNAPSHOT || config.getService() == Service.DELAYED_SNAPSHOT) {
+                subTypes.forEach( type -> client.subscribeSnapshot(config.getService(), type, config.getSymbols(), config.getSnapshotIntervalSec()));
+            } else {
+                client.subscribe(config.getService(), subTypes.toArray(new SubscriptionType[subTypes.size()]), config.getSymbols());
             }
         } else if (config.getMarketIds() != null) {
             if (config.getSubscriptionTypes().length > 0) {

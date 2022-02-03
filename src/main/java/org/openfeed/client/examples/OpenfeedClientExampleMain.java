@@ -50,6 +50,8 @@ public class OpenfeedClientExampleMain {
         // Subscription Types
         options.addOption(Option.builder("st").hasArg()
                 .desc("Subscription Types, comma separated, defaults to quote.  [quote,quote_participant,depth_price,depth_order,trades,cumlative_volume,ohlc]").build());
+        options.addOption(Option.builder("snapinterval").hasArg()
+                .desc("Snapshot Interval Seconds, defaults to 0.").build());
         // Instrument types
         options.addOption(Option.builder("it").hasArg()
                 .desc("Instrument Types, comma separated.  []]").build());
@@ -63,6 +65,7 @@ public class OpenfeedClientExampleMain {
         options.addOption(Option.builder("host").hasArg().desc("Host, defaults " + config.getHost()).build());
         options.addOption(Option.builder("port").hasArg().desc("Port, defaults " + config.getPort()).build());
         //
+        options.addOption(Option.builder("lrr").desc("log requests and responses").build());
         options.addOption(Option.builder("lh").desc("log heartbeats").build());
         options.addOption(Option.builder("li").desc("log instruments").build());
         options.addOption(Option.builder("ls").desc("log snapshots").build());
@@ -139,6 +142,10 @@ public class OpenfeedClientExampleMain {
                 config.addSubscriptonType(SubscriptionType.valueOf(t.toUpperCase()));
             }
         }
+        if (cmdLine.hasOption("snapinterval")) {
+            v = cmdLine.getOptionValue("snapinterval");
+                config.setSnapshotIntervalSec(Integer.parseInt(cmdLine.getOptionValue("snapinterval")));
+        }
         if (cmdLine.hasOption("it")) {
             v = cmdLine.getOptionValue("it");
             String[] types = v.split(",");
@@ -166,6 +173,9 @@ public class OpenfeedClientExampleMain {
         }
         if (cmdLine.hasOption("port")) {
             config.setPort(Integer.parseInt(cmdLine.getOptionValue("port")));
+        }
+        if (cmdLine.hasOption("lrr")) {
+            config.setLogRequestResponse(true);
         }
         if (cmdLine.hasOption("lh")) {
             config.setLogHeartBeat(true);

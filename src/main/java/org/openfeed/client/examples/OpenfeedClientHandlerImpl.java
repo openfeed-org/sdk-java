@@ -41,7 +41,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
 
     @Override
     public void onLoginResponse(LoginResponse loginResponse) {
-        log.info("{}: < {}", config.getClientId(), PbUtil.toJson(loginResponse));
+        log.info("{}: < LoginResponse {}", config.getClientId(), PbUtil.toJson(loginResponse));
     }
 
     @Override
