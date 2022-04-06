@@ -10,6 +10,7 @@ import io.netty.util.CharsetUtil;
 import org.openfeed.*;
 import org.openfeed.client.api.OpenfeedClientConfig;
 import org.openfeed.client.api.OpenfeedClientHandler;
+import org.openfeed.client.api.OpenfeedClientMessageHandler;
 import org.openfeed.client.api.impl.OpenfeedClientConfigImpl;
 import org.openfeed.client.api.impl.PbUtil;
 import org.openfeed.client.api.impl.SubscriptionManagerImpl;
@@ -31,15 +32,17 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
     private OpenfeedClientConfigImpl config;
     private final SubscriptionManagerImpl subscriptionManager;
     private OpenfeedClientHandler clientHandler;
+    private final OpenfeedClientMessageHandler messageHandler;
     private WireStats stats;
 
     public OpenfeedWebSocketHandler(OpenfeedClientConfigImpl config, OpenfeedClientWebSocket client, SubscriptionManagerImpl subscriptionManager,
-                                    OpenfeedClientHandler clientHandler, WebSocketClientHandshaker handshaker) {
+                                    OpenfeedClientHandler clientHandler, WebSocketClientHandshaker handshaker, OpenfeedClientMessageHandler messageHandler) {
         this.config = config;
         this.subscriptionManager = subscriptionManager;
         this.clientHandler = clientHandler;
         this.handshaker = handshaker;
         this.client = client;
+        this.messageHandler = messageHandler;
     }
 
     public WireStats getStats() {
@@ -173,6 +176,11 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         if (config.isLogAll()) {
             logMsg(ofgm);
         }
+        // Message callback
+        if(messageHandler != null) {
+            messageHandler.onMessage(ofgm);
+        }
+        
         switch (ofgm.getDataCase()) {
             case LOGINRESPONSE:
                 log(ofgm);

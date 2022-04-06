@@ -228,7 +228,7 @@ public class OpenfeedClientExampleMain {
         MarketsManagerImpl marketsManager = new MarketsManagerImpl();
         OpenfeedClientEventHandler eventHandler = new OpenfeedClientEventHandlerImpl(config,instrumentCache,connectionStats);
         OpenfeedClientHandler clientHandler = new OpenfeedClientHandlerImpl(config, instrumentCache,connectionStats,marketsManager);
-        OpenfeedClientWebSocket client = new OpenfeedClientWebSocket(config, eventHandler, clientHandler);
+        OpenfeedClientWebSocket client = new OpenfeedClientWebSocket(config, eventHandler, clientHandler,null);
 
         client.connectAndLogin();
     }

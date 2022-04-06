@@ -55,6 +55,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private ByteArrayOutputStream encodeBuf = new ByteArrayOutputStream(BUF_SIZE_ENCODE);
     private final OpenfeedClientEventHandler eventHandler;
     private final OpenfeedClientHandler clientHandler;
+    private final OpenfeedClientMessageHandler messageHandler;
     //
     private AtomicBoolean running = new AtomicBoolean(true);
     private AtomicBoolean connected = new AtomicBoolean(false);
@@ -63,10 +64,17 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private Map<Long, String> marketIdToSymbol = new Long2ObjectHashMap<>();
     private final String clientVersion;
 
-    public OpenfeedClientWebSocket(OpenfeedClientConfigImpl config, OpenfeedClientEventHandler eventHandler, OpenfeedClientHandler clientHandler) {
+    public OpenfeedClientWebSocket(OpenfeedClientConfigImpl config, OpenfeedClientEventHandler eventHandler,
+                                   OpenfeedClientHandler clientHandler) {
+        this(config,eventHandler,clientHandler,null);
+    }
+
+    public OpenfeedClientWebSocket(OpenfeedClientConfigImpl config, OpenfeedClientEventHandler eventHandler,
+                                   OpenfeedClientHandler clientHandler,OpenfeedClientMessageHandler messageHandler) {
         this.config = config;
         this.eventHandler = eventHandler;
         this.clientHandler = clientHandler;
+        this.messageHandler = messageHandler;
         this.clientVersion = getClientVersion();
     }
 
@@ -147,7 +155,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         log.info("{}: Initializing connection to: {}", config.getClientId(), uri);
         // Connect with V13 (RFC 6455 aka HyBi-17).
         webSocketHandler = new OpenfeedWebSocketHandler(config, this, this.subscriptionManager, clientHandler, WebSocketClientHandshakerFactory
-                .newHandshaker(uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()));
+                .newHandshaker(uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()),messageHandler);
         boolean epoll = OS.indexOf("linux") >= 0 ? true : false;
 
         // Ensure previous event loop was shutdown
