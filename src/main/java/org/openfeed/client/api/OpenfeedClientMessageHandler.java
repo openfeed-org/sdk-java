@@ -1,12 +1,15 @@
 package org.openfeed.client.api;
 
-import org.openfeed.OpenfeedGatewayMessage;
-
 /**
- *   Callback for every message received.
+ *  Callback for every message received.
  */
 public interface OpenfeedClientMessageHandler {
 
-    void onMessage(OpenfeedGatewayMessage message);
+    /**
+     * Will be called for every message.
+     *
+     * @param bytes A copy of the Protobuf encoded OpenfeedGatewayMessage
+     */
+    void onMessage(byte [] bytes);
 
 }

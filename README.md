@@ -80,6 +80,10 @@ The client API has three main interfaces:
 1. [OpenfeedClient.java](src/main/java/org/openfeed/client/api/OpenfeedClient.java)        - connect, subscribe methods
 2. [OpenfeedClientHandler.java](src/main/java/org/openfeed/client/api/OpenfeedClientHandler.java)  - Openfeed message handler
 3. [OpenfeedClientEventHandler](src/main/java/org/openfeed/client/api/OpenfeedClientEventHandler.java) - Event callback
+
+A raw message handler can also be used instead of the OpenfeedClientHandler.   The [OpenfeedClientMessageHandler.java] will 
+return the raw bytes for each message.  Please see the example program for usage.
+
 ### Client Usage
 
 To use the client you must do the following:

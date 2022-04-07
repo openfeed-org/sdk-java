@@ -22,16 +22,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Sample Openfeed Client using Google Protobuf
- *
  */
 public class OpenfeedClientExampleMain {
     private static final Logger log = LoggerFactory.getLogger(OpenfeedClientExampleMain.class);
     private static Options options;
     private InstrumentCache instrumentCache = new InstrumentCacheImpl();
     private OpenfeedClientConfigImpl config;
+    private final boolean useMessageHandler;
 
     public static void main(String[] args) throws Exception {
         OpenfeedClientConfigImpl config = new OpenfeedClientConfigImpl();
+        boolean useMessageHandler = false;
+
         options = new Options();
         options.addOption(Option.builder("u").hasArg().required().desc("user name").build());
         options.addOption(Option.builder("p").hasArg().required().desc("password").build());
@@ -76,7 +78,9 @@ public class OpenfeedClientExampleMain {
         options.addOption(Option.builder("ltco").desc("log trade correction").build());
         options.addOption(Option.builder("ld").desc("log depth").build());
         //
+        options.addOption(Option.builder("mh").desc("Use message handler").build());
         options.addOption(Option.builder("h").desc("help").build());
+
         CommandLineParser cmdParser = new org.apache.commons.cli.DefaultParser();
         CommandLine cmdLine;
         try {
@@ -131,25 +135,25 @@ public class OpenfeedClientExampleMain {
             try {
                 service = Service.valueOf(v);
                 config.setService(service);
-            } catch(Exception e) {
-                log.error("Invalid Service type: {} err: {}",v,e.getMessage());
+            } catch (Exception e) {
+                log.error("Invalid Service type: {} err: {}", v, e.getMessage());
             }
         }
         if (cmdLine.hasOption("st")) {
             v = cmdLine.getOptionValue("st");
             String[] types = v.split(",");
-            for(String t : types) {
+            for (String t : types) {
                 config.addSubscriptonType(SubscriptionType.valueOf(t.toUpperCase()));
             }
         }
         if (cmdLine.hasOption("snapinterval")) {
             v = cmdLine.getOptionValue("snapinterval");
-                config.setSnapshotIntervalSec(Integer.parseInt(cmdLine.getOptionValue("snapinterval")));
+            config.setSnapshotIntervalSec(Integer.parseInt(cmdLine.getOptionValue("snapinterval")));
         }
         if (cmdLine.hasOption("it")) {
             v = cmdLine.getOptionValue("it");
             String[] types = v.split(",");
-            for(String t : types) {
+            for (String t : types) {
                 config.addInstrumentType(InstrumentDefinition.InstrumentType.valueOf(t.toUpperCase()));
             }
         }
@@ -204,12 +208,15 @@ public class OpenfeedClientExampleMain {
         if (cmdLine.hasOption("ld")) {
             config.setLogDepth(true);
         }
+        if (cmdLine.hasOption("mh")) {
+            useMessageHandler = true;
+        }
         if (cmdLine.hasOption("h")) {
             printHelp();
             System.exit(1);
         }
         log.info("Starting Openfeed Client with {}", config);
-        OpenfeedClientExampleMain app = new OpenfeedClientExampleMain(config);
+        OpenfeedClientExampleMain app = new OpenfeedClientExampleMain(config, useMessageHandler);
         app.start();
     }
 
@@ -218,17 +225,24 @@ public class OpenfeedClientExampleMain {
         formatter.printHelp("OpenfeedClient", options);
     }
 
-    public OpenfeedClientExampleMain(OpenfeedClientConfigImpl config) {
+    public OpenfeedClientExampleMain(OpenfeedClientConfigImpl config, boolean useMessageHandler) {
         this.config = config;
+        this.useMessageHandler = useMessageHandler;
     }
 
     public void start() throws CloneNotSupportedException, InterruptedException {
         config.setClientId("client");
         ConnectionStats connectionStats = new ConnectionStats();
         MarketsManagerImpl marketsManager = new MarketsManagerImpl();
-        OpenfeedClientEventHandler eventHandler = new OpenfeedClientEventHandlerImpl(config,instrumentCache,connectionStats);
-        OpenfeedClientHandler clientHandler = new OpenfeedClientHandlerImpl(config, instrumentCache,connectionStats,marketsManager);
-        OpenfeedClientWebSocket client = new OpenfeedClientWebSocket(config, eventHandler, clientHandler,null);
+        OpenfeedClientEventHandler eventHandler = new OpenfeedClientEventHandlerImpl(config, instrumentCache, connectionStats);
+        OpenfeedClientHandler clientHandler = new OpenfeedClientHandlerImpl(config, instrumentCache, connectionStats, marketsManager);
+        OpenfeedClientWebSocket client = null;
+        if (useMessageHandler) {
+            OpenfeedClientMessageHandlerImpl messageHandler = new OpenfeedClientMessageHandlerImpl();
+            client = new OpenfeedClientWebSocket(config, eventHandler, messageHandler);
+        } else {
+            client = new OpenfeedClientWebSocket(config, eventHandler, clientHandler);
+        }
 
         client.connectAndLogin();
     }

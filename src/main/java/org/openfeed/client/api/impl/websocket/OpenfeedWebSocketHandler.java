@@ -96,10 +96,10 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         if (!handshaker.isHandshakeComplete()) {
             try {
                 handshaker.finishHandshake(ch, (FullHttpResponse) msg);
-                log.info("{}: WebSocket Client connected!",config.getClientId());
+                log.info("{}: WebSocket Client connected!", config.getClientId());
                 handshakeFuture.setSuccess();
             } catch (WebSocketHandshakeException e) {
-                log.error("{}: WebSocket Client failed to connect",config.getClientId());
+                log.error("{}: WebSocket Client failed to connect", config.getClientId());
                 handshakeFuture.setFailure(e);
             }
             return;
@@ -115,28 +115,25 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         if (frame instanceof TextWebSocketFrame) {
             TextWebSocketFrame textFrame = (TextWebSocketFrame) frame;
             OpenfeedGatewayMessage ofgm = decodeJson(textFrame.text());
-            handleResponse(ofgm);
+            handleResponse(ofgm, new byte[0]);
         } else if (frame instanceof BinaryWebSocketFrame) {
             try {
                 BinaryWebSocketFrame binaryFrame = (BinaryWebSocketFrame) frame;
                 final byte[] array;
-                final int offset;
                 ByteBuf binBuf = frame.content();
                 final int length = binBuf.readableBytes();
                 if (this.config.isWireStats()) {
                     this.stats.update(length);
                 }
 
-                if (binBuf.hasArray()) {
-                    array = binBuf.array();
-                    offset = binBuf.arrayOffset() + binBuf.readerIndex();
+                if (messageHandler != null) {// make copy
+                    array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, true);
                 } else {
                     array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, false);
-                    offset = 0;
                 }
                 ByteArrayInputStream bis = new ByteArrayInputStream(array);
                 OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(bis);
-                handleResponse(rsp);
+                handleResponse(rsp, array);
             } catch (Exception e) {
                 log.error("{}: Could not process message: ", ctx.channel().remoteAddress(), e);
             }
@@ -168,7 +165,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         }
     }
 
-    void handleResponse(OpenfeedGatewayMessage ofgm) {
+    void handleResponse(OpenfeedGatewayMessage ofgm, byte[] bytes) {
         if (ofgm == null) {
             log.warn("Empty Message received.");
             return;
@@ -176,11 +173,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         if (config.isLogAll()) {
             logMsg(ofgm);
         }
-        // Message callback
-        if(messageHandler != null) {
-            messageHandler.onMessage(ofgm);
-        }
-        
+
         switch (ofgm.getDataCase()) {
             case LOGINRESPONSE:
                 log(ofgm);
@@ -194,7 +187,9 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                     log.error("{}", error);
                     this.client.completeLogin(false, error);
                 }
-                clientHandler.onLoginResponse(ofgm.getLoginResponse());
+                if (clientHandler != null) {
+                    clientHandler.onLoginResponse(ofgm.getLoginResponse());
+                }
                 break;
             case LOGOUTRESPONSE:
                 log(ofgm);
@@ -209,65 +204,96 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 } else {
                     this.client.completeLogout(false);
                 }
-                clientHandler.onLogoutResponse(ofgm.getLogoutResponse());
+
+                if (clientHandler != null) {
+                    clientHandler.onLogoutResponse(ofgm.getLogoutResponse());
+                }
                 break;
             case INSTRUMENTRESPONSE:
                 log(ofgm);
-                clientHandler.onInstrumentResponse(ofgm.getInstrumentResponse());
+                if (clientHandler != null) {
+                    clientHandler.onInstrumentResponse(ofgm.getInstrumentResponse());
+                }
                 break;
             case INSTRUMENTREFERENCERESPONSE:
                 log(ofgm);
-                clientHandler.onInstrumentReferenceResponse(ofgm.getInstrumentReferenceResponse());
+                if (clientHandler != null) {
+                    clientHandler.onInstrumentReferenceResponse(ofgm.getInstrumentReferenceResponse());
+                }
                 break;
             case EXCHANGERESPONSE:
                 log(ofgm);
-                clientHandler.onExchangeResponse(ofgm.getExchangeResponse());
+                if (clientHandler != null) {
+                    clientHandler.onExchangeResponse(ofgm.getExchangeResponse());
+                }
                 break;
             case SUBSCRIPTIONRESPONSE:
                 log(ofgm);
                 // Update Subscription State
                 this.subscriptionManager.updateSubscriptionState(ofgm.getSubscriptionResponse());
-                clientHandler.onSubscriptionResponse(ofgm.getSubscriptionResponse());
+                if (clientHandler != null) {
+                    clientHandler.onSubscriptionResponse(ofgm.getSubscriptionResponse());
+                }
                 break;
             case MARKETSTATUS:
                 log(ofgm);
-                clientHandler.onMarketStatus(ofgm.getMarketStatus());
+                if (clientHandler != null) {
+                    clientHandler.onMarketStatus(ofgm.getMarketStatus());
+                }
                 break;
             case HEARTBEAT:
-                if(config.isLogHeartBeat()) {
+                if (config.isLogHeartBeat()) {
                     logMsg(ofgm);
                 }
-                clientHandler.onHeartBeat(ofgm.getHeartBeat());
+                if (clientHandler != null) {
+                    clientHandler.onHeartBeat(ofgm.getHeartBeat());
+                }
                 break;
             case INSTRUMENTDEFINITION:
                 InstrumentDefinition def = ofgm.getInstrumentDefinition();
                 this.client.addMapping(def);
-                clientHandler.onInstrumentDefinition(ofgm.getInstrumentDefinition());
+                if (clientHandler != null) {
+                    clientHandler.onInstrumentDefinition(ofgm.getInstrumentDefinition());
+                }
                 break;
             case MARKETSNAPSHOT:
-                clientHandler.onMarketSnapshot(ofgm.getMarketSnapshot());
+                if (clientHandler != null) {
+                    clientHandler.onMarketSnapshot(ofgm.getMarketSnapshot());
+                }
                 break;
             case MARKETUPDATE:
-                clientHandler.onMarketUpdate(ofgm.getMarketUpdate());
+                if (clientHandler != null) {
+                    clientHandler.onMarketUpdate(ofgm.getMarketUpdate());
+                }
                 break;
             case VOLUMEATPRICE:
-                clientHandler.onVolumeAtPrice(ofgm.getVolumeAtPrice());
+                if (clientHandler != null) {
+                    clientHandler.onVolumeAtPrice(ofgm.getVolumeAtPrice());
+                }
                 break;
             case OHLC:
-                clientHandler.onOhlc(ofgm.getOhlc());
+                if (clientHandler != null) {
+                    clientHandler.onOhlc(ofgm.getOhlc());
+                }
                 break;
             case INSTRUMENTACTION:
-                clientHandler.onInstrumentAction(ofgm.getInstrumentAction());
+                if (clientHandler != null) {
+                    clientHandler.onInstrumentAction(ofgm.getInstrumentAction());
+                }
                 break;
             default:
             case DATA_NOT_SET:
                 break;
         }
 
+        if(messageHandler != null) {
+            messageHandler.onMessage(bytes);
+        }
+
     }
 
     private void log(OpenfeedGatewayMessage ofmsg) {
-        if(config.isLogRequestResponse()) {
+        if (config.isLogRequestResponse()) {
             logMsg(ofmsg);
         }
     }

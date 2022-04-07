@@ -70,13 +70,21 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
     public OpenfeedClientWebSocket(OpenfeedClientConfigImpl config, OpenfeedClientEventHandler eventHandler,
-                                   OpenfeedClientHandler clientHandler,OpenfeedClientMessageHandler messageHandler) {
+                                   OpenfeedClientMessageHandler messageHandler) {
+        this(config,eventHandler,null,messageHandler);
+    }
+
+    public OpenfeedClientWebSocket(OpenfeedClientConfigImpl config,
+                                   OpenfeedClientEventHandler eventHandler,
+                                   OpenfeedClientHandler clientHandler,
+                                   OpenfeedClientMessageHandler messageHandler) {
         this.config = config;
         this.eventHandler = eventHandler;
         this.clientHandler = clientHandler;
         this.messageHandler = messageHandler;
         this.clientVersion = getClientVersion();
     }
+
 
     private String getClientVersion() {
         Package jarPackage = this.getClass().getPackage();
