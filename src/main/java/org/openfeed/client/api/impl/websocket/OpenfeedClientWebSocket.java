@@ -41,7 +41,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private static final int BUF_SIZE_ENCODE = 1 * 1024;
     private static final int RCV_BUF_SIZE = 10 * (1024 * 1024);
     private final OpenfeedClientConfigImpl config;
-    private Bootstrap clientBookstrap;
+    private Bootstrap clientBootstrap;
     private EventLoopGroup clientEventLoopGroup;
     private OpenfeedWebSocketHandler webSocketHandler;
     private URI uri;
@@ -176,14 +176,14 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         }
         log.debug("{}: Using EventLoop: {}", config.getClientId(), clientEventLoopGroup.getClass());
         try {
-            clientBookstrap = new Bootstrap();
-            clientBookstrap.group(clientEventLoopGroup);
+            clientBootstrap = new Bootstrap();
+            clientBootstrap.group(clientEventLoopGroup);
             if (epoll) {
-                clientBookstrap.channel(EpollSocketChannel.class);
+                clientBootstrap.channel(EpollSocketChannel.class);
             } else {
-                clientBookstrap.channel(NioSocketChannel.class);
+                clientBootstrap.channel(NioSocketChannel.class);
             }
-            clientBookstrap.option(ChannelOption.TCP_NODELAY, true)
+            clientBootstrap.option(ChannelOption.TCP_NODELAY, true)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MSEC)
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     /*
@@ -221,7 +221,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         try {
             log.info("{}: Starting connection to: {}", config.getClientId(), uri);
             // Connect
-            ChannelFuture connnectFuture = clientBookstrap.connect(config.getHost(), config.getPort()).sync();
+            ChannelFuture connnectFuture = clientBootstrap.connect(config.getHost(), config.getPort()).sync();
             this.channel = connnectFuture.channel();
             // Wait for connect
             webSocketHandler.handshakeFuture().sync();
