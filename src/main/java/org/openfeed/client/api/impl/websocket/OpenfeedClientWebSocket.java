@@ -39,7 +39,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private static final int CONNECT_TIMEOUT_MSEC = 3000;
     private static final long LOGIN_WAIT_SEC = 15;
     private static final int BUF_SIZE_ENCODE = 1 * 1024;
-    private static final int RCV_BUF_SIZE = 10 * (1024 * 1024);
     private final OpenfeedClientConfigImpl config;
     private Bootstrap clientBootstrap;
     private EventLoopGroup clientEventLoopGroup;
@@ -190,7 +189,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                      * The default value is set by the /proc/sys/net/core/rmem_default file, and the
                      * maximum allowed value is set by the /proc/sys/net/core/rmem_max file.
                      */
-                    .option(ChannelOption.SO_RCVBUF, RCV_BUF_SIZE)
+                    .option(ChannelOption.SO_RCVBUF, config.getReceiveBufferSize())
                     //
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override

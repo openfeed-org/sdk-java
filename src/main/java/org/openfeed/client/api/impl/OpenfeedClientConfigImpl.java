@@ -10,6 +10,7 @@ import java.util.*;
 
 public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private static final long RECONNECT_TIMEOUT_WAIT_MS = 2000;
+    private static final int RCV_BUF_SIZE = 10 * (1024 * 1024);
 
     private String clientId = UUID.randomUUID().toString();
     // Connection
@@ -20,6 +21,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private String password = "";
     private boolean reconnect = true;
     private long reconnectDelayMs = RECONNECT_TIMEOUT_WAIT_MS;
+    private int receiveBufferSize = RCV_BUF_SIZE;
 
     // Subscriptions
     private String[] symbols = null;
@@ -476,6 +478,14 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     @Override
     public int getSnapshotIntervalSec() {
         return snapshotIntervalSec;
+    }
+
+    public int getReceiveBufferSize() {
+        return receiveBufferSize;
+    }
+
+    public void setReceiveBufferSize(int receiveBufferSize) {
+        this.receiveBufferSize = receiveBufferSize;
     }
 
     public void setSnapshotIntervalSec(int snapshotIntervalSec) {
