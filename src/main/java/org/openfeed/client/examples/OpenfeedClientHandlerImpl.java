@@ -108,7 +108,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     @Override
     public void onMarketSnapshot(MarketSnapshot snapshot) {
         if (config.isLogSnapshot()) {
-            log.info("{}: < {}", config.getClientId(), PbUtil.toJson(snapshot));
+            log.info("SNAPSHOT {}: < {}", config.getClientId(), PbUtil.toJson(snapshot));
         }
         connectionStats.getMessageStats().incrSnapshots();
         updateExchangeStats(snapshot.getMarketId(), StatType.snapshot);
@@ -138,7 +138,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
             symbol = definition.getSymbol();
         }
         if (config.isLogUpdate()) {
-            log.info("{}: {}: < {}", config.getClientId(), symbol, PbUtil.toJson(update));
+            log.info("UPDATE: {}: {}: < {}", config.getClientId(), symbol, PbUtil.toJson(update));
         }
 
         Optional<MarketState> market = marketsManager.getMarket(update.getMarketId());

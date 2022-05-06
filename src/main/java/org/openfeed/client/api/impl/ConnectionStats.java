@@ -1,38 +1,39 @@
 package org.openfeed.client.api.impl;
 
-import java.util.Comparator;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.agrona.collections.Object2ObjectHashMap;
-
 public class ConnectionStats {
-
     private MessageStats overallStats = new MessageStats();
-    // Key = channelId:exchangeCode
-    private Map<String, MessageStats> exchangeToMessageStats = new Object2ObjectHashMap<String, MessageStats>();
+
+    private Map<String, MessageStats>[] channelToExchangeToMessageStats = new Map[256];
 
     public MessageStats getMessageStats() {
         return this.overallStats;
     }
 
-    public MessageStats getExchangeMessageStats(int channel,String exchangeCode) {
-        return this.exchangeToMessageStats.computeIfAbsent(MessageStats.makeExchangeKey(channel,exchangeCode), key -> new MessageStats(channel,exchangeCode));
+    public MessageStats getExchangeMessageStats(int channel, String exchangeCode) {
+        if (channelToExchangeToMessageStats[channel] == null) {
+            channelToExchangeToMessageStats[channel] = new HashMap<>();
+        }
+        return this.channelToExchangeToMessageStats[channel]
+                .computeIfAbsent(exchangeCode, key -> new MessageStats(channel,exchangeCode));
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("\nOverall: " + overallStats + "\n");
-        exchangeToMessageStats.values().stream().sorted(Comparator.comparing(MessageStats::getId)).forEach((stats) -> {
-            sb.append("\t " + stats + "\n");
-        });
+
+        Arrays.stream(channelToExchangeToMessageStats).filter(m -> m != null)
+                .forEach( m -> m.values().forEach(stats ->
+            sb.append("\t " + stats + "\n") ));
+
         return sb.toString();
     }
 
     public void clear() {
         overallStats.clear();
-        exchangeToMessageStats.forEach( (code, stats) -> {
-            stats.clear();
-        });
+        Arrays.stream(channelToExchangeToMessageStats).filter(m -> m != null).forEach( m -> m.clear());
     }
-
 }
