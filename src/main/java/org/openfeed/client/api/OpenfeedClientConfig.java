@@ -20,6 +20,7 @@ public interface OpenfeedClientConfig {
     // Re-connects if the connection is dropped. Defaults to true.
     boolean isReconnect();
     long getReconnectDelayMs();
+    int getReceiveBufferSize();
 
     // Service Type
     Service getService();

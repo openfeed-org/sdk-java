@@ -159,7 +159,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         } catch (URISyntaxException ex) {
             log.error("{}: Invalid URL err: {}", config.getClientId(), ex.getMessage());
         }
-        log.info("{}: Initializing connection to: {}", config.getClientId(), uri);
+        log.info("{}: Initializing connection to: {} recBufSize: {}", config.getClientId(), uri,config.getReceiveBufferSize());
         // Connect with V13 (RFC 6455 aka HyBi-17).
         webSocketHandler = new OpenfeedWebSocketHandler(config, this, this.subscriptionManager, clientHandler, WebSocketClientHandshakerFactory
                 .newHandshaker(uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()),messageHandler);

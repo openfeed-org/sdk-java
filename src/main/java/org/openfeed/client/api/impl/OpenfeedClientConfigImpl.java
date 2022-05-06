@@ -68,6 +68,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.password = this.password;
         o.reconnect = this.reconnect;
         o.reconnectDelayMs = this.reconnectDelayMs;
+        o.receiveBufferSize = this.receiveBufferSize;
         //
         o.symbols = this.symbols;
         o.marketIds = this.marketIds;
@@ -480,6 +481,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         return snapshotIntervalSec;
     }
 
+    @Override
     public int getReceiveBufferSize() {
         return receiveBufferSize;
     }
