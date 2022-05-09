@@ -21,7 +21,10 @@ import org.openfeed.*;
 import org.openfeed.SubscriptionRequest.Request.Builder;
 import org.openfeed.client.api.*;
 import org.openfeed.client.api.OpenfeedEvent.EventType;
-import org.openfeed.client.api.impl.*;
+import org.openfeed.client.api.impl.OpenfeedClientConfigImpl;
+import org.openfeed.client.api.impl.PbUtil;
+import org.openfeed.client.api.impl.Subscription;
+import org.openfeed.client.api.impl.SubscriptionManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -622,6 +625,16 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         return sb.toString();
     }
 
+    private String createSubscriptionId(String userName, Service service, SubscriptionRequest subscriptionRequest) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(userName);
+        sb.append(":");
+        sb.append(service.getNumber());
+        sb.append(":");
+        sb.append(PbUtil.toJson(subscriptionRequest));
+        return sb.toString();
+    }
+
     private String createSubscriptionId(String userName, Service service, SubscriptionType[] subscriptionTypes, Integer[] ids) {
         StringBuilder sb = new StringBuilder();
         sb.append(userName);
@@ -714,6 +727,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             throw new RuntimeException("Not logged in.");
         }
         OpenfeedGatewayRequest req = request().setSubscriptionRequest(request).build();
+        String subscriptionId = createSubscriptionId(config.getUserName(),request.getService(),request);
+        subscriptionManager.addSubscription(subscriptionId, request);
         send(req);
     }
 

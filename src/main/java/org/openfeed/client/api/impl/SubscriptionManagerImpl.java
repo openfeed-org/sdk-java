@@ -96,6 +96,13 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
+    public void addSubscription(String subscriptionId, SubscriptionRequest subReq) {
+        Subscription subscription = new Subscription(subscriptionId, subReq);
+        subscriptionIdToSubscription.put(subscriptionId, subscription);
+        correlationIdToSubscription.put(subReq.getCorrelationId(), subscription);
+    }
+
+    @Override
     public void addSubscriptionExchange(String subscriptionId, SubscriptionRequest subReq, String[] exchanges,long correlationId) {
         Subscription subscription = new Subscription(subscriptionId, subReq, exchanges,correlationId, true);
         subscriptionIdToSubscription.put(subscriptionId, subscription);

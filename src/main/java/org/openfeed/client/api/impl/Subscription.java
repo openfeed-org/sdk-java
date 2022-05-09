@@ -65,6 +65,11 @@ public class Subscription {
         }
     }
 
+    public Subscription(String subscriptionId, SubscriptionRequest subReq) {
+        this.subscriptionId = subscriptionId;
+        this.request = subReq;
+    }
+
     public Subscription.SubscriptionState getStateSymbol(String symbol) {
         return symboltoState.get(symbol);
     }

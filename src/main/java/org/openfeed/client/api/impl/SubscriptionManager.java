@@ -13,6 +13,7 @@ public interface SubscriptionManager {
 
     void addSubscription(String subscriptionId, SubscriptionRequest subReq, String[] symbols,long correlationId);
     void addSubscription(String subscriptionId, SubscriptionRequest subReq, Long [] marketIds,long correlationId);
+    void addSubscription(String subscriptionId, SubscriptionRequest subReq);
     void addSubscriptionExchange(String subscriptionId, SubscriptionRequest subReq, String[] exchanges,long correlationId);
     void addSubscriptionChannel(String subscriptionId, SubscriptionRequest subReq, Integer [] channelIds,long correlationId);
 
