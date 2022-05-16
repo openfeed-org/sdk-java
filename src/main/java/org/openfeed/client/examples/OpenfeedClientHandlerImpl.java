@@ -88,7 +88,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
     @Override
     public void onInstrumentDefinition(InstrumentDefinition definition) {
         if (config.isLogInstrument()) {
-            log.info("< {}", PbUtil.toJson(definition));
+            log.info("INSTRUMENT {}: < {}", config.getClientId(), PbUtil.toJson(definition));
         }
         connectionStats.getMessageStats().incrInstruments();
         this.instrumentCache.addInstrument(definition);
