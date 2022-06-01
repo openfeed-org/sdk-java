@@ -42,6 +42,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private static final int CONNECT_TIMEOUT_MSEC = 3000;
     private static final long LOGIN_WAIT_SEC = 15;
     private static final int BUF_SIZE_ENCODE = 1 * 1024;
+    private static final int PROTOCOL_VERSION = 1;
     private final OpenfeedClientConfigImpl config;
     private Bootstrap clientBootstrap;
     private EventLoopGroup clientEventLoopGroup;
@@ -303,7 +304,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     private void login() {
         LoginRequest request = LoginRequest.newBuilder().setCorrelationId(correlationId++)
-                .setUsername(config.getUserName()).setPassword(config.getPassword()).setClientVersion(clientVersion).build();
+                .setUsername(config.getUserName()).setPassword(config.getPassword())
+                .setClientVersion(clientVersion).setProtocolVersion(PROTOCOL_VERSION).build();
         OpenfeedGatewayRequest ofreq = request().setLoginRequest(request).build();
         send(ofreq);
         this.loginFuture = this.channel.newPromise();
