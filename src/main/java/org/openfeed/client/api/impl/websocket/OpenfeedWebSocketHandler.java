@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -119,20 +120,24 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         } else if (frame instanceof BinaryWebSocketFrame) {
             try {
                 BinaryWebSocketFrame binaryFrame = (BinaryWebSocketFrame) frame;
-                final byte[] array;
+
                 ByteBuf binBuf = frame.content();
                 final int length = binBuf.readableBytes();
                 if (this.config.isWireStats()) {
                     this.stats.update(length);
                 }
 
-                if (messageHandler != null) {// make copy
-                    array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, true);
-                } else {
-                    array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, false);
+                final byte[] array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, false);
+                final ByteBuffer byteBuffer = ByteBuffer.wrap(array);
+
+                while (byteBuffer.remaining() > 0) {
+                    int msgLen = byteBuffer.getShort();
+                    byte[] ofMsgBytes = new byte[msgLen];
+                    byteBuffer.get(ofMsgBytes);
+                    OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(ofMsgBytes);
+                    handleResponse(rsp, ofMsgBytes);
                 }
-                OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(array);
-                handleResponse(rsp, array);
+
             } catch (Exception e) {
                 log.error("{}: Could not process message: ", ctx.channel().remoteAddress(), e);
             }
