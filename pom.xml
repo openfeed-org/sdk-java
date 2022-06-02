@@ -197,7 +197,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Always generate sources jar. -->
+            <!-- Always generate sources jar.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -211,6 +211,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
         </plugins>
     </build>
 
@@ -225,13 +226,12 @@
             </activation>
             <build>
                 <plugins>
-                    <!-- Release must contain sources. -->
+                    <!-- Release must contain sources.
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
                         <executions>
                             <execution>
-                                <!-- Provide custom execution id. -->
                                 <id>attach-sources-no-fork-release</id>
                                 <phase>package</phase>
                                 <goals>
@@ -240,6 +240,7 @@
                             </execution>
                         </executions>
                     </plugin>
+                    -->
                     <!-- Release must be signed. -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
