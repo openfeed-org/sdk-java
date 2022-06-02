@@ -11,6 +11,7 @@
         <url>https://github.com/openfeed-org/sdk-java</url>
         <connection>scm:git:https://github.com/openfeed-org/sdk-java.git</connection>
         <developerConnection>scm:git:ssh://https://github.com/openfeed-org/sdk-java.git</developerConnection>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
