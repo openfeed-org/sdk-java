@@ -232,7 +232,7 @@
                         <executions>
                             <execution>
                                 <!-- Provide custom execution id. -->
-                                <id>attach-sources-no-fork</id>
+                                <id>attach-sources-no-fork-release</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>jar-no-fork</goal>
