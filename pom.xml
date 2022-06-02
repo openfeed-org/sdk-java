@@ -4,7 +4,26 @@
     <groupId>org.openfeed</groupId>
     <artifactId>openfeed-client</artifactId>
     <version>1.0.1-SNAPSHOT</version>
+
     <name>openfeed-client</name>
+    <description>Openfeed Java Client</description>
+    <url>https://github.com/openfeed-org/sdk-java</url>
+
+    <licenses>
+        <license>
+            <name>The MIT License</name>
+            <url>http://www.opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>openfeed.org</id>
+            <name>Openfeed</name>
+            <email>http://www.openfeed.org/</email>
+        </developer>
+    </developers>
 
     <scm>
         <url>https://github.com/openfeed-org/sdk-java</url>
@@ -12,6 +31,7 @@
         <developerConnection>scm:git:ssh://git@github.com/openfeed-org/sdk-java.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+
 
     <properties>
         <projectJavaVersion>11</projectJavaVersion>
@@ -180,6 +200,50 @@
         </plugins>
     </build>
 
+    <profiles>
+        <!-- Activated during release. See maven-release-plugin. -->
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Release must contain sources. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <!-- Provide custom execution id. -->
+                                <id>attach-sources-no-fork</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Release must be signed. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencyManagement>
         <dependencies>
