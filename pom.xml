@@ -3,7 +3,7 @@
 
     <groupId>org.openfeed</groupId>
     <artifactId>openfeed-client</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.5-SNAPSHOT</version>
 
     <name>openfeed-client</name>
     <description>Openfeed Java Client</description>
