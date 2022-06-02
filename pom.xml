@@ -9,8 +9,8 @@
 
     <scm>
         <url>https://github.com/openfeed-org/sdk-java</url>
-        <connection>scm:git:https://github.com/openfeed-org/sdk-java.git</connection>
-        <developerConnection>scm:git:ssh://https://github.com/openfeed-org/sdk-java.git</developerConnection>
+        <connection>scm:git:git://github.com/openfeed-org/sdk-java.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/openfeed-org/sdk-java.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
