@@ -1,10 +1,7 @@
 package org.openfeed.client.api;
 
 import io.netty.channel.ChannelPromise;
-import org.openfeed.InstrumentDefinition;
-import org.openfeed.Service;
-import org.openfeed.SubscriptionRequest;
-import org.openfeed.SubscriptionType;
+import org.openfeed.*;
 import org.openfeed.client.api.impl.Subscription;
 
 import java.util.Collection;
@@ -93,7 +90,7 @@ public interface OpenfeedClient {
      */
     String subscribeExchange(Service service, SubscriptionType subscriptionType, String[] exchanges);
     String subscribeExchange(Service service, SubscriptionType [] subscriptionTypes, String[] exchanges);
-    String subscribeExchange(Service service, SubscriptionType [] subscriptionTypes, InstrumentDefinition.InstrumentType [] instrumentTypes, String[] exchanges);
+    String subscribeExchange(Service service, SubscriptionType [] subscriptionTypes, InstrumentDefinition.InstrumentType [] instrumentTypes, String[] exchanges, BulkSubscriptionFilter[] bulkSubscriptionFilters);
 
     /**
      *
@@ -104,7 +101,7 @@ public interface OpenfeedClient {
      */
     String subscribeChannel(Service service, SubscriptionType subscriptionType, int[] channelIds);
     String subscribeChannel(Service service, SubscriptionType [] subscriptionType, int[] channelIds);
-    String subscribeChannel(Service service, SubscriptionType [] subscriptionType, InstrumentDefinition.InstrumentType [] instrumentTypes, int[] channelIds);
+    String subscribeChannel(Service service, SubscriptionType [] subscriptionType, InstrumentDefinition.InstrumentType [] instrumentTypes, int[] channelIds, BulkSubscriptionFilter[] bulkSubscriptionFilters);
 
     /**
      * Subscribe for Realtime Snapshots at specific interval

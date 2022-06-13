@@ -6,9 +6,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.openfeed.InstrumentDefinition;
-import org.openfeed.Service;
-import org.openfeed.SubscriptionType;
+import org.openfeed.*;
 import org.openfeed.client.api.InstrumentCache;
 import org.openfeed.client.api.OpenfeedClientEventHandler;
 import org.openfeed.client.api.OpenfeedClientHandler;
@@ -57,6 +55,9 @@ public class OpenfeedClientExampleMain {
         // Instrument types
         options.addOption(Option.builder("it").hasArg()
                 .desc("Instrument Types, comma separated.  []]").build());
+        // Bulk subscription filter
+        options.addOption(Option.builder("bf").hasArg()
+                .desc("Bulk subscription regular expression filter, comma separated. For example, to filter symbols starting with Barchart symbol 'A', use 'BARCHART:^A.*' []]").build());
         options.addOption(Option.builder("qp").desc("Quote Participant Subscription").build());
         options.addOption(Option.builder("t").desc("Trades Subscription").build());
         // Instruments
@@ -155,6 +156,17 @@ public class OpenfeedClientExampleMain {
             String[] types = v.split(",");
             for (String t : types) {
                 config.addInstrumentType(InstrumentDefinition.InstrumentType.valueOf(t.toUpperCase()));
+            }
+        }
+        if (cmdLine.hasOption("bf")) {
+            v = cmdLine.getOptionValue("bf");
+            String[] filters = v.split(",");
+            for (String filterDef : filters) {
+                String filterParams[] = filterDef.split(":");
+                config.addBulkSubscriptionFilter(BulkSubscriptionFilter.newBuilder()
+                        .setSymbolType(SymbolType.valueOf(filterParams[0]))
+                        .setSymbolPattern(filterParams[1])
+                        .build());
             }
         }
         if (cmdLine.hasOption("qp")) {

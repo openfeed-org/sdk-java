@@ -1,5 +1,6 @@
 package org.openfeed.client.api;
 
+import org.openfeed.BulkSubscriptionFilter;
 import org.openfeed.InstrumentDefinition;
 import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
@@ -60,6 +61,7 @@ public interface OpenfeedClientConfig {
     boolean isWireStats();
     boolean isDisableClientOnDuplicateLogin();
 
+    BulkSubscriptionFilter[] getBulkSubscriptionFilters();
 
 
     enum WireProtocol {

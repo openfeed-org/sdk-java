@@ -110,9 +110,9 @@ public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandle
                 client.subscribe(config.getService(), SubscriptionType.QUOTE, config.getMarketIds());
             }
         } else if (config.getExchanges() != null && config.getExchanges().length > 0) {
-            client.subscribeExchange(config.getService(), config.getSubscriptionTypes(), config.getInstrumentTypes(), config.getExchanges());
+            client.subscribeExchange(config.getService(), config.getSubscriptionTypes(), config.getInstrumentTypes(), config.getExchanges(), config.getBulkSubscriptionFilters());
         } else if (config.getChannelIds() != null && config.getChannelIds().length > 0) {
-            client.subscribeChannel(config.getService(), config.getSubscriptionTypes(), config.getInstrumentTypes(), config.getChannelIds());
+            client.subscribeChannel(config.getService(), config.getSubscriptionTypes(), config.getInstrumentTypes(), config.getChannelIds(), config.getBulkSubscriptionFilters());
         }
     }
 }

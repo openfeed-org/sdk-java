@@ -763,11 +763,11 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public String subscribeExchange(Service service, SubscriptionType[] subscriptionTypes, String[] exchanges) {
-        return subscribeExchange(service, subscriptionTypes, new InstrumentDefinition.InstrumentType[0], exchanges);
+        return subscribeExchange(service, subscriptionTypes, new InstrumentDefinition.InstrumentType[0], exchanges, null);
     }
 
     @Override
-    public String subscribeExchange(Service service, SubscriptionType[] subscriptionTypes, InstrumentDefinition.InstrumentType[] instrumentTypes, String[] exchanges) {
+    public String subscribeExchange(Service service, SubscriptionType[] subscriptionTypes, InstrumentDefinition.InstrumentType[] instrumentTypes, String[] exchanges, BulkSubscriptionFilter[] bulkSubscriptionFilters) {
         if (!isLoggedIn()) {
             throw new RuntimeException("Not logged in.");
         }
@@ -787,6 +787,9 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             subTypes.forEach(type -> subReq.addSubscriptionType(type));
             // Instrument Types
             Arrays.stream(instrumentTypes).forEach(type -> subReq.addInstrumentType(type));
+            if (bulkSubscriptionFilters != null) {
+                Arrays.stream(bulkSubscriptionFilters).forEach(f -> subReq.addBulkSubscriptionFilter(f));
+            }
             request.addRequests(subReq);
         }
         SubscriptionRequest subReq = request.build();
@@ -827,11 +830,11 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public String subscribeChannel(Service service, SubscriptionType[] subscriptionTypes, int[] channelIds) {
-        return subscribeChannel(service, subscriptionTypes, new InstrumentDefinition.InstrumentType[0], channelIds);
+        return subscribeChannel(service, subscriptionTypes, new InstrumentDefinition.InstrumentType[0], channelIds, null);
     }
 
     @Override
-    public String subscribeChannel(Service service, SubscriptionType[] subscriptionTypes, InstrumentDefinition.InstrumentType[] instrumentTypes, int[] channelIds) {
+    public String subscribeChannel(Service service, SubscriptionType[] subscriptionTypes, InstrumentDefinition.InstrumentType[] instrumentTypes, int[] channelIds, BulkSubscriptionFilter[] bulkSubscriptionFilters) {
         if (!isLoggedIn()) {
             throw new RuntimeException("Not logged in.");
         }
@@ -850,6 +853,9 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             subTypes.forEach(type -> subReq.addSubscriptionType(type));
             // Instrument Types
             Arrays.stream(instrumentTypes).forEach(type -> subReq.addInstrumentType(type));
+            if (bulkSubscriptionFilters != null) {
+                Arrays.stream(bulkSubscriptionFilters).forEach(f -> subReq.addBulkSubscriptionFilter(f));
+            }
             request.addRequests(subReq);
         }
         SubscriptionRequest subReq = request.build();

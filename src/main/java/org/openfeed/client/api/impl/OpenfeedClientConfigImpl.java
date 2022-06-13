@@ -1,6 +1,7 @@
 package org.openfeed.client.api.impl;
 
 import com.google.common.base.MoreObjects;
+import org.openfeed.BulkSubscriptionFilter;
 import org.openfeed.InstrumentDefinition;
 import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
@@ -33,6 +34,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     //
     private Set<SubscriptionType> subscriptionTypes = new HashSet<>();
     private Set<InstrumentDefinition.InstrumentType> instrumentTypes = new HashSet<>();
+    private List<BulkSubscriptionFilter> bulkSubscriptionFilters = new ArrayList<>();
     private int snapshotIntervalSec;
     private boolean instrumentRequest;
     private boolean instrumentCrossReferenceRequest;
@@ -77,6 +79,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         //
         o.subscriptionTypes.addAll(this.subscriptionTypes);
         o.instrumentTypes.addAll(this.instrumentTypes);
+        o.bulkSubscriptionFilters.addAll(this.bulkSubscriptionFilters);
         o.snapshotIntervalSec = this.snapshotIntervalSec;
         o.instrumentRequest = this.instrumentRequest;
         o.instrumentCrossReferenceRequest = this.instrumentCrossReferenceRequest;
@@ -394,6 +397,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     @Override
     public boolean isDisableClientOnDuplicateLogin() {
         return this.disableClientOnDuplicateLogin;
+    }
+
+    @Override
+    public BulkSubscriptionFilter[] getBulkSubscriptionFilters() {
+        return bulkSubscriptionFilters.toArray(new BulkSubscriptionFilter[0]);
+    }
+
+    public void addBulkSubscriptionFilter(BulkSubscriptionFilter bulkSubscriptionFilter) {
+        this.bulkSubscriptionFilters.add(bulkSubscriptionFilter);
     }
 
     public void setDisableClientOnDuplicateLogin(boolean v) {
