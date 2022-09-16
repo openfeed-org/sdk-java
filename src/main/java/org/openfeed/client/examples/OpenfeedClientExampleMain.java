@@ -65,6 +65,7 @@ public class OpenfeedClientExampleMain {
         options.addOption(
                 Option.builder("irx").desc("instrument cross reference request, requires -s,-e or -ids").build());
         //
+        options.addOption(Option.builder("scheme").hasArg().desc("URI Scheme, defaults to" + config.getScheme()).build());
         options.addOption(Option.builder("host").hasArg().desc("Host, defaults " + config.getHost()).build());
         options.addOption(Option.builder("port").hasArg().desc("Port, defaults " + config.getPort()).build());
         //
@@ -78,6 +79,7 @@ public class OpenfeedClientExampleMain {
         options.addOption(Option.builder("lo").desc("log ohlc").build());
         options.addOption(Option.builder("ltco").desc("log trade correction").build());
         options.addOption(Option.builder("ld").desc("log depth").build());
+        options.addOption(Option.builder("lw").desc("log wire").build());
         //
         options.addOption(Option.builder("mh").desc("Use message handler").build());
         options.addOption(Option.builder("h").desc("help").build());
@@ -184,6 +186,9 @@ public class OpenfeedClientExampleMain {
         if (cmdLine.hasOption("er")) {
             config.setExchangeRequest(true);
         }
+        if (cmdLine.hasOption("scheme")) {
+            config.setScheme(cmdLine.getOptionValue("scheme"));
+        }
         if (cmdLine.hasOption("host")) {
             config.setHost(cmdLine.getOptionValue("host"));
         }
@@ -219,6 +224,9 @@ public class OpenfeedClientExampleMain {
         }
         if (cmdLine.hasOption("ld")) {
             config.setLogDepth(true);
+        }
+        if (cmdLine.hasOption("lw")) {
+            config.setLogWire(true);
         }
         if (cmdLine.hasOption("mh")) {
             useMessageHandler = true;

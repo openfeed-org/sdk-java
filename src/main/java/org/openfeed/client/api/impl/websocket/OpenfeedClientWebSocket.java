@@ -16,6 +16,11 @@ import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.agrona.collections.Long2ObjectHashMap;
 import org.openfeed.*;
 import org.openfeed.SubscriptionRequest.Request.Builder;
@@ -28,6 +33,7 @@ import org.openfeed.client.api.impl.SubscriptionManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -37,12 +43,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
+
     private static final Logger log = LoggerFactory.getLogger(OpenfeedClientWebSocket.class);
     private static final String OS = System.getProperty("os.name").toLowerCase();
     private static final int CONNECT_TIMEOUT_MSEC = 3000;
     private static final long LOGIN_WAIT_SEC = 15;
     private static final int BUF_SIZE_ENCODE = 1 * 1024;
     private static final int PROTOCOL_VERSION = 1;
+    private static final int WSS_PORT = 443;
     private final OpenfeedClientConfigImpl config;
     private Bootstrap clientBootstrap;
     private EventLoopGroup clientEventLoopGroup;
@@ -69,12 +77,12 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     public OpenfeedClientWebSocket(OpenfeedClientConfigImpl config, OpenfeedClientEventHandler eventHandler,
                                    OpenfeedClientHandler clientHandler) {
-        this(config,eventHandler,clientHandler,null);
+        this(config, eventHandler, clientHandler, null);
     }
 
     public OpenfeedClientWebSocket(OpenfeedClientConfigImpl config, OpenfeedClientEventHandler eventHandler,
                                    OpenfeedClientMessageHandler messageHandler) {
-        this(config,eventHandler,null,messageHandler);
+        this(config, eventHandler, null, messageHandler);
     }
 
     public OpenfeedClientWebSocket(OpenfeedClientConfigImpl config,
@@ -93,14 +101,14 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         Package jarPackage = this.getClass().getPackage();
         String version = jarPackage.getImplementationVersion() != null ? jarPackage.getImplementationVersion() : "1.0.0";
         StringBuilder sb = new StringBuilder();
-        sb.append("sdk-java"+":");
+        sb.append("sdk-java" + ":");
         sb.append(version + ":");
-        sb.append(System.getProperty("java.version","") + ":");
-        sb.append(System.getProperty("java.vendor","")+ ":");
-        sb.append(System.getProperty("java.name","")+ ":");
-        sb.append(System.getProperty("os.name","")+ ":");
-        sb.append(System.getProperty("os.version","") + ":");
-        sb.append(System.getProperty("os.arch",""));
+        sb.append(System.getProperty("java.version", "") + ":");
+        sb.append(System.getProperty("java.vendor", "") + ":");
+        sb.append(System.getProperty("java.name", "") + ":");
+        sb.append(System.getProperty("os.name", "") + ":");
+        sb.append(System.getProperty("os.version", "") + ":");
+        sb.append(System.getProperty("os.arch", ""));
         return sb.toString();
     }
 
@@ -158,15 +166,27 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     private void init() {
         uri = null;
+        final boolean ssl = config.getScheme().equalsIgnoreCase("wss");
+        SslContext sslCtx = null;
+        if (ssl) {
+            try {
+                sslCtx = SslContextBuilder.forClient()
+                        .trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+                config.setPort(WSS_PORT);
+            } catch (SSLException e) {
+                log.error("{}: Could not initialize SSL: {}", config.getClientId(), e.getMessage());
+            }
+        }
         try {
-            uri = new URI("ws://" + config.getHost() + ":" + config.getPort() + "/ws");
+            uri = new URI(config.getScheme() + "://" + config.getHost() + ":" + config.getPort() + "/ws");
         } catch (URISyntaxException ex) {
             log.error("{}: Invalid URL err: {}", config.getClientId(), ex.getMessage());
         }
-        log.info("{}: Initializing connection to: {} recBufSize: {}", config.getClientId(), uri,config.getReceiveBufferSize());
+
+        log.info("{}: Initializing connection to: {} recBufSize: {}", config.getClientId(), uri, config.getReceiveBufferSize());
         // Connect with V13 (RFC 6455 aka HyBi-17).
         webSocketHandler = new OpenfeedWebSocketHandler(config, this, this.subscriptionManager, clientHandler, WebSocketClientHandshakerFactory
-                .newHandshaker(uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()),messageHandler);
+                .newHandshaker(uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()), messageHandler);
         boolean epoll = OS.indexOf("linux") >= 0 ? true : false;
 
         // Ensure previous event loop was shutdown
@@ -186,6 +206,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             } else {
                 clientBootstrap.channel(NioSocketChannel.class);
             }
+            final SslContext sslCtxFinal = sslCtx;
             clientBootstrap.option(ChannelOption.TCP_NODELAY, true)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MSEC)
                     .option(ChannelOption.SO_KEEPALIVE, true)
@@ -199,8 +220,14 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline p = ch.pipeline();
+                            if (sslCtxFinal != null) {
+                                p.addLast(sslCtxFinal.newHandler(ch.alloc(), config.getHost(), config.getPort()));
+                            }
                             p.addLast(new HttpClientCodec());
                             p.addLast(new HttpObjectAggregator(512 * 1024));
+                            if (config.isLogWire()) {
+                                p.addLast(new LoggingHandler(LogLevel.INFO));
+                            }
                             p.addLast(webSocketHandler);
                         }
                     });
@@ -325,7 +352,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
     private void log(OpenfeedGatewayRequest ofreq) {
-        if(config.isLogRequestResponse()) {
+        if (config.isLogRequestResponse()) {
             log.info("{} > {}", config.getClientId(), PbUtil.toJson(ofreq));
         }
     }
@@ -602,7 +629,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
 
-
     private String createSubscriptionId(String userName, Service service, SubscriptionType[] subscriptionTypes, String[] symbols) {
         StringBuilder sb = new StringBuilder();
         sb.append(userName);
@@ -661,7 +687,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public String subscribe(Service service, SubscriptionType subscriptionType, long marketId) {
-       return subscribe(service,subscriptionType,new long [] { marketId });
+        return subscribe(service, subscriptionType, new long[]{marketId});
     }
 
 
@@ -729,7 +755,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             throw new RuntimeException("Not logged in.");
         }
         OpenfeedGatewayRequest req = request().setSubscriptionRequest(request).build();
-        String subscriptionId = createSubscriptionId(config.getUserName(),request.getService(),request);
+        String subscriptionId = createSubscriptionId(config.getUserName(), request.getService(), request);
         subscriptionManager.addSubscription(subscriptionId, request);
         send(req);
     }
@@ -873,7 +899,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public String subscribeSnapshot(Service service, String[] symbols, int intervalSec) {
-        return subscribeSnapshot(service,null,symbols,intervalSec);
+        return subscribeSnapshot(service, null, symbols, intervalSec);
     }
 
     @Override

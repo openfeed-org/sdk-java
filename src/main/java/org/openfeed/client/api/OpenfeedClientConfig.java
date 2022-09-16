@@ -13,6 +13,7 @@ public interface OpenfeedClientConfig {
     String getClientId();
 
     // Connection
+    String getScheme();
     String getHost();
     int getPort();
     WireProtocol getWireProtocol();
@@ -55,6 +56,7 @@ public interface OpenfeedClientConfig {
     boolean isLogOhlc();
     boolean isLogPrettyPrint();
     boolean isLogSymbol(String symbol);
+    boolean isLogWire();
 
     int getNumberOfConnections();
     int getStatsDisplaySeconds();
@@ -62,7 +64,6 @@ public interface OpenfeedClientConfig {
     boolean isDisableClientOnDuplicateLogin();
 
     BulkSubscriptionFilter[] getBulkSubscriptionFilters();
-
 
     enum WireProtocol {
         PB, JSON

@@ -15,6 +15,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     private String clientId = UUID.randomUUID().toString();
     // Connection
+    private String scheme = "ws";
     private String host = "openfeed.aws.barchart.com";
     private int port = 80;
     private WireProtocol wireProtocol = WireProtocol.PB;
@@ -55,6 +56,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private boolean logOhlc;
     private boolean logPrettyPrint;
     private Set<String> logSymbols;
+    private boolean logWire;
     //
     private int numberOfConnections = 1;
     private int statsDisplaySeconds = 30;
@@ -63,6 +65,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     public OpenfeedClientConfigImpl dup() throws CloneNotSupportedException {
         OpenfeedClientConfigImpl o = new OpenfeedClientConfigImpl();
+        o.scheme = this.scheme;
         o.host = this.host;
         o.port = this.port;
         o.wireProtocol = this.wireProtocol;
@@ -99,6 +102,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.logTradeCancel = this.logTradeCancel;
         o.logTradeCorrection = this.logTradeCorrection;
         o.logSymbols = this.logSymbols;
+        o.logWire = this.logWire;
         //
         o.numberOfConnections = this.numberOfConnections;
         o.statsDisplaySeconds = this.statsDisplaySeconds;
@@ -108,7 +112,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("server", host + ":" + port).add("userName", userName)
+        return MoreObjects.toStringHelper(this).add("server", scheme + "//" + host + ":" + port).add("userName", userName)
                 .toString();
     }
 
@@ -119,6 +123,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    @Override
+    public String getScheme() {
+        return scheme;
+    }
+
+    public void setScheme(String scheme) {
+        this.scheme = scheme;
     }
 
     @Override
@@ -486,6 +499,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     public void setLogPrettyPrint(boolean logPrettyPrint) {
         this.logPrettyPrint = logPrettyPrint;
+    }
+
+    @Override
+    public boolean isLogWire() {
+        return logWire;
+    }
+
+    public void setLogWire(boolean logWire) {
+        this.logWire = logWire;
     }
 
     @Override
