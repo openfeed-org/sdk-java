@@ -11,6 +11,16 @@
 
 An executable jar will be build in `target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar`, with the main class being [OpenfeedClientExampleMain](src/main/java/org/openfeed/client/OpenfeedClientExampleMain.java) 
 
+## Maven Repository
+The latest released jar is in the Maven Repositories under:
+
+```text
+           <dependency>
+                <groupId>org.openfeed</groupId>
+                <artifactId>openfeed-client</artifactId>
+                <version><!-- Insert version --></version>
+            </dependency>
+```
 ## Command line examples
 
 ### Display Command Line Help
