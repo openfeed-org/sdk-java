@@ -8,7 +8,6 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
 import org.openfeed.*;
-import org.openfeed.client.api.OpenfeedClientConfig;
 import org.openfeed.client.api.OpenfeedClientHandler;
 import org.openfeed.client.api.OpenfeedClientMessageHandler;
 import org.openfeed.client.api.impl.OpenfeedClientConfigImpl;
@@ -18,7 +17,6 @@ import org.openfeed.client.api.impl.WireStats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -128,14 +126,18 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 }
 
                 final byte[] array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, false);
-                final ByteBuffer byteBuffer = ByteBuffer.wrap(array);
-
-                while (byteBuffer.remaining() > 0) {
-                    int msgLen = byteBuffer.getShort();
-                    byte[] ofMsgBytes = new byte[msgLen];
-                    byteBuffer.get(ofMsgBytes);
-                    OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(ofMsgBytes);
-                    handleResponse(rsp, ofMsgBytes);
+                if (config.getProtocolVersion() == 0) {
+                    OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(array);
+                    handleResponse(rsp, array);
+                } else {
+                    final ByteBuffer byteBuffer = ByteBuffer.wrap(array);
+                    while (byteBuffer.remaining() > 0) {
+                        int msgLen = byteBuffer.getShort();
+                        byte[] ofMsgBytes = new byte[msgLen];
+                        byteBuffer.get(ofMsgBytes);
+                        OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(ofMsgBytes);
+                        handleResponse(rsp, ofMsgBytes);
+                    }
                 }
 
             } catch (Exception e) {
@@ -290,7 +292,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 break;
         }
 
-        if(messageHandler != null) {
+        if (messageHandler != null) {
             messageHandler.onMessage(bytes);
         }
 

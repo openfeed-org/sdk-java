@@ -5,8 +5,6 @@ import org.openfeed.InstrumentDefinition;
 import org.openfeed.Service;
 import org.openfeed.SubscriptionType;
 
-import java.util.List;
-
 public interface OpenfeedClientConfig {
 
     // Unique Id for Client
@@ -16,6 +14,7 @@ public interface OpenfeedClientConfig {
     String getScheme();
     String getHost();
     int getPort();
+    int getProtocolVersion();
     WireProtocol getWireProtocol();
 	String getUserName();
 	String getPassword();

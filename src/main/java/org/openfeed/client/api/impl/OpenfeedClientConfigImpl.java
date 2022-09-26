@@ -12,12 +12,14 @@ import java.util.*;
 public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private static final long RECONNECT_TIMEOUT_WAIT_MS = 2000;
     private static final int RCV_BUF_SIZE = 10 * (1024 * 1024);
+    private static final int PROTOCOL_VERSION = 1;
 
     private String clientId = UUID.randomUUID().toString();
     // Connection
     private String scheme = "ws";
     private String host = "openfeed.aws.barchart.com";
     private int port = 80;
+    private int protocolVersion = PROTOCOL_VERSION;
     private WireProtocol wireProtocol = WireProtocol.PB;
     private String userName = "";
     private String password = "";
@@ -68,6 +70,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.scheme = this.scheme;
         o.host = this.host;
         o.port = this.port;
+        o.protocolVersion = this.protocolVersion;
         o.wireProtocol = this.wireProtocol;
         o.userName = this.userName;
         o.password = this.password;
@@ -150,6 +153,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    @Override
+    public int getProtocolVersion() {
+        return protocolVersion;
+    }
+
+    public void setProtocolVersion(int protocolVersion) {
+        this.protocolVersion = protocolVersion;
     }
 
     @Override
