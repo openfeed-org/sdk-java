@@ -133,9 +133,20 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                     final ByteBuffer byteBuffer = ByteBuffer.wrap(array);
                     while (byteBuffer.remaining() > 0) {
                         int msgLen = byteBuffer.getShort();
+                        if (msgLen > byteBuffer.remaining()) {
+                            log.error("Corrupt packet: {}", byteBuffer);
+                            break;
+                        }
                         byte[] ofMsgBytes = new byte[msgLen];
                         byteBuffer.get(ofMsgBytes);
-                        OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(ofMsgBytes);
+                        OpenfeedGatewayMessage rsp = null;
+                        try {
+                            rsp = OpenfeedGatewayMessage.parseFrom(ofMsgBytes);
+                        }
+                        catch(Exception e) {
+                            log.error("Could not decode array: {} buf: {} msgLen: {} message: {}",array.length,byteBuffer,msgLen, e.getMessage());
+                            break;
+                        }
                         handleResponse(rsp, ofMsgBytes);
                     }
                 }

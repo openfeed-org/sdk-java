@@ -20,7 +20,7 @@
 	<appender name="CONSOLE"
 		class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS, America/Chicago} [%thread] %msg%n</pattern>
+			<pattern>%d{HH:mm:ss.SSS, America/Chicago} [%thread] %-5level %msg%n</pattern>
 		</encoder>
 	</appender>
 

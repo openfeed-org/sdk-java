@@ -185,7 +185,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         log.info("{}: Initializing connection to: {} recBufSize: {}", config.getClientId(), uri, config.getReceiveBufferSize());
         // Connect with V13 (RFC 6455 aka HyBi-17).
         webSocketHandler = new OpenfeedWebSocketHandler(config, this, this.subscriptionManager, clientHandler, WebSocketClientHandshakerFactory
-                .newHandshaker(uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()), messageHandler);
+                .newHandshaker(uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders(), config.getMaxFramePayloadSize()), messageHandler);
         boolean epoll = OS.indexOf("linux") >= 0 ? true : false;
 
         // Ensure previous event loop was shutdown
@@ -223,7 +223,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                                 p.addLast(sslCtxFinal.newHandler(ch.alloc(), config.getHost(), config.getPort()));
                             }
                             p.addLast(new HttpClientCodec());
-                            p.addLast(new HttpObjectAggregator(512 * 1024));
+                            p.addLast(new HttpObjectAggregator(config.getMaxFramePayloadSize()));
                             if (config.isLogWire()) {
                                 p.addLast(new LoggingHandler(LogLevel.INFO));
                             }

@@ -12,6 +12,7 @@ import java.util.*;
 public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private static final long RECONNECT_TIMEOUT_WAIT_MS = 2000;
     private static final int RCV_BUF_SIZE = 10 * (1024 * 1024);
+    private static final int MAX_FRAME_PAYLOAD_SIZE = 512 * 1024;
     private static final int PROTOCOL_VERSION = 1;
 
     private String clientId = UUID.randomUUID().toString();
@@ -26,6 +27,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private boolean reconnect = true;
     private long reconnectDelayMs = RECONNECT_TIMEOUT_WAIT_MS;
     private int receiveBufferSize = RCV_BUF_SIZE;
+    private int maxFramePayloadSize = MAX_FRAME_PAYLOAD_SIZE;
 
     // Subscriptions
     private String[] symbols = null;
@@ -77,6 +79,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.reconnect = this.reconnect;
         o.reconnectDelayMs = this.reconnectDelayMs;
         o.receiveBufferSize = this.receiveBufferSize;
+        o.maxFramePayloadSize = this.maxFramePayloadSize;
         //
         o.symbols = this.symbols;
         o.marketIds = this.marketIds;
@@ -534,6 +537,14 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     public void setReceiveBufferSize(int receiveBufferSize) {
         this.receiveBufferSize = receiveBufferSize;
+    }
+
+    public int getMaxFramePayloadSize() {
+        return maxFramePayloadSize;
+    }
+
+    public void setMaxFramePayloadSize(int maxFramePayloadSize) {
+        this.maxFramePayloadSize = maxFramePayloadSize;
     }
 
     public void setSnapshotIntervalSec(int snapshotIntervalSec) {
