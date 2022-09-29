@@ -133,7 +133,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                     final ByteBuffer byteBuffer = ByteBuffer.wrap(array);
                     while (byteBuffer.remaining() > 0) {
                         int msgLen = byteBuffer.getShort();
-                        if (msgLen > byteBuffer.remaining()) {
+                        if (msgLen < 0 || msgLen > byteBuffer.remaining()) {
                             log.error("Corrupt packet, array: {} msgLen: {} buf: {}",array.length,msgLen, byteBuffer);
                             break;
                         }
