@@ -12,7 +12,7 @@ import java.util.*;
 public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private static final long RECONNECT_TIMEOUT_WAIT_MS = 2000;
     private static final int RCV_BUF_SIZE = 10 * (1024 * 1024);
-    private static final int MAX_FRAME_PAYLOAD_SIZE = 512 * 1024;
+    private static final int MAX_FRAME_PAYLOAD_SIZE = 128 * 1024;
     private static final int PROTOCOL_VERSION = 1;
 
     private String clientId = UUID.randomUUID().toString();
