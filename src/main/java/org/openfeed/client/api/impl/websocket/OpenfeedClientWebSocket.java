@@ -898,7 +898,36 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     @Override
     public String subscribeSnapshot(Service service, String[] symbols, int intervalSec) {
-        return subscribeSnapshot(service, null, symbols, intervalSec);
+        return subscribeSnapshot(service, new SubscriptionType[0], symbols, intervalSec);
+    }
+    @Override
+    public String subscribeSnapshot(Service service, SubscriptionType[] subscriptionTypes, String[] symbols, int intervalSec) {
+        if (!isLoggedIn()) {
+            throw new RuntimeException("Not logged in.");
+        }
+        // Eliminate dups
+        List<String> syms = new ArrayList<>();
+
+        Arrays.stream(symbols).forEach(s -> syms.add(s));
+
+        SubscriptionRequest.Builder request = SubscriptionRequest.newBuilder().setCorrelationId(correlationId++)
+                .setToken(token).setService(service);
+
+        for (String symbol : syms) {
+            log.debug("{}: Subscribe Snapshot: {}", config.getClientId(), symbol);
+            Builder subReq = SubscriptionRequest.Request.newBuilder().setSymbol(symbol)
+                    .setSnapshotIntervalSeconds(intervalSec);
+            if (subscriptionTypes != null && subscriptionTypes.length > 0) {
+                Arrays.stream(subscriptionTypes).forEach( st -> subReq.addSubscriptionType(st));
+            }
+            request.addRequests(subReq);
+        }
+        SubscriptionRequest subReq = request.build();
+        String subscriptionId = createSubscriptionId(config.getUserName(), Service.REAL_TIME_SNAPSHOT, syms.toArray(new String[0]));
+        subscriptionManager.addSubscription(subscriptionId, subReq, syms.toArray(new String[0]), correlationId);
+        OpenfeedGatewayRequest req = request().setSubscriptionRequest(subReq).build();
+        send(req);
+        return subscriptionId;
     }
 
     @Override

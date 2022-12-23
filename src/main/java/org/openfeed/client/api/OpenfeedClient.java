@@ -129,6 +129,7 @@ public interface OpenfeedClient {
      * @return subscriptionId
      */
     String subscribeSnapshot(Service service, SubscriptionType subscriptionType, String[] symbols, int intervalSec);
+    String subscribeSnapshot(Service service, SubscriptionType[] subscriptionType, String[] symbols, int intervalSec);
     String subscribeSnapshot(Service service, SubscriptionType subscriptionType, long marketId, int intervalSec);
 
 
