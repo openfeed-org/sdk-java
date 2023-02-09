@@ -53,6 +53,7 @@ public interface OpenfeedClientConfig {
     boolean isLogTradeCancel();
     boolean isLogTradeCorrection();
     boolean isLogOhlc();
+    boolean isLogVolumeAtPrice();
     boolean isLogPrettyPrint();
     boolean isLogSymbol(String symbol);
     boolean isLogWire();

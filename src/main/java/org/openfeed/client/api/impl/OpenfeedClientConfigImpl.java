@@ -58,6 +58,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private boolean logTradeCancel;
     private boolean logTradeCorrection;
     private boolean logOhlc;
+    private boolean logVolumeAtPrice;
     private boolean logPrettyPrint;
     private Set<String> logSymbols;
     private boolean logWire;
@@ -107,6 +108,8 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.logDepth = this.logDepth;
         o.logTradeCancel = this.logTradeCancel;
         o.logTradeCorrection = this.logTradeCorrection;
+        o.logOhlc = this.logOhlc;
+        o.logVolumeAtPrice = this.logVolumeAtPrice;
         o.logSymbols = this.logSymbols;
         o.logWire = this.logWire;
         //
@@ -245,6 +248,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     @Override
     public boolean isLogOhlc() {
         return this.logOhlc;
+    }
+
+    public void setLogVolumeAtPrice(boolean logVolumeAtPrice) {
+        this.logVolumeAtPrice = logVolumeAtPrice;
+    }
+
+    @Override
+    public boolean isLogVolumeAtPrice() {
+        return this.logVolumeAtPrice;
     }
 
     public void setLogOhlc(boolean logOhlc) {
