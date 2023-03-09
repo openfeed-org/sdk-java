@@ -71,7 +71,6 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
 
     private void logStats() {
         log.info("{}", this.stats);
-        this.stats.reset();
     }
 
     @Override
@@ -79,7 +78,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         handshaker.handshake(ctx.channel());
         if (this.config.isWireStats()) {
             // Track some wire metrics
-            ctx.channel().eventLoop().scheduleAtFixedRate(this::logStats, 1, 1, TimeUnit.SECONDS);
+            ctx.channel().eventLoop().scheduleAtFixedRate(this::logStats, 4, config.getStatsDisplaySeconds(), TimeUnit.SECONDS);
         }
     }
 

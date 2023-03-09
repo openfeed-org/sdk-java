@@ -4,11 +4,13 @@ import org.HdrHistogram.Histogram;
 
 public class WireStats {
     private static final int MB = 1000 * 1000;
+    private long packetsReceived;
     private long bytesReceived;
     private long bitsReceived;
     private Histogram bitsReceivedHistogram= new Histogram(3600000000L, 2);
 
     public void update(long bytesReceived) {
+        this.packetsReceived++;
         this.bytesReceived += bytesReceived;
         this.bitsReceived += bytesReceived * 8;
         bitsReceivedHistogram.recordValue(this.bitsReceived/MB);
@@ -30,6 +32,7 @@ public class WireStats {
         return "Wire: Kbytes/sec = " + bytesReceived / 1000 + ", Mean Mbps = " +
                 bitsReceivedHistogram.getMean() + ", Stddev Mbps = "
                 + bitsReceivedHistogram.getStdDeviation()
-                + ", Max Mbps = " + bitsReceivedHistogram.getMaxValue();
+                + ", Max Mbps = " + bitsReceivedHistogram.getMaxValue()
+                + ", packets = "+packetsReceived + ", avePacketSizeBytes = "+ (packetsReceived > 0 ? (bytesReceived/packetsReceived) : 0);
     }
 }
