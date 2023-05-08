@@ -110,11 +110,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         }
 
         WebSocketFrame frame = (WebSocketFrame) msg;
-        if (frame instanceof TextWebSocketFrame) {
-            TextWebSocketFrame textFrame = (TextWebSocketFrame) frame;
-            OpenfeedGatewayMessage ofgm = decodeJson(textFrame.text());
-            handleResponse(ofgm, new byte[0]);
-        } else if (frame instanceof BinaryWebSocketFrame) {
+        if (frame instanceof BinaryWebSocketFrame) {
             try {
                 BinaryWebSocketFrame binaryFrame = (BinaryWebSocketFrame) frame;
 
@@ -129,6 +125,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                     OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(array);
                     handleResponse(rsp, array);
                 } else {
+                    int msgs =0;
                     final ByteBuffer byteBuffer = ByteBuffer.wrap(array);
                     while (byteBuffer.remaining() > 0) {
                         int msgLen = byteBuffer.getShort() & 0xFFFF;
@@ -141,12 +138,16 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                         OpenfeedGatewayMessage rsp = null;
                         try {
                             rsp = OpenfeedGatewayMessage.parseFrom(ofMsgBytes);
+                            msgs++;
                         }
                         catch(Exception e) {
                             log.error("Could not decode array: {} buf: {} msgLen: {} error: {}",array.length,byteBuffer,msgLen, e.getMessage());
                             break;
                         }
                         handleResponse(rsp, ofMsgBytes);
+                    }
+                    if (this.config.isWireStats()) {
+                        log.info("Packet len: {} msgs: {}",length,msgs);
                     }
                 }
 
