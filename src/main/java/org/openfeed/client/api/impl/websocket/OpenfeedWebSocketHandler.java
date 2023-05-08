@@ -141,7 +141,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                             msgs++;
                         }
                         catch(Exception e) {
-                            log.error("Could not decode array: {} buf: {} msgLen: {} error: {}",array.length,byteBuffer,msgLen, e.getMessage());
+                            log.error("Could not decode array: {} msg: {} buf: {} msgLen: {} error: {}",array.length,msgs,byteBuffer,msgLen, e.getMessage());
                             break;
                         }
                         handleResponse(rsp, ofMsgBytes);
