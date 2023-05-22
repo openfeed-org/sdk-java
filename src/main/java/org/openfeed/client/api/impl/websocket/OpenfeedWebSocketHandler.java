@@ -116,12 +116,12 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
 
                 ByteBuf binBuf = frame.content();
                 final int length = binBuf.readableBytes();
-                if (this.config.isWireStats()) {
-                    this.stats.update(length);
-                }
 
                 final byte[] array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, false);
                 if (config.getProtocolVersion() == 0) {
+                    if (this.config.isWireStats()) {
+                        this.stats.update(length,0);
+                    }
                     OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(array);
                     handleResponse(rsp, array);
                 } else {
@@ -147,7 +147,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                         handleResponse(rsp, ofMsgBytes);
                     }
                     if (this.config.isWireStats()) {
-                        log.info("Packet len: {} msgs: {}",length,msgs);
+                        this.stats.update(length,msgs);
                     }
                 }
 
