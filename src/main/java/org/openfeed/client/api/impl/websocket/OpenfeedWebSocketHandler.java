@@ -76,9 +76,9 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         handshaker.handshake(ctx.channel());
-        if (this.config.isWireStats()) {
+        if (this.config.isWireStats() && this.config.getWireStatsDisplaySeconds() > 0) {
             // Track some wire metrics
-            ctx.channel().eventLoop().scheduleAtFixedRate(this::logStats, 4, config.getStatsDisplaySeconds(), TimeUnit.SECONDS);
+            ctx.channel().eventLoop().scheduleAtFixedRate(this::logStats, 4, config.getWireStatsDisplaySeconds(), TimeUnit.SECONDS);
         }
     }
 

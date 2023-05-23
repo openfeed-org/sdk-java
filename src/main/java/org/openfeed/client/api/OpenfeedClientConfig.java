@@ -61,6 +61,9 @@ public interface OpenfeedClientConfig {
     int getNumberOfConnections();
     int getStatsDisplaySeconds();
     boolean isWireStats();
+    int getWireStatsDisplaySeconds();
+
+
     boolean isDisableClientOnDuplicateLogin();
 
     BulkSubscriptionFilter[] getBulkSubscriptionFilters();

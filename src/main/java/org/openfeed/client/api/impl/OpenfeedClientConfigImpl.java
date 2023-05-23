@@ -66,6 +66,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private int numberOfConnections = 1;
     private int statsDisplaySeconds = 30;
     private boolean wireStats = false;
+    private int wireStatsDisplaySeconds = 0;
     private boolean disableClientOnDuplicateLogin = true;
 
     public OpenfeedClientConfigImpl dup() throws CloneNotSupportedException {
@@ -116,6 +117,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.numberOfConnections = this.numberOfConnections;
         o.statsDisplaySeconds = this.statsDisplaySeconds;
         o.wireStats = this.wireStats;
+        o.wireStatsDisplaySeconds = this.wireStatsDisplaySeconds;
         return o;
     }
 
@@ -433,6 +435,18 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     public boolean isWireStats() {
         return this.wireStats;
     }
+    public void setWireStats(boolean v) {
+        this.wireStats = v;
+    }
+
+    @Override
+    public int getWireStatsDisplaySeconds() {
+        return wireStatsDisplaySeconds;
+    }
+
+    public void setWireStatsDisplaySeconds(int wireStatsDisplaySeconds) {
+        this.wireStatsDisplaySeconds = wireStatsDisplaySeconds;
+    }
 
     @Override
     public boolean isDisableClientOnDuplicateLogin() {
@@ -452,9 +466,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         this.disableClientOnDuplicateLogin = v;
     }
 
-    public void setWireStats(boolean v) {
-        this.wireStats = v;
-    }
+
 
     public void setStatsDisplaySeconds(int sec) {
         this.statsDisplaySeconds = sec;
