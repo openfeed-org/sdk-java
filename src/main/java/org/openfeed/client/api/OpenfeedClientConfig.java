@@ -18,6 +18,8 @@ public interface OpenfeedClientConfig {
     WireProtocol getWireProtocol();
 	String getUserName();
 	String getPassword();
+    // JSON Web Token
+    String getJwt();
     // Re-connects if the connection is dropped. Defaults to true.
     boolean isReconnect();
     long getReconnectDelayMs();
@@ -67,6 +69,8 @@ public interface OpenfeedClientConfig {
     boolean isDisableClientOnDuplicateLogin();
 
     BulkSubscriptionFilter[] getBulkSubscriptionFilters();
+
+
 
     enum WireProtocol {
         PB, JSON

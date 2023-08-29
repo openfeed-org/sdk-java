@@ -1,5 +1,6 @@
 package org.openfeed.client.api.impl.websocket;
 
+import com.google.common.base.Strings;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -329,9 +330,14 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
 
     private void login() {
-        LoginRequest request = LoginRequest.newBuilder().setCorrelationId(correlationId++)
-                .setUsername(config.getUserName()).setPassword(config.getPassword())
-                .setClientVersion(clientVersion).setProtocolVersion(config.getProtocolVersion()).build();
+        LoginRequest.Builder request = LoginRequest.newBuilder().setCorrelationId(correlationId++)
+                .setClientVersion(clientVersion).setProtocolVersion(config.getProtocolVersion());
+        if(!Strings.isNullOrEmpty(config.getJwt())) {
+                request.setJwt(config.getJwt());
+        }
+        else {
+            request.setUsername(config.getUserName()).setPassword(config.getPassword());
+        }
         OpenfeedGatewayRequest ofreq = request().setLoginRequest(request).build();
         send(ofreq);
         this.loginFuture = this.channel.newPromise();
