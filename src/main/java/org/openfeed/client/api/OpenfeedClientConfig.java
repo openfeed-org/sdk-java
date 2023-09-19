@@ -36,6 +36,7 @@ public interface OpenfeedClientConfig {
 
     SubscriptionType [] getSubscriptionTypes();
     InstrumentDefinition.InstrumentType [] getInstrumentTypes();
+    String [] getSpreadTypes();
     int getSnapshotIntervalSec();
     boolean isInstrumentRequest();
     boolean isInstrumentCrossReferenceRequest();

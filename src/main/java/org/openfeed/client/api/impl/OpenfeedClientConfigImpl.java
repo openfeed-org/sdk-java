@@ -41,6 +41,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private Set<SubscriptionType> subscriptionTypes = new HashSet<>();
     private Set<InstrumentDefinition.InstrumentType> instrumentTypes = new HashSet<>();
     private List<BulkSubscriptionFilter> bulkSubscriptionFilters = new ArrayList<>();
+    private String [] spreadTypes;
     private int snapshotIntervalSec;
     private boolean instrumentRequest;
     private boolean instrumentCrossReferenceRequest;
@@ -93,6 +94,8 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.subscriptionTypes.addAll(this.subscriptionTypes);
         o.instrumentTypes.addAll(this.instrumentTypes);
         o.bulkSubscriptionFilters.addAll(this.bulkSubscriptionFilters);
+        o.spreadTypes = this.spreadTypes;
+        //
         o.snapshotIntervalSec = this.snapshotIntervalSec;
         o.instrumentRequest = this.instrumentRequest;
         o.instrumentCrossReferenceRequest = this.instrumentCrossReferenceRequest;
@@ -375,6 +378,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     @Override
     public InstrumentDefinition.InstrumentType[] getInstrumentTypes() {
         return this.instrumentTypes.toArray(new InstrumentDefinition.InstrumentType[0]);
+    }
+
+    @Override
+    public String[] getSpreadTypes() {
+        return this.spreadTypes;
+    }
+
+    public void setSpreadTypes(String [] spreadTypes) {
+        this.spreadTypes = spreadTypes;
     }
 
     public void addInstrumentType(InstrumentDefinition.InstrumentType type) {
