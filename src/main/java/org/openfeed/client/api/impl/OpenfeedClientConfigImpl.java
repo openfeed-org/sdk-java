@@ -382,6 +382,9 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     @Override
     public String[] getSpreadTypes() {
+        if(spreadTypes == null) {
+            return new String[0];
+        }
         return this.spreadTypes;
     }
 
