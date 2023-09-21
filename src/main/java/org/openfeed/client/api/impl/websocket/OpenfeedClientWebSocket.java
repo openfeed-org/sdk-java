@@ -450,6 +450,16 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
     @Override
+    public void instrument(InstrumentRequest request) {
+        if (!isLoggedIn()) {
+            return;
+        }
+        InstrumentRequest subReq = request.toBuilder().setCorrelationId(correlationId++).setToken(token).build();
+        OpenfeedGatewayRequest req = request().setInstrumentRequest(subReq).build();
+        send(req);
+    }
+
+    @Override
     public void instrumentMarketId(long... marketIds) {
         if (!isLoggedIn()) {
             return;

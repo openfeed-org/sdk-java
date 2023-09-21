@@ -23,6 +23,7 @@ public interface OpenfeedClient {
     // Sends InstrumentRequest
     void instrumentMarketId(long... marketIds);
     void instrument(String... symbols);
+    void instrument(InstrumentRequest request);
     ChannelPromise instrumentChannel(int channelId);
     ChannelPromise instrumentExchange(String exchange);
 
