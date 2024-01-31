@@ -295,12 +295,12 @@
             <dependency>
                 <groupId>org.agrona</groupId>
                 <artifactId>agrona</artifactId>
-                <version>1.17.1</version>
+                <version>1.20.0</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
-                <version>4.1.97.Final</version>
+                <version>4.1.105.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
