@@ -15,6 +15,7 @@ public interface OpenfeedClient {
     void connectAndLogin();
     void disconnect();
     long getCorrelationId();
+    long getNextCorrelationId();
     String getToken();
     void logout();
     boolean isConnected();
@@ -162,8 +163,15 @@ public interface OpenfeedClient {
     Subscription getSubscription(String subscriptionId);
 
     void schedule(Runnable task, long delay, TimeUnit timeUnit);
+
+
     void scheduleAtFixedRate(Runnable task, long delay, long interval, TimeUnit timeUnit);
 
+    /**
+     * Send top level request
+     * @param request Request
+     */
+    void send(OpenfeedGatewayRequest request);
 
 }
 

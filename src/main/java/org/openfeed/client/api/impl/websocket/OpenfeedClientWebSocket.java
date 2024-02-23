@@ -14,7 +14,6 @@ import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.logging.LogLevel;
@@ -124,6 +123,11 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     @Override
     public long getCorrelationId() {
         return this.correlationId;
+    }
+
+    @Override
+    public long getNextCorrelationId() {
+        return this.correlationId++;
     }
 
     @Override
@@ -381,26 +385,23 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         }
     }
 
+    @Override
     public void send(OpenfeedGatewayRequest req) {
         if (!isConnected()) {
             return;
         }
         log(req);
-        if (config.getWireProtocol() == OpenfeedClientConfig.WireProtocol.JSON) {
-            String data = PbUtil.toJson(req);
-            this.channel.writeAndFlush(new TextWebSocketFrame(data));
-        } else {
-            // Binary
-            ByteBuf outBuf = ByteBufAllocator.DEFAULT.buffer();
-            try {
-                this.encodeBuf.reset();
-                req.writeTo(this.encodeBuf);
-                outBuf.writeBytes(encodeBuf.toByteArray());
-                BinaryWebSocketFrame frame = new BinaryWebSocketFrame(outBuf);
-                this.channel.writeAndFlush(frame);
-            } catch (IOException e) {
-                log.error("{}: Send error: {}", config.getClientId(), e.getMessage());
-            }
+
+        // Binary
+        ByteBuf outBuf = ByteBufAllocator.DEFAULT.buffer();
+        try {
+            this.encodeBuf.reset();
+            req.writeTo(this.encodeBuf);
+            outBuf.writeBytes(encodeBuf.toByteArray());
+            BinaryWebSocketFrame frame = new BinaryWebSocketFrame(outBuf);
+            this.channel.writeAndFlush(frame);
+        } catch (IOException e) {
+            log.error("{}: Send error: {}", config.getClientId(), e.getMessage());
         }
     }
 
