@@ -298,6 +298,11 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                     clientHandler.onInstrumentAction(ofgm.getInstrumentAction());
                 }
                 break;
+            case LISTSUBSCRIPTIONSRESPONSE:
+                if (clientHandler != null) {
+                    clientHandler.onListSubscriptionsResponse(ofgm.getListSubscriptionsResponse());
+                }
+                break;
             default:
             case DATA_NOT_SET:
                 break;

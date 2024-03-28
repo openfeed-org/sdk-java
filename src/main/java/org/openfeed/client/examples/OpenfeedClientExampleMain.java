@@ -44,6 +44,8 @@ public class OpenfeedClientExampleMain {
                 .desc("Openfeed Chanel Id(s) to subscribe too, comma separated.").build());
         options.addOption(Option.builder("er")
                 .desc("Send ExchangeRequest to list available Openfeed exchanges").build());
+        options.addOption(Option.builder("lsr")
+                .desc("Send ListSubscriptionsRequest for a user").build());
         // Service
         options.addOption(Option.builder("service").hasArg()
                 .desc("Service type, defaults to REALTIME.  [REALTIME,DELAYED]").build());
@@ -185,6 +187,9 @@ public class OpenfeedClientExampleMain {
         }
         if (cmdLine.hasOption("er")) {
             config.setExchangeRequest(true);
+        }
+        if (cmdLine.hasOption("lsr")) {
+            config.setListSubscriptionsRequest(true);
         }
         if (cmdLine.hasOption("scheme")) {
             config.setScheme(cmdLine.getOptionValue("scheme"));

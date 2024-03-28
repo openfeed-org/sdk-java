@@ -91,7 +91,8 @@ public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandle
             }
         } else if (config.isExchangeRequest()) {
             client.exchangeRequest();
-        } else if (config.getSymbols() != null) {
+        }
+        else if (config.getSymbols() != null) {
             Set<SubscriptionType> subTypes = new HashSet<>();
             if (config.getSubscriptionTypes().length > 0) {
                 subTypes.addAll(List.of(config.getSubscriptionTypes()));
@@ -113,6 +114,10 @@ public class OpenfeedClientEventHandlerImpl implements OpenfeedClientEventHandle
             client.subscribeExchange(config.getService(), config.getSubscriptionTypes(), config.getInstrumentTypes(), config.getExchanges(), config.getBulkSubscriptionFilters());
         } else if (config.getChannelIds() != null && config.getChannelIds().length > 0) {
             client.subscribeChannel(config.getService(), config.getSubscriptionTypes(), config.getInstrumentTypes(), config.getChannelIds(), config.getBulkSubscriptionFilters());
+        }
+        // List Subscriptions
+        if(config.isListSubscriptionsRequest()) {
+            client.listSubscriptionsRequest();
         }
     }
 }

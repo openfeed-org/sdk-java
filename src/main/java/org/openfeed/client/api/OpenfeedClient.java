@@ -173,5 +173,10 @@ public interface OpenfeedClient {
      */
     void send(OpenfeedGatewayRequest request);
 
+    /**
+     * Sends a ListSubscriptionsRequest which lists all your active subscriptions.
+     */
+    void listSubscriptionsRequest();
+
 }
 

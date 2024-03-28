@@ -405,6 +405,16 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         }
     }
 
+    @Override
+    public void listSubscriptionsRequest() {
+        if (!isLoggedIn()) {
+            throw new RuntimeException("Not logged in.");
+        }
+        ListSubscriptionsRequest.Builder b = ListSubscriptionsRequest.newBuilder().setCorrelationId(correlationId++).setToken(this.token);
+        OpenfeedGatewayRequest req = request().setListSubscriptionsRequest(b).build();
+        send(req);
+    }
+
     private OpenfeedGatewayRequest.Builder request() {
         return OpenfeedGatewayRequest.newBuilder();
     }

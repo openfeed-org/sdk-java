@@ -41,6 +41,7 @@ public interface OpenfeedClientConfig {
     boolean isInstrumentRequest();
     boolean isInstrumentCrossReferenceRequest();
     boolean isExchangeRequest();
+    boolean isListSubscriptionsRequest();
     int getRandomInstruments();
 
     // Logging
@@ -70,8 +71,6 @@ public interface OpenfeedClientConfig {
     boolean isDisableClientOnDuplicateLogin();
 
     BulkSubscriptionFilter[] getBulkSubscriptionFilters();
-
-
 
     enum WireProtocol {
         PB, JSON

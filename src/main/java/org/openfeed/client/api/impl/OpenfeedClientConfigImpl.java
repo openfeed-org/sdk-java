@@ -46,6 +46,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private boolean instrumentRequest;
     private boolean instrumentCrossReferenceRequest;
     private boolean exchangeRequest;
+    private boolean listSubscriptionsRequest;
     private int randomInstruments;
     // logging
     private boolean logRequestResponse;
@@ -600,4 +601,9 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     public void setSnapshotIntervalSec(int snapshotIntervalSec) {
         this.snapshotIntervalSec = snapshotIntervalSec;
     }
+
+    public void setListSubscriptionsRequest(boolean v) { this.listSubscriptionsRequest = v;}
+
+    @Override
+    public boolean isListSubscriptionsRequest() { return this.listSubscriptionsRequest;}
 }

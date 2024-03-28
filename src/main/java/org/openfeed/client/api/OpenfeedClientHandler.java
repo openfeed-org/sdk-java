@@ -24,6 +24,8 @@ public interface OpenfeedClientHandler {
     void onVolumeAtPrice(VolumeAtPrice cumulativeVolume);
     void onOhlc(Ohlc ohlc);
     void onInstrumentAction(InstrumentAction instrumentAction);
+    void onListSubscriptionsResponse(ListSubscriptionsResponse listSubscriptionsResponse);
 
     ConnectionStats getConnectionStats();
+
 }
