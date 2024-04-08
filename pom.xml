@@ -3,7 +3,7 @@
 
     <groupId>org.openfeed</groupId>
     <artifactId>openfeed-client</artifactId>
-    <version>1.0.11-SNAPSHOT</version>
+    <version>1.0.11</version>
 
     <name>openfeed-client</name>
     <description>Openfeed Java Client</description>
@@ -29,7 +29,7 @@
         <url>https://github.com/openfeed-org/sdk-java</url>
         <connection>scm:git:git://github.com/openfeed-org/sdk-java.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/openfeed-org/sdk-java.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>openfeed-client-1.0.11</tag>
     </scm>
 
 
