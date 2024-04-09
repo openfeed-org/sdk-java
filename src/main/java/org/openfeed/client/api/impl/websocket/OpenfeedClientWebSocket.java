@@ -21,7 +21,6 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import org.agrona.collections.Long2ObjectHashMap;
 import org.openfeed.*;
 import org.openfeed.SubscriptionRequest.Request.Builder;
 import org.openfeed.client.api.*;
@@ -71,7 +70,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private AtomicBoolean connected = new AtomicBoolean(false);
     private AtomicBoolean reconnectInProgress = new AtomicBoolean(false);
     private int numSuccessLogins = 0;
-    private Map<Long, String> marketIdToSymbol = new Long2ObjectHashMap<>();
     private final String clientVersion;
 
     public OpenfeedClientWebSocket(OpenfeedClientConfigImpl config, OpenfeedClientEventHandler eventHandler,
@@ -336,10 +334,9 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private void login() {
         LoginRequest.Builder request = LoginRequest.newBuilder().setCorrelationId(correlationId++)
                 .setClientVersion(clientVersion).setProtocolVersion(config.getProtocolVersion());
-        if(!Strings.isNullOrEmpty(config.getJwt())) {
-                request.setJwt(config.getJwt());
-        }
-        else {
+        if (!Strings.isNullOrEmpty(config.getJwt())) {
+            request.setJwt(config.getJwt());
+        } else {
             request.setUsername(config.getUserName()).setPassword(config.getPassword());
         }
         OpenfeedGatewayRequest ofreq = request().setLoginRequest(request).build();
@@ -547,20 +544,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         send(req);
         return channel.newPromise();
     }
-
-    @Override
-    public String getSymbol(long marketId) {
-        return marketIdToSymbol.get(marketId);
-    }
-
-    public void addMapping(InstrumentDefinition def) {
-        this.marketIdToSymbol.put(def.getMarketId(), def.getSymbol());
-        String ddfSymbol = InstrumentCache.getDdfSymbol(def);
-        if (ddfSymbol != null) {
-            this.marketIdToSymbol.put(def.getMarketId(), ddfSymbol);
-        }
-    }
-
 
     @Override
     public void exchangeRequest() {
@@ -787,6 +770,25 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
     @Override
+    public String subscribeExchange(Service service, String exchange) {
+        if (!isLoggedIn()) {
+            throw new RuntimeException("Not logged in.");
+        }
+        SubscriptionRequest.Builder request = SubscriptionRequest.newBuilder().setCorrelationId(correlationId++)
+                .setToken(token).setService(service);
+        log.debug("{}: Subscribe Exchange: {}", config.getClientId(), exchange);
+        Builder subReq = SubscriptionRequest.Request.newBuilder().setExchange(exchange);
+        subReq.addSubscriptionType(SubscriptionType.ALL);
+        request.addRequests(subReq);
+
+        String subscriptionId = createSubscriptionId(config.getUserName(), service, request.build());
+        subscriptionManager.addSubscriptionExchange(subscriptionId, request.build(), new String[] {exchange}, correlationId);
+        OpenfeedGatewayRequest req = request().setSubscriptionRequest(request).build();
+        send(req);
+        return subscriptionId;
+    }
+
+    @Override
     public String subscribeExchange(Service service, SubscriptionType subscriptionType, String[] exchanges) {
         if (!isLoggedIn()) {
             throw new RuntimeException("Not logged in.");
@@ -927,6 +929,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     public String subscribeSnapshot(Service service, String[] symbols, int intervalSec) {
         return subscribeSnapshot(service, new SubscriptionType[0], symbols, intervalSec);
     }
+
     @Override
     public String subscribeSnapshot(Service service, SubscriptionType[] subscriptionTypes, String[] symbols, int intervalSec) {
         if (!isLoggedIn()) {
@@ -945,7 +948,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             Builder subReq = SubscriptionRequest.Request.newBuilder().setSymbol(symbol)
                     .setSnapshotIntervalSeconds(intervalSec);
             if (subscriptionTypes != null && subscriptionTypes.length > 0) {
-                Arrays.stream(subscriptionTypes).forEach( st -> subReq.addSubscriptionType(st));
+                Arrays.stream(subscriptionTypes).forEach(st -> subReq.addSubscriptionType(st));
             }
             request.addRequests(subReq);
         }

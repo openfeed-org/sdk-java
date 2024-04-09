@@ -7,7 +7,10 @@ import io.netty.channel.socket.SocketChannelConfig;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
-import org.openfeed.*;
+import org.openfeed.LoginResponse;
+import org.openfeed.LogoutResponse;
+import org.openfeed.OpenfeedGatewayMessage;
+import org.openfeed.Result;
 import org.openfeed.client.api.OpenfeedClientHandler;
 import org.openfeed.client.api.OpenfeedClientMessageHandler;
 import org.openfeed.client.api.impl.OpenfeedClientConfigImpl;
@@ -267,8 +270,6 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 }
                 break;
             case INSTRUMENTDEFINITION:
-                InstrumentDefinition def = ofgm.getInstrumentDefinition();
-                this.client.addMapping(def);
                 if (clientHandler != null) {
                     clientHandler.onInstrumentDefinition(ofgm.getInstrumentDefinition());
                 }
@@ -309,7 +310,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         }
 
         if (messageHandler != null) {
-            messageHandler.onMessage(bytes);
+            messageHandler.onMessage(ofgm,bytes);
         }
 
     }

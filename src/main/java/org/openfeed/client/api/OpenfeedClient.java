@@ -34,14 +34,6 @@ public interface OpenfeedClient {
     ChannelPromise instrumentReferenceExchange(String exchange);
     ChannelPromise instrumentReferenceChannel(int channelId);
 
-    /**
-     * Get symbol from marketId, if available in the local cache.
-     *
-     * @param marketId
-     * @return Symbol if available else null
-     */
-    String getSymbol(long marketId);
-
     // Sends ExchangeRequest which will list available exchanges.
     void exchangeRequest();
 
@@ -84,7 +76,14 @@ public interface OpenfeedClient {
     void subscribe(SubscriptionRequest request);
 
     /**
-     *
+     * Subscribe for an exchange
+     * @param service Service - Realtime, Delayed
+     * @param exchange Exchange Name
+     * @return subscriptionId
+     */
+    String subscribeExchange(Service service,String exchange);
+    /**
+     * Subscribe for an exchange(s)
      * @param service
      * @param subscriptionType
      * @param exchanges
