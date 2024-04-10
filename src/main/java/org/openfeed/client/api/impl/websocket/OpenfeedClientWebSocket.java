@@ -271,7 +271,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         }
     }
 
-    private void reconnectOrShutdown(boolean shutdown) {
+    public void reconnectOrShutdown(boolean shutdown) {
         closeConnection();
         if (!config.isReconnect() || shutdown) {
             if (!running.get()) {
