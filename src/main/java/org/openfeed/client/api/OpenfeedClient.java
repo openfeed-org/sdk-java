@@ -13,7 +13,17 @@ public interface OpenfeedClient {
      * Blocking call to connect and login.
      */
     void connectAndLogin();
+
+    /**
+     * Will drop the connection and re-connect if configured.
+     */
     void disconnect();
+
+    /**
+     * Will disconnect and shutdown the connection.
+     */
+    void close();
+
     long getCorrelationId();
     long getNextCorrelationId();
     String getToken();

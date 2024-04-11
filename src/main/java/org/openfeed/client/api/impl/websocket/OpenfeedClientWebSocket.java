@@ -271,7 +271,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         }
     }
 
-    public void reconnectOrShutdown(boolean shutdown) {
+    private void reconnectOrShutdown(boolean shutdown) {
         closeConnection();
         if (!config.isReconnect() || shutdown) {
             if (!running.get()) {
@@ -330,6 +330,11 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         reconnectOrShutdown(config.isReconnect() ? false : true);
     }
 
+    @Override
+    public void close() {
+        config.setReconnect(false);
+        disconnect();
+    }
 
     private void login() {
         LoginRequest.Builder request = LoginRequest.newBuilder().setCorrelationId(correlationId++)
