@@ -395,10 +395,15 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         log(req);
 
         // Binary
-        ByteBuf outBuf = ByteBufAllocator.DEFAULT.buffer();
+        ByteBuf outBuf = ByteBufAllocator.DEFAULT.buffer(1044,config.getMaxFramePayloadSize());
         try {
             this.encodeBuf.reset();
             req.writeTo(this.encodeBuf);
+            byte [] bytes = encodeBuf.toByteArray();
+            if(bytes.length >= config.getMaxFramePayloadSize()) {
+                log.error("request size({}) is large than websocket frame size({}), not sending {}",bytes.length,config.getMaxFramePayloadSize(),PbUtil.toJson(req).substring(0,50));
+                return;
+            }
             outBuf.writeBytes(encodeBuf.toByteArray());
             BinaryWebSocketFrame frame = new BinaryWebSocketFrame(outBuf);
             this.channel.writeAndFlush(frame);
