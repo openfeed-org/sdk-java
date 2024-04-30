@@ -1,5 +1,6 @@
 package org.openfeed.client.api.impl.websocket;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.*;
@@ -21,12 +22,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object> {
     private static final Logger log = LoggerFactory.getLogger(OpenfeedWebSocketHandler.class);
+    private static final int QUEUE_BATCH_SIE = 2_000;
+    private static final int QUEUE_LOG_SIZE = 5_000;
 
     private final WebSocketClientHandshaker handshaker;
     private ChannelPromise handshakeFuture;
@@ -36,6 +41,10 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
     private OpenfeedClientHandler clientHandler;
     private final OpenfeedClientMessageHandler messageHandler;
     private WireStats stats;
+    // Off load response processing
+    private final ExecutorService executorService;
+    private final BlockingQueue<Dto> messageQueue = new LinkedBlockingQueue<>();
+    private final Future<?> processingThreadFuture;
 
     public OpenfeedWebSocketHandler(OpenfeedClientConfigImpl config, OpenfeedClientWebSocket client, SubscriptionManagerImpl subscriptionManager,
                                     OpenfeedClientHandler clientHandler, WebSocketClientHandshaker handshaker, OpenfeedClientMessageHandler messageHandler) {
@@ -45,6 +54,9 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         this.handshaker = handshaker;
         this.client = client;
         this.messageHandler = messageHandler;
+        this.executorService = Executors.newCachedThreadPool((new ThreadFactoryBuilder()).setNameFormat(config.getClientId()).build());
+        // Message processing thread
+        this.processingThreadFuture = this.executorService.submit(() -> processMessageQueue());
     }
 
     public WireStats getStats() {
@@ -53,6 +65,34 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
 
     public ChannelFuture handshakeFuture() {
         return handshakeFuture;
+    }
+
+    private void processMessageQueue() {
+        List<Dto> items = new ArrayList<>(QUEUE_BATCH_SIE);
+        while (true) {
+
+            if (this.messageQueue.size() != 0 && this.messageQueue.size() % QUEUE_LOG_SIZE == 0) {
+                log.info("{}: message Q size: {}", config.getClientId(), this.messageQueue.size());
+            }
+
+            items.clear();
+            Dto o = null;
+            int no = 0;
+            try {
+                o = messageQueue.poll(100, TimeUnit.MILLISECONDS);
+                if (o != null) {
+                    items.add(o);
+                    no = messageQueue.drainTo(items, QUEUE_BATCH_SIE);
+                }
+            } catch (InterruptedException e) {
+                log.warn("{}: message processing issue: {}",config.getClientId(), e.getMessage());
+            }
+            if (items.size() == 0) {
+                continue;
+            }
+            //
+            items.forEach( m -> handleResponse(m.message,m.bytes));
+        }
     }
 
     @Override
@@ -66,10 +106,14 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         for (Entry<ChannelOption<?>, Object> opt : options.entrySet()) {
             sb.append(opt.getKey() + "=" + opt.getValue() + ",");
         }
-        log.debug("{}", sb.toString());
+        log.debug("{}: options: {}",ctx,sb);
+
+        log.info("{}: recvBufSize: {}", ctx,((SocketChannelConfig) config).getReceiveBufferSize());
+
         if (this.config.isWireStats()) {
             this.stats = new WireStats();
         }
+
     }
 
     private void logStats() {
@@ -89,6 +133,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
     public void channelInactive(ChannelHandlerContext ctx) {
         log.warn("WebSocket Client disconnected. {}", ctx.channel().localAddress());
         this.client.disconnect();
+        this.processingThreadFuture.cancel(true);
     }
 
     @Override
@@ -126,7 +171,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                         this.stats.update(length,0);
                     }
                     OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(array);
-                    handleResponse(rsp, array);
+                    messageQueue.offer(new Dto(rsp,array));
                 } else {
                     int msgs =0;
                     final ByteBuffer byteBuffer = ByteBuffer.wrap(array);
@@ -147,7 +192,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                             log.error("Could not decode array: {} msg: {} buf: {} msgLen: {} error: {}",array.length,msgs,byteBuffer,msgLen, e.getMessage());
                             break;
                         }
-                        handleResponse(rsp, ofMsgBytes);
+                        this.messageQueue.offer(new Dto(rsp,ofMsgBytes));
                     }
                     if (this.config.isWireStats()) {
                         this.stats.update(length,msgs);
@@ -173,6 +218,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         }
         ctx.close();
         client.disconnect();
+        this.processingThreadFuture.cancel(true);
     }
 
     private OpenfeedGatewayMessage decodeJson(String data) {
@@ -325,5 +371,14 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         log.info("{} < {}", config.getClientId(), PbUtil.toJson(ofmsg));
     }
 
+    class Dto {
+        OpenfeedGatewayMessage message;
+        byte[] bytes;
+
+        public Dto(OpenfeedGatewayMessage message, byte[] bytes) {
+            this.message = message;
+            this.bytes = bytes;
+        }
+    }
 
 }
