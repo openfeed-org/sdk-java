@@ -31,7 +31,6 @@ import java.util.concurrent.*;
 public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object> {
     private static final Logger log = LoggerFactory.getLogger(OpenfeedWebSocketHandler.class);
     private static final int QUEUE_BATCH_SIE = 2_000;
-    private static final int QUEUE_LOG_SIZE = 5_000;
 
     private final WebSocketClientHandshaker handshaker;
     private ChannelPromise handshakeFuture;
@@ -69,25 +68,26 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
 
     private void processMessageQueue() {
         List<Dto> items = new ArrayList<>(QUEUE_BATCH_SIE);
+        long ts = System.currentTimeMillis();
         while (true) {
-
-            if (this.messageQueue.size() != 0 && this.messageQueue.size() % QUEUE_LOG_SIZE == 0) {
+            long t = System.currentTimeMillis();
+            if ((t - ts)/ 1000 > config.getWireStatsDisplaySeconds()) {
+                ts = t;
                 log.info("{}: message Q size: {}", config.getClientId(), this.messageQueue.size());
             }
 
             items.clear();
             Dto o = null;
-            int no = 0;
             try {
                 o = messageQueue.poll(100, TimeUnit.MILLISECONDS);
                 if (o != null) {
                     items.add(o);
-                    no = messageQueue.drainTo(items, QUEUE_BATCH_SIE);
+                    messageQueue.drainTo(items, QUEUE_BATCH_SIE);
                 }
             } catch (InterruptedException e) {
                 log.warn("{}: message processing issue: {}",config.getClientId(), e.getMessage());
             }
-            if (items.size() == 0) {
+            if (items.isEmpty()) {
                 continue;
             }
             //
