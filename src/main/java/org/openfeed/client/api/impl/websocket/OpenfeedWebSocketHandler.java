@@ -278,13 +278,11 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 }
                 break;
             case INSTRUMENTRESPONSE:
-                log(ofgm);
                 if (clientHandler != null) {
                     clientHandler.onInstrumentResponse(ofgm.getInstrumentResponse());
                 }
                 break;
             case INSTRUMENTREFERENCERESPONSE:
-                log(ofgm);
                 if (clientHandler != null) {
                     clientHandler.onInstrumentReferenceResponse(ofgm.getInstrumentReferenceResponse());
                 }
