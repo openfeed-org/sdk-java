@@ -183,6 +183,9 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                             log.error("Corrupt packet, array: {} msgLen: {} buf: {}",array.length,msgLen, byteBuffer);
                             break;
                         }
+                        if(msgLen > 32_767) {
+                            log.debug("Message length ({})> short",msgLen);
+                        }
                         byte[] ofMsgBytes = new byte[msgLen];
                         byteBuffer.get(ofMsgBytes);
                         OpenfeedGatewayMessage rsp = null;
