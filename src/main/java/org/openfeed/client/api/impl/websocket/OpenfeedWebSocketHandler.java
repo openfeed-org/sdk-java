@@ -1,6 +1,7 @@
 package org.openfeed.client.api.impl.websocket;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.*;
@@ -168,41 +169,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 final int length = binBuf.readableBytes();
 
                 final byte[] array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, false);
-                if (config.getProtocolVersion() == 0) {
-                    if (this.config.isWireStats()) {
-                        this.stats.update(length,0);
-                    }
-                    OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(array);
-                    messageQueue.offer(new Dto(rsp,array));
-                } else {
-                    int msgs =0;
-                    final ByteBuffer byteBuffer = ByteBuffer.wrap(array);
-                    while (byteBuffer.remaining() > 0) {
-                        int msgLen = byteBuffer.getShort() & 0xFFFF;
-                        if (msgLen < 0 || msgLen > byteBuffer.remaining()) {
-                            log.error("Corrupt packet, array: {} msgLen: {} buf: {}",array.length,msgLen, byteBuffer);
-                            break;
-                        }
-                        if(msgLen > 32_767) {
-                            log.debug("Message length ({})> short",msgLen);
-                        }
-                        byte[] ofMsgBytes = new byte[msgLen];
-                        byteBuffer.get(ofMsgBytes);
-                        OpenfeedGatewayMessage rsp = null;
-                        try {
-                            rsp = OpenfeedGatewayMessage.parseFrom(ofMsgBytes);
-                            msgs++;
-                        }
-                        catch(Exception e) {
-                            log.error("Could not decode array: {} msg: {} buf: {} msgLen: {} error: {}",array.length,msgs,byteBuffer,msgLen, e.getMessage());
-                            break;
-                        }
-                        this.messageQueue.offer(new Dto(rsp,ofMsgBytes));
-                    }
-                    if (this.config.isWireStats()) {
-                        this.stats.update(length,msgs);
-                    }
-                }
+                parseMessage(length, array);
 
             } catch (Exception e) {
                 log.error("{}: Could not process message: ", ctx.channel().remoteAddress(), e);
@@ -212,6 +179,41 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         } else if (frame instanceof CloseWebSocketFrame) {
             log.info("WebSocket Client received closing");
             ch.close();
+        }
+    }
+
+    void parseMessage(int length, byte[] array) throws InvalidProtocolBufferException {
+        if (config.getProtocolVersion() == 0) {
+            if (this.config.isWireStats()) {
+                this.stats.update(length,0);
+            }
+            OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(array);
+            messageQueue.offer(new Dto(rsp, array));
+        } else {
+            int msgs =0;
+            final ByteBuffer byteBuffer = ByteBuffer.wrap(array);
+            while (byteBuffer.remaining() > 0) {
+                int msgLen = byteBuffer.getShort() & 0xFFFF;
+                if (msgLen > byteBuffer.remaining()) {
+                    log.error("Corrupt packet, array: {} msgLen: {} buf: {}", array.length,msgLen, byteBuffer);
+                    break;
+                }
+                byte[] ofMsgBytes = new byte[msgLen];
+                byteBuffer.get(ofMsgBytes);
+                OpenfeedGatewayMessage rsp = null;
+                try {
+                    rsp = OpenfeedGatewayMessage.parseFrom(ofMsgBytes);
+                    msgs++;
+                }
+                catch(Exception e) {
+                    log.error("Could not decode message dataLength: {} msgNo: {} buf: {} msgLen: {} error: {}", array.length,msgs,byteBuffer,msgLen, e.getMessage());
+                    break;
+                }
+                this.messageQueue.offer(new Dto(rsp,ofMsgBytes));
+            }
+            if (this.config.isWireStats()) {
+                this.stats.update(length,msgs);
+            }
         }
     }
 
