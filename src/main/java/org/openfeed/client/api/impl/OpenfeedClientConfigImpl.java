@@ -14,7 +14,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private static final int RCV_BUF_SIZE = 10 * (1024 * 1024);
     private static final int MAX_FRAME_PAYLOAD_SIZE = 128 * 1024;
     private static final int PROTOCOL_VERSION = 1;
-    private static final int WEBSOCKET_PING_SECONDS = 30;
+    private static final int WEBSOCKET_PING_SECONDS = 15;
 
     private String clientId = UUID.randomUUID().toString();
     // Connection

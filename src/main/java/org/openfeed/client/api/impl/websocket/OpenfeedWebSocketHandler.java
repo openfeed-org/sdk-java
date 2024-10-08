@@ -170,7 +170,9 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
             // Not used
         }
         else if(frame instanceof PingWebSocketFrame) {
-            this.wireStats.incrPingsReceived();
+            if(this.wireStats != null) {
+                this.wireStats.incrPingsReceived();
+            }
             ByteBuf binBuf = frame.content();
             final int length = binBuf.readableBytes();
             final byte[] array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, false);
@@ -188,7 +190,9 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 log.error("{}: Could not process message: ", ctx.channel().remoteAddress(), e);
             }
         } else if (frame instanceof PongWebSocketFrame) {
-            this.wireStats.incrPongsReceived();
+            if(this.wireStats != null) {
+                this.wireStats.incrPongsReceived();
+            }
             PongWebSocketFrame pong = (PongWebSocketFrame) frame;
             ByteBuf binBuf = pong.content();
             final int length = binBuf.readableBytes();
