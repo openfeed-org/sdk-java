@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannelConfig;
@@ -44,7 +43,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
     private final SubscriptionManagerImpl subscriptionManager;
     private OpenfeedClientHandler clientHandler;
     private final OpenfeedClientMessageHandler messageHandler;
-    private WireStats stats;
+    private WireStats wireStats;
     // Off load response processing
     private final ExecutorService executorService;
     private final BlockingQueue<Dto> messageQueue = new LinkedBlockingQueue<>();
@@ -61,10 +60,13 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         this.executorService = Executors.newCachedThreadPool((new ThreadFactoryBuilder()).setNameFormat(config.getClientId()).build());
         // Message processing thread
         this.processingThreadFuture = this.executorService.submit(() -> processMessageQueue());
+        if(config.getWireStatsDisplaySeconds() > 0) {
+            this.wireStats = new WireStats();
+        }
     }
 
-    public WireStats getStats() {
-        return this.stats;
+    public WireStats getWireStats() {
+        return this.wireStats;
     }
 
     public ChannelFuture handshakeFuture() {
@@ -116,21 +118,18 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         log.debug("{}: options: {}",ctx,sb);
 
         log.info("{}: recvBufSize: {}", ctx,((SocketChannelConfig) config).getReceiveBufferSize());
-
-        this.stats = new WireStats();
-
     }
 
-    private void logStats() {
-        log.info("{}", this.stats);
+    private void logWireStats() {
+        log.info("{}", this.wireStats);
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         handshaker.handshake(ctx.channel());
-        if (this.config.isWireStats() && this.config.getWireStatsDisplaySeconds() > 0) {
+        if (this.config.getWireStatsDisplaySeconds() > 0) {
             // Track some wire metrics
-            ctx.channel().eventLoop().scheduleAtFixedRate(this::logStats, 4, config.getWireStatsDisplaySeconds(), TimeUnit.SECONDS);
+            ctx.channel().eventLoop().scheduleAtFixedRate(this::logWireStats, 4, config.getWireStatsDisplaySeconds(), TimeUnit.SECONDS);
         }
         if(this.config.getPingSeconds() > 0) {
             log.info("{}: Sending Ping messages every {} seconds",ctx,config.getPingSeconds());
@@ -171,7 +170,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
             // Not used
         }
         else if(frame instanceof PingWebSocketFrame) {
-            this.stats.incrPingsReceived();
+            this.wireStats.incrPingsReceived();
             ByteBuf binBuf = frame.content();
             final int length = binBuf.readableBytes();
             final byte[] array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, false);
@@ -189,7 +188,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 log.error("{}: Could not process message: ", ctx.channel().remoteAddress(), e);
             }
         } else if (frame instanceof PongWebSocketFrame) {
-            this.stats.incrPongsReceived();
+            this.wireStats.incrPongsReceived();
             PongWebSocketFrame pong = (PongWebSocketFrame) frame;
             ByteBuf binBuf = pong.content();
             final int length = binBuf.readableBytes();
@@ -203,8 +202,8 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
 
     void parseMessage(int length, byte[] array) throws InvalidProtocolBufferException {
         if (config.getProtocolVersion() == 0) {
-            if (this.config.isWireStats()) {
-                this.stats.update(length,0);
+            if (this.wireStats != null) {
+                this.wireStats.update(length,0);
             }
             OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(array);
             messageQueue.offer(new Dto(rsp, array));
@@ -230,8 +229,8 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 }
                 this.messageQueue.offer(new Dto(rsp,ofMsgBytes));
             }
-            if (this.config.isWireStats()) {
-                this.stats.update(length,msgs);
+            if (this.wireStats != null) {
+                this.wireStats.update(length,msgs);
             }
         }
     }

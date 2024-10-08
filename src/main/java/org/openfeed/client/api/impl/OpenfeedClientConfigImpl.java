@@ -14,6 +14,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private static final int RCV_BUF_SIZE = 10 * (1024 * 1024);
     private static final int MAX_FRAME_PAYLOAD_SIZE = 128 * 1024;
     private static final int PROTOCOL_VERSION = 1;
+    private static final int WEBSOCKET_PING_SECONDS = 30;
 
     private String clientId = UUID.randomUUID().toString();
     // Connection
@@ -70,7 +71,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private int statsDisplaySeconds = 30;
     private boolean wireStats = false;
     private int wireStatsDisplaySeconds = 0;
-    private int pingSeconds = 0;
+    private int pingSeconds = WEBSOCKET_PING_SECONDS;
     private boolean disableClientOnDuplicateLogin = true;
 
     public OpenfeedClientConfigImpl dup() throws CloneNotSupportedException {
@@ -457,14 +458,6 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     @Override
     public int getStatsDisplaySeconds() {
         return this.statsDisplaySeconds;
-    }
-
-    @Override
-    public boolean isWireStats() {
-        return this.wireStats;
-    }
-    public void setWireStats(boolean v) {
-        this.wireStats = v;
     }
 
     @Override
