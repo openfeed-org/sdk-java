@@ -70,6 +70,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private int statsDisplaySeconds = 30;
     private boolean wireStats = false;
     private int wireStatsDisplaySeconds = 0;
+    private int pingSeconds = 0;
     private boolean disableClientOnDuplicateLogin = true;
 
     public OpenfeedClientConfigImpl dup() throws CloneNotSupportedException {
@@ -574,6 +575,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     public void setLogWire(boolean logWire) {
         this.logWire = logWire;
+    }
+
+    @Override
+    public int getPingSeconds() {
+        return pingSeconds;
+    }
+
+    public void setPingSeconds(int pingSeconds) {
+        this.pingSeconds = pingSeconds;
     }
 
     @Override

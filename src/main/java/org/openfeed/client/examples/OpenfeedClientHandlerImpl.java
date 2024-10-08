@@ -83,6 +83,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         if (config.isLogHeartBeat()) {
             log.info("{}: {} < {}", config.getClientId(), hb.getExchange() ? "Exchange" : "", PbUtil.toJson(hb));
         }
+        connectionStats.getMessageStats().incrHeartBeats();
     }
 
     @Override

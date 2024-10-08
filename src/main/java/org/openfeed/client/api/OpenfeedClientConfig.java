@@ -66,7 +66,8 @@ public interface OpenfeedClientConfig {
     int getStatsDisplaySeconds();
     boolean isWireStats();
     int getWireStatsDisplaySeconds();
-
+    // If > 0 will send a websocket ping to the server every X seconds
+    int getPingSeconds();
 
     boolean isDisableClientOnDuplicateLogin();
 

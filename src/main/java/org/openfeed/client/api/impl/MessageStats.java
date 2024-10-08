@@ -2,8 +2,10 @@ package org.openfeed.client.api.impl;
 
 public class MessageStats {
 
+
+
     public enum StatType {
-        instrument, snapshot, update, bbo, nbbo, trade, trade_correction, trade_cancel, ohlc, depth_price, depth_order,volumeAtPrice,rfq;
+        instrument, snapshot, update, bbo, nbbo, trade, trade_correction, trade_cancel, ohlc, depth_price, depth_order,volumeAtPrice,rfq,heartbeat;
     }
 
     private int channel;
@@ -23,6 +25,7 @@ public class MessageStats {
     private long numDepthOrder;
     private long numVolumeAtPrice;
     private long numRfq;
+    private long numHeartBeats;
     //
     private long defSizeBytes = 0;
     private long snapSizeBytes = 0;
@@ -51,7 +54,7 @@ public class MessageStats {
         numDepthPrice = 0;
         numDepthOrder = 0;
         numVolumeAtPrice = 0;
-        numRfq = 0;
+        numRfq = numHeartBeats = 0;
         defSizeBytes = snapSizeBytes = updSizeBytes = 0;
     }
 
@@ -103,6 +106,9 @@ public class MessageStats {
     }
     public void incrVolumeAtPrice() { this.numVolumeAtPrice++;  }
     public void incrRfq() { this.numRfq++;  }
+
+    public void incrHeartBeats() { this.numHeartBeats++;   }
+    public long getNumHeartBeats() { return this.numHeartBeats; }
 
     public long getNumInstruments() {
         return numInstruments;
@@ -173,6 +179,7 @@ public class MessageStats {
                 + " depthOrder: " + numDepthOrder
                 + " volAtPrice: " + numVolumeAtPrice
                 + " rfq: " + numRfq
+                + " hb: " + numHeartBeats
                 + " aveDefSizeBytes: " + (numInstruments > 0 ? (defSizeBytes/numInstruments) : 0)
                 + " aveSnapSizeBytes: " + (numSnapshots > 0 ? (snapSizeBytes/numSnapshots) : 0)
                 + " aveUpdSizeBytes: " + (numUpdates > 0 ? (updSizeBytes/numUpdates) : 0);

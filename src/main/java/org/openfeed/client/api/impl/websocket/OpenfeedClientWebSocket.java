@@ -14,6 +14,7 @@ import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.logging.LogLevel;
@@ -37,6 +38,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,6 +52,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private static final long LOGIN_WAIT_SEC = 15;
     private static final int BUF_SIZE_ENCODE = 1 * 1024;
     private static final int WSS_PORT = 443;
+
+
     private final OpenfeedClientConfigImpl config;
     private Bootstrap clientBootstrap;
     private EventLoopGroup clientEventLoopGroup;
@@ -1178,6 +1183,5 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     public Subscription getSubscription(String subscriptionId) {
         return this.subscriptionManager.getSubscription(subscriptionId);
     }
-
 
 }

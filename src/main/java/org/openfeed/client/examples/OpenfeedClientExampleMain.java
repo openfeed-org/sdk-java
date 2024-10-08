@@ -82,6 +82,10 @@ public class OpenfeedClientExampleMain {
         options.addOption(Option.builder("ltco").desc("log trade correction").build());
         options.addOption(Option.builder("ld").desc("log depth").build());
         options.addOption(Option.builder("lw").desc("log wire").build());
+        options.addOption(Option.builder("lws").desc("log wire stats").build());
+        options.addOption(Option.builder("lwsi").hasArg().desc("log wire stats interval seconds").build());
+        //
+        options.addOption(Option.builder("pi").hasArg().desc("Websocket ping interval seconds").build());
         //
         options.addOption(Option.builder("mh").desc("Use message handler").build());
         options.addOption(Option.builder("h").desc("help").build());
@@ -232,6 +236,15 @@ public class OpenfeedClientExampleMain {
         }
         if (cmdLine.hasOption("lw")) {
             config.setLogWire(true);
+        }
+        if (cmdLine.hasOption("lws")) {
+            config.setWireStats(true);
+        }
+        if (cmdLine.hasOption("lwsi")) {
+            config.setWireStatsDisplaySeconds(Integer.parseInt(cmdLine.getOptionValue("lwsi")));
+        }
+        if (cmdLine.hasOption("pi")) {
+            config.setPingSeconds(Integer.parseInt(cmdLine.getOptionValue("pi")));
         }
         if (cmdLine.hasOption("mh")) {
             useMessageHandler = true;
