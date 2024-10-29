@@ -211,6 +211,8 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
             case PREVCLOSE:
                 break;
             case SETTLEMENT:
+                connectionStats.getMessageStats().incrSettlements();
+                updateExchangeStats(update.getMarketId(), StatType.settlement);
                 break;
             case SHARESOUTSTANDING:
                 break;
@@ -333,6 +335,9 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                     break;
                 case depth_order:
                     stats.incrDepthOrder();
+                    break;
+                case settlement:
+                    stats.incrSettlements();
                     break;
                 default:
                     break;
