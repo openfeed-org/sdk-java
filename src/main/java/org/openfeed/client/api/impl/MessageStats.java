@@ -6,7 +6,7 @@ public class MessageStats {
 
     public enum StatType {
         instrument, snapshot, update, bbo, nbbo, trade, trade_correction, trade_cancel, ohlc,
-        depth_price, depth_order,volumeAtPrice,rfq,heartbeat,settlement;
+        depth_price, depth_order,volumeAtPrice,rfq,heartbeat,settlement,marketSummary;
     }
 
     private int channel;
@@ -28,6 +28,7 @@ public class MessageStats {
     private long numRfq;
     private long numHeartBeats;
     private long numSettlements;
+    private long numMarketSummary;
     //
     private long defSizeBytes = 0;
     private long snapSizeBytes = 0;
@@ -56,7 +57,7 @@ public class MessageStats {
         numDepthPrice = 0;
         numDepthOrder = 0;
         numVolumeAtPrice = 0;
-        numRfq = numHeartBeats = numSettlements = 0;
+        numRfq = numHeartBeats = numSettlements = numMarketSummary = 0;
         defSizeBytes = snapSizeBytes = updSizeBytes = 0;
     }
 
@@ -115,6 +116,8 @@ public class MessageStats {
     public void incrSettlements() { this.numSettlements++;   }
     public long getNumSettlements() { return this.numSettlements; }
 
+    public void incrMarketSummary() { this.numMarketSummary++; }
+    public long getNumMarketSummary() { return numMarketSummary;  }
 
     public long getNumInstruments() {
         return numInstruments;
@@ -187,6 +190,7 @@ public class MessageStats {
                 + " rfq: " + numRfq
                 + " hb: " + numHeartBeats
                 + " settle: " + numSettlements
+                + " ms: " + numMarketSummary
                 + " aveDefSizeBytes: " + (numInstruments > 0 ? (defSizeBytes/numInstruments) : 0)
                 + " aveSnapSizeBytes: " + (numSnapshots > 0 ? (snapSizeBytes/numSnapshots) : 0)
                 + " aveUpdSizeBytes: " + (numUpdates > 0 ? (updSizeBytes/numUpdates) : 0);

@@ -195,6 +195,8 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
             case LOW:
                 break;
             case MARKETSUMMARY:
+                connectionStats.getMessageStats().incrMarketSummary();
+                updateExchangeStats(update.getMarketId(), StatType.marketSummary);
                 break;
             case MONETARYVALUE:
                 break;
@@ -338,6 +340,9 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                     break;
                 case settlement:
                     stats.incrSettlements();
+                    break;
+                case marketSummary:
+                    stats.incrMarketSummary();
                     break;
                 default:
                     break;

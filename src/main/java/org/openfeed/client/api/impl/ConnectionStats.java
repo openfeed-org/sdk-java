@@ -5,19 +5,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConnectionStats {
-    private MessageStats overallStats = new MessageStats();
+    private final MessageStats overallStats = new MessageStats();
 
-    private Map<String, MessageStats>[] channelToExchangeToMessageStats = new Map[256];
+    // channel => { exchangeCode => Stats }
+    private final Map<Integer,Map<String,MessageStats>> channelToExchangeToMessageStats = new HashMap<>();
 
     public MessageStats getMessageStats() {
         return this.overallStats;
     }
 
     public MessageStats getExchangeMessageStats(int channel, String exchangeCode) {
-        if (channelToExchangeToMessageStats[channel] == null) {
-            channelToExchangeToMessageStats[channel] = new HashMap<>();
+        if (!channelToExchangeToMessageStats.containsKey(channel)) {
+            channelToExchangeToMessageStats.put(channel,new HashMap<>());
         }
-        return this.channelToExchangeToMessageStats[channel]
+        return this.channelToExchangeToMessageStats.get(channel)
                 .computeIfAbsent(exchangeCode, key -> new MessageStats(channel,exchangeCode));
     }
 
@@ -25,15 +26,14 @@ public class ConnectionStats {
     public String toString() {
         StringBuilder sb = new StringBuilder("\nOverall: " + overallStats + "\n");
 
-        Arrays.stream(channelToExchangeToMessageStats).filter(m -> m != null)
-                .forEach( m -> m.values().forEach(stats ->
-            sb.append("\t " + stats + "\n") ));
-
+        for(Map<String,MessageStats> channelStats : channelToExchangeToMessageStats.values()) {
+            channelStats.values().forEach(stats ->  sb.append("\t " + stats + "\n"));
+        }
         return sb.toString();
     }
 
     public void clear() {
         overallStats.clear();
-        Arrays.stream(channelToExchangeToMessageStats).filter(m -> m != null).forEach( m -> m.clear());
+        channelToExchangeToMessageStats.clear();
     }
 }
