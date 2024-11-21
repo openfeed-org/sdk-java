@@ -3,7 +3,8 @@ package org.openfeed.client.api.impl;
 import org.HdrHistogram.Histogram;
 
 public class WireStats {
-    private static final int MB = 1000 * 1000;
+    public  static final int MB = 1000 * 1000;
+
     private long packetsReceived;
     private long messagesPerPacket;
     private long bytesReceived;

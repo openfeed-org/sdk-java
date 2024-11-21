@@ -2,8 +2,6 @@ package org.openfeed.client.api.impl;
 
 public class MessageStats {
 
-
-
     public enum StatType {
         instrument, snapshot, update, bbo, nbbo, trade, trade_correction, trade_cancel, ohlc,
         depth_price, depth_order,volumeAtPrice,rfq,heartbeat,settlement,marketSummary;
@@ -33,10 +31,11 @@ public class MessageStats {
     private long defSizeBytes = 0;
     private long snapSizeBytes = 0;
     private long updSizeBytes = 0;
+    //
+    private double totalBytesReceived;
+    private double totalBitsReceived;
 
-
-    public static String makeExchangeKey(int channel, String exchange) { return channel + ":"+ exchange; }
-
+    
     public MessageStats(int channel,String exchangeCode) {
         this.channel = channel;
         this.exchangeCode = exchangeCode;
@@ -59,6 +58,7 @@ public class MessageStats {
         numVolumeAtPrice = 0;
         numRfq = numHeartBeats = numSettlements = numMarketSummary = 0;
         defSizeBytes = snapSizeBytes = updSizeBytes = 0;
+        totalBitsReceived = totalBitsReceived = 0;
     }
 
     public int getChannel() { return this.channel; }
@@ -174,6 +174,11 @@ public class MessageStats {
         this.updSizeBytes += v;
     }
 
+    public void updateBytes(long bytesReceived) {
+        this.totalBytesReceived += bytesReceived;
+        this.totalBitsReceived += bytesReceived * 8;
+    }
+    
     @Override
     public String toString() {
         String ec = getId();
@@ -193,7 +198,9 @@ public class MessageStats {
                 + " ms: " + numMarketSummary
                 + " aveDefSizeBytes: " + (numInstruments > 0 ? (defSizeBytes/numInstruments) : 0)
                 + " aveSnapSizeBytes: " + (numSnapshots > 0 ? (snapSizeBytes/numSnapshots) : 0)
-                + " aveUpdSizeBytes: " + (numUpdates > 0 ? (updSizeBytes/numUpdates) : 0);
+                + " aveUpdSizeBytes: " + (numUpdates > 0 ? (updSizeBytes/numUpdates) : 0)
+                + " bytesReceived: " + totalBytesReceived / WireStats.MB + " MB"
+                + " bitsReceived: " + totalBitsReceived / WireStats.MB + " MBits";
     }
 
 
