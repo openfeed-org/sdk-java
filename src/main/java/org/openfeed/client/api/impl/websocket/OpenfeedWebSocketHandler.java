@@ -206,13 +206,13 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
 
     void parseMessage(int length, byte[] array) throws InvalidProtocolBufferException {
         if (config.getProtocolVersion() == 0) {
-            if (this.wireStats != null) {
-                this.wireStats.update(length,0);
-            }
             OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(array);
             messageQueue.offer(new Dto(rsp, array));
+            if (this.wireStats != null) {
+                this.wireStats.update(length,1);
+            }
         } else {
-            int msgs =0;
+            int numMsgs =0;
             final ByteBuffer byteBuffer = ByteBuffer.wrap(array);
             while (byteBuffer.remaining() > 0) {
                 int msgLen = byteBuffer.getShort() & 0xFFFF;
@@ -225,16 +225,16 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 OpenfeedGatewayMessage rsp = null;
                 try {
                     rsp = OpenfeedGatewayMessage.parseFrom(ofMsgBytes);
-                    msgs++;
+                    numMsgs++;
                 }
                 catch(Exception e) {
-                    log.error("Could not decode message dataLength: {} msgNo: {} buf: {} msgLen: {} error: {}", array.length,msgs,byteBuffer,msgLen, e.getMessage());
+                    log.error("Could not decode message dataLength: {} msgNo: {} buf: {} msgLen: {} error: {}", array.length,numMsgs,byteBuffer,msgLen, e.getMessage());
                     break;
                 }
                 this.messageQueue.offer(new Dto(rsp,ofMsgBytes));
             }
             if (this.wireStats != null) {
-                this.wireStats.update(length,msgs);
+                this.wireStats.update(length,numMsgs);
             }
         }
     }

@@ -176,7 +176,7 @@ public class MessageStats {
 
     public void updateBytes(long bytesReceived) {
         this.totalBytesReceived += bytesReceived;
-        this.totalBitsReceived += bytesReceived * 8;
+        this.totalBitsReceived += (bytesReceived * 8);
     }
     
     @Override

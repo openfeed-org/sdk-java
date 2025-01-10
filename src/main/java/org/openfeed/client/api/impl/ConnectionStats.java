@@ -17,7 +17,8 @@ public class ConnectionStats {
     public void setTradeDate(LocalDateTime date) {
         this.tradeDate = date;
     }
-    public MessageStats getMessageStats() {
+
+    public MessageStats getOverallMessageStats() {
         return this.overallStats;
     }
 

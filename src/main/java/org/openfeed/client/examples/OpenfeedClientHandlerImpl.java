@@ -83,7 +83,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         if (config.isLogHeartBeat()) {
             log.info("{}: {} < {}", config.getClientId(), hb.getExchange() ? "Exchange" : "", PbUtil.toJson(hb));
         }
-        connectionStats.getMessageStats().incrHeartBeats();
+        connectionStats.getOverallMessageStats().incrHeartBeats();
     }
 
     @Override
@@ -91,7 +91,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         if (config.isLogInstrument()) {
             log.info("INSTRUMENT {}: < {}", config.getClientId(), PbUtil.toJson(definition));
         }
-        connectionStats.getMessageStats().incrInstruments();
+        connectionStats.getOverallMessageStats().incrInstruments();
         this.instrumentCache.addInstrument(definition);
         this.numDefinitions++;
         if (this.awaitingNumDefinitions == numDefinitions) {
@@ -111,7 +111,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
         if (config.isLogSnapshot()) {
             log.info("SNAPSHOT {}: < {}", config.getClientId(), PbUtil.toJson(snapshot));
         }
-        connectionStats.getMessageStats().incrSnapshots();
+        connectionStats.getOverallMessageStats().incrSnapshots();
         updateExchangeStats(snapshot.getMarketId(), StatType.snapshot);
 
         Optional<MarketState> market = marketsManager.getMarket(snapshot.getMarketId());
@@ -127,7 +127,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
 
     @Override
     public void onMarketUpdate(MarketUpdate update) {
-        connectionStats.getMessageStats().incrUpdates();
+        connectionStats.getOverallMessageStats().incrUpdates();
         updateExchangeStats(update.getMarketId(), StatType.update);
         //
         InstrumentDefinition definition = instrumentCache.getInstrument(update.getMarketId());
@@ -155,11 +155,11 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                 BestBidOffer bbo = update.getBbo();
                 if (bbo.getRegional()) {
                     // Regional/Participant Quote
-                    connectionStats.getMessageStats().incrBbo();
+                    connectionStats.getOverallMessageStats().incrBbo();
                     updateExchangeStats(update.getMarketId(), StatType.bbo);
                 } else {
                     // NBBO for Equities
-                    connectionStats.getMessageStats().incrNBbo();
+                    connectionStats.getOverallMessageStats().incrNBbo();
                     updateExchangeStats(update.getMarketId(), StatType.nbbo);
                 }
                 if (config.isLogBbo()) {
@@ -175,11 +175,11 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
             case DATA_NOT_SET:
                 break;
             case DEPTHORDER:
-                connectionStats.getMessageStats().incrDepthOrder();
+                connectionStats.getOverallMessageStats().incrDepthOrder();
                 updateExchangeStats(update.getMarketId(), StatType.depth_order);
                 break;
             case DEPTHPRICELEVEL:
-                connectionStats.getMessageStats().incrDepthPrice();
+                connectionStats.getOverallMessageStats().incrDepthPrice();
                 updateExchangeStats(update.getMarketId(), StatType.depth_price);
                 break;
             case DIVIDENDSINCOMEDISTRIBUTIONS:
@@ -195,7 +195,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
             case LOW:
                 break;
             case MARKETSUMMARY:
-                connectionStats.getMessageStats().incrMarketSummary();
+                connectionStats.getOverallMessageStats().incrMarketSummary();
                 updateExchangeStats(update.getMarketId(), StatType.marketSummary);
                 break;
             case MONETARYVALUE:
@@ -213,7 +213,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
             case PREVCLOSE:
                 break;
             case SETTLEMENT:
-                connectionStats.getMessageStats().incrSettlements();
+                connectionStats.getOverallMessageStats().incrSettlements();
                 updateExchangeStats(update.getMarketId(), StatType.settlement);
                 break;
             case SHARESOUTSTANDING:
@@ -223,7 +223,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                 for (Entry te : trades.getTradesList()) {
                     switch (te.getDataCase()) {
                         case TRADE:
-                            connectionStats.getMessageStats().incrTrades();
+                            connectionStats.getOverallMessageStats().incrTrades();
                             updateExchangeStats(update.getMarketId(), StatType.trade);
                             Trade trade = te.getTrade();
                             String tradeId = trade.getTradeId().toStringUtf8();
@@ -233,7 +233,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                             }
                             break;
                         case TRADECANCEL:
-                            connectionStats.getMessageStats().incrTradeCancel();
+                            connectionStats.getOverallMessageStats().incrTradeCancel();
                             updateExchangeStats(update.getMarketId(), StatType.trade_cancel);
                             TradeCancel cancel = te.getTradeCancel();
                             tradeId = cancel.getTradeId().toStringUtf8();
@@ -243,7 +243,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
                             }
                             break;
                         case TRADECORRECTION:
-                            connectionStats.getMessageStats().incrTradeCorrection();
+                            connectionStats.getOverallMessageStats().incrTradeCorrection();
                             updateExchangeStats(update.getMarketId(), StatType.trade_correction);
                             TradeCorrection correction = te.getTradeCorrection();
                             tradeId = correction.getTradeId().toStringUtf8();
@@ -278,7 +278,7 @@ public class OpenfeedClientHandlerImpl implements OpenfeedClientHandler {
 
     @Override
     public void onOhlc(Ohlc ohlc) {
-        connectionStats.getMessageStats().incrOHLC();
+        connectionStats.getOverallMessageStats().incrOHLC();
         updateExchangeStats(ohlc.getMarketId(), StatType.ohlc);
         if (config.isLogOhlc()) {
             log.info("{}: < {}", config.getClientId(), PbUtil.toJson(ohlc));
