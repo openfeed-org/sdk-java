@@ -77,13 +77,6 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         List<Dto> items = new ArrayList<>(QUEUE_BATCH_SIZE);
         long ts = System.currentTimeMillis();
         while (true) {
-            if(config.getWireStatsDisplaySeconds() > 0) {
-                long t = System.currentTimeMillis();
-                if ((t - ts) / 1000 > config.getWireStatsDisplaySeconds()) {
-                    ts = t;
-                    log.info("{}: message Q size: {}", config.getClientId(), this.messageQueue.size());
-                }
-            }
 
             items.clear();
             Dto o = null;
