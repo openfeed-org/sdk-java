@@ -20,6 +20,8 @@ public interface OpenfeedClientConfig {
 	String getPassword();
     // JSON Web Token
     String getJwt();
+    // Get sessionId, which passed to the server as a query parameter
+    String getParameterSessionId();
     // Re-connects if the connection is dropped. Defaults to true.
     boolean isReconnect();
     long getReconnectDelayMs();
@@ -75,4 +77,7 @@ public interface OpenfeedClientConfig {
     enum WireProtocol {
         PB, JSON
     }
+
+    String PARAMETER_SESSION_ID = "sessionId";
+
 }

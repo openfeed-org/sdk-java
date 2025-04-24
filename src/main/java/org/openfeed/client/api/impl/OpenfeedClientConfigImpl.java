@@ -26,6 +26,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private String userName = "";
     private String password = "";
     private String jwt = null;
+    private String sessionId = null;
     private boolean reconnect = true;
     private long reconnectDelayMs = RECONNECT_TIMEOUT_WAIT_MS;
     private int receiveBufferSize = RCV_BUF_SIZE;
@@ -84,6 +85,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.userName = this.userName;
         o.password = this.password;
         o.jwt = this.jwt;
+        o.sessionId = this.sessionId;
         o.reconnect = this.reconnect;
         o.reconnectDelayMs = this.reconnectDelayMs;
         o.receiveBufferSize = this.receiveBufferSize;
@@ -196,6 +198,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     public void setJwt(String jwt) {
         this.jwt = jwt;
+    }
+
+    @Override
+    public String getParameterSessionId() {
+        return this.sessionId;
+    }
+
+    public void setParameterSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     @Override

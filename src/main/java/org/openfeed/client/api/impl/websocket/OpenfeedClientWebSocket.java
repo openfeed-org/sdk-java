@@ -185,7 +185,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             }
         }
         try {
-            uri = new URI(config.getScheme() + "://" + config.getHost() + ":" + config.getPort() + "/ws");
+            uri = new URI(config.getScheme() + "://" + config.getHost() + ":" + config.getPort() + "/ws"+ (config.getParameterSessionId() != null ? "?"+OpenfeedClientConfig.PARAMETER_SESSION_ID+"="+config.getParameterSessionId() : ""));
         } catch (URISyntaxException ex) {
             log.error("{}: Invalid URL err: {}", config.getClientId(), ex.getMessage());
         }

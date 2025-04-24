@@ -35,6 +35,7 @@ public class OpenfeedClientExampleMain {
         options = new Options();
         options.addOption(Option.builder("u").hasArg().required().desc("user name").build());
         options.addOption(Option.builder("p").hasArg().required().desc("password").build());
+        options.addOption(Option.builder("si").hasArg().desc("session Id").build());
         // Subscriptions
         options.addOption(Option.builder("s").hasArg().desc("Symbol(s) to subscribe too, comma separated. Defaults to quote subscription.").build());
         options.addOption(
@@ -104,6 +105,8 @@ public class OpenfeedClientExampleMain {
         }
         if (cmdLine.hasOption("p")) {
             config.setPassword(cmdLine.getOptionValue("p"));
+        } if (cmdLine.hasOption("si")) {
+            config.setParameterSessionId(cmdLine.getOptionValue("si"));
         }
         if (cmdLine.hasOption("s")) {
             v = cmdLine.getOptionValue("s");
