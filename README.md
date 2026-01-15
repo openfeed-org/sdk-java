@@ -139,7 +139,7 @@ Trade Cancel and Trade Corrections are matched by the "tradeId" field.  The trad
  String tradeId = trade.getTradeId().toStringUtf8();
 ```
 
-Below is an example for USHY (marketId = 4997695455292339999) on channel 31 (AMEX) for a Trade Cancel.
+Below is an example for USHY (marketId = 499769545.5292339999) on channel 31 (AMEX) for a Trade Cancel.
 Notice the tradeId fields match.
  
 ```javascript
