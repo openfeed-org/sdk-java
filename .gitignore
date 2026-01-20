@@ -1,8 +1,0 @@
-log/*
-*.iml
-target/
-proto/
-.settings/
-.project
-.classpath
-/dependency-reduced-pom.xml
