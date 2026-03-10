@@ -26,6 +26,7 @@ public interface OpenfeedClientConfig {
     boolean isReconnect();
     long getReconnectDelayMs();
     int getReceiveBufferSize();
+    boolean isUseResponseQueue();
 
     // Service Type
     Service getService();

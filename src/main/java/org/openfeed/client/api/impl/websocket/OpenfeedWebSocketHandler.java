@@ -34,20 +34,22 @@ import java.util.concurrent.*;
 
 public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object> {
     private static final Logger log = LoggerFactory.getLogger(OpenfeedWebSocketHandler.class);
-    private static final int QUEUE_BATCH_SIZE = 2_000;
+    private static final int QUEUE_MAX_SIZE = 500_000;
+    private static final int QUEUE_BATCH_SIZE = 15_000;
+    private static final long QUEUE_TIMEOUT_MS = 25;
 
     private final WebSocketClientHandshaker handshaker;
     private ChannelPromise handshakeFuture;
-    private OpenfeedClientWebSocket client;
-    private OpenfeedClientConfigImpl config;
+    private final OpenfeedClientWebSocket client;
+    private final OpenfeedClientConfigImpl config;
     private final SubscriptionManagerImpl subscriptionManager;
-    private OpenfeedClientHandler clientHandler;
+    private final OpenfeedClientHandler clientHandler;
     private final OpenfeedClientMessageHandler messageHandler;
     private WireStats wireStats;
     // Off load response processing
-    private final ExecutorService executorService;
-    private final BlockingQueue<Dto> messageQueue = new LinkedBlockingQueue<>();
-    private final Future<?> processingThreadFuture;
+    private ExecutorService executorService;
+    private BlockingQueue<Dto> messageQueue;
+    private Future<?> processingThreadFuture;
 
     public OpenfeedWebSocketHandler(OpenfeedClientConfigImpl config, OpenfeedClientWebSocket client, SubscriptionManagerImpl subscriptionManager,
                                     OpenfeedClientHandler clientHandler, WebSocketClientHandshaker handshaker, OpenfeedClientMessageHandler messageHandler) {
@@ -57,11 +59,15 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         this.handshaker = handshaker;
         this.client = client;
         this.messageHandler = messageHandler;
-        this.executorService = Executors.newCachedThreadPool((new ThreadFactoryBuilder()).setNameFormat(config.getClientId()).build());
-        // Message processing thread
-        this.processingThreadFuture = this.executorService.submit(() -> processMessageQueue());
-        if(config.getWireStatsDisplaySeconds() > 0) {
+        if (config.getWireStatsDisplaySeconds() > 0) {
             this.wireStats = new WireStats();
+        }
+        if (config.isUseResponseQueue()) {
+            log.info("{}: Using response queue of size: {} batchSize: {}",config.getClientId(),QUEUE_MAX_SIZE,QUEUE_BATCH_SIZE);
+            messageQueue = new LinkedBlockingQueue<>(QUEUE_MAX_SIZE);
+            this.executorService = Executors.newSingleThreadScheduledExecutor((new ThreadFactoryBuilder()).setNameFormat("Q-" + config.getClientId()).build());
+            // Message processing thread
+            this.processingThreadFuture = this.executorService.submit(() -> processMessageQueue());
         }
     }
 
@@ -75,26 +81,31 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
 
     private void processMessageQueue() {
         List<Dto> items = new ArrayList<>(QUEUE_BATCH_SIZE);
-        long ts = System.currentTimeMillis();
         while (true) {
-
             items.clear();
             Dto o = null;
             try {
-                o = messageQueue.poll(100, TimeUnit.MILLISECONDS);
+                o = messageQueue.poll(QUEUE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
                 if (o != null) {
                     items.add(o);
                     messageQueue.drainTo(items, QUEUE_BATCH_SIZE);
                 }
             } catch (InterruptedException e) {
-                log.warn("{}: message processing issue: {}",config.getClientId(), e.getMessage());
+                log.warn("{}: message processing interrupted.", config.getClientId());
+                Thread.currentThread().interrupt();
+                break;
             }
             if (items.isEmpty()) {
                 continue;
             }
-            //
-            items.forEach( m -> handleResponse(m.message,m.bytes));
+            // Call handler(s)
+            items.forEach(m -> handleResponse(m.message, m.bytes));
+
+            if(wireStats != null) {
+                wireStats.setQueueSize(messageQueue.size());
+            }
         }
+        log.info("{}: Stopped process loop", config.getClientId());
     }
 
     @Override
@@ -108,9 +119,9 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         for (Entry<ChannelOption<?>, Object> opt : options.entrySet()) {
             sb.append(opt.getKey() + "=" + opt.getValue() + ",");
         }
-        log.debug("{}: options: {}",ctx,sb);
+        log.debug("{}: options: {}", ctx, sb);
 
-        log.info("{}: recvBufSize: {}", ctx,((SocketChannelConfig) config).getReceiveBufferSize());
+        log.info("{}: recvBufSize: {}", ctx, ((SocketChannelConfig) config).getReceiveBufferSize());
     }
 
     private void logWireStats() {
@@ -124,17 +135,25 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
             // Track some wire metrics
             ctx.channel().eventLoop().scheduleAtFixedRate(this::logWireStats, 4, config.getWireStatsDisplaySeconds(), TimeUnit.SECONDS);
         }
-        if(this.config.getPingSeconds() > 0) {
-            log.info("{}: Sending Ping messages every {} seconds",ctx,config.getPingSeconds());
-            ctx.channel().eventLoop().scheduleAtFixedRate(() -> sendPingFrame(ctx,null),10, config.getPingSeconds(), TimeUnit.SECONDS);
+        if (this.config.getPingSeconds() > 0) {
+            log.info("{}: Sending Ping messages every {} seconds", ctx, config.getPingSeconds());
+            ctx.channel().eventLoop().scheduleAtFixedRate(() -> sendPingFrame(ctx, null), 10, config.getPingSeconds(), TimeUnit.SECONDS);
         }
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         log.warn("WebSocket Client disconnected. {}", ctx.channel().localAddress());
+        shutdownHandler();
+    }
+
+    private void shutdownHandler() {
+        if (config.isUseResponseQueue()) {
+            this.processingThreadFuture.cancel(true);
+            this.executorService.shutdownNow();
+            this.messageQueue.clear();
+        }
         this.client.disconnect();
-        this.processingThreadFuture.cancel(true);
     }
 
     @Override
@@ -159,58 +178,62 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         }
 
         WebSocketFrame frame = (WebSocketFrame) msg;
-        if(frame instanceof  TextWebSocketFrame) {
+        if (frame instanceof TextWebSocketFrame) {
             // Not used
-        }
-        else if(frame instanceof PingWebSocketFrame) {
-            if(this.wireStats != null) {
+        } else if (frame instanceof PingWebSocketFrame) {
+            if (this.wireStats != null) {
                 this.wireStats.incrPingsReceived();
             }
             ByteBuf binBuf = frame.content();
             final int length = binBuf.readableBytes();
             final byte[] array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, false);
             String payload = new String(array);
-            sendPongFrame(ctx,payload);
-            log.debug("{}: Client received Ping: {}",ctx.channel().remoteAddress(),payload);
-        }
-        else if (frame instanceof BinaryWebSocketFrame) {
+            sendPongFrame(ctx, payload);
+            log.debug("{}: Client received Ping: {}", ctx.channel().remoteAddress(), payload);
+        } else if (frame instanceof BinaryWebSocketFrame) {
+            ByteBuf binBuf = frame.content();
             try {
-                ByteBuf binBuf = frame.content();
                 final int length = binBuf.readableBytes();
-                final byte[] array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, false);
+                final byte[] array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, true);
                 parseMessage(length, array);
             } catch (Exception e) {
                 log.error("{}: Could not process message: ", ctx.channel().remoteAddress(), e);
             }
         } else if (frame instanceof PongWebSocketFrame) {
-            if(this.wireStats != null) {
+            if (this.wireStats != null) {
                 this.wireStats.incrPongsReceived();
             }
             PongWebSocketFrame pong = (PongWebSocketFrame) frame;
             ByteBuf binBuf = pong.content();
             final int length = binBuf.readableBytes();
             final byte[] array = ByteBufUtil.getBytes(binBuf, binBuf.readerIndex(), length, false);
-            log.debug("{}: Client received Pong: {}",ctx.channel().remoteAddress(),new String(array));
+            log.debug("{}: Client received Pong: {}", ctx.channel().remoteAddress(), new String(array));
         } else if (frame instanceof CloseWebSocketFrame) {
             log.warn("WebSocket Client received Close Frame");
             ch.close();
         }
     }
 
-    void parseMessage(int length, byte[] array) throws InvalidProtocolBufferException {
+    void parseMessage(int length, byte[] array) throws InvalidProtocolBufferException, InterruptedException {
         if (config.getProtocolVersion() == 0) {
             OpenfeedGatewayMessage rsp = OpenfeedGatewayMessage.parseFrom(array);
-            messageQueue.offer(new Dto(rsp, array));
             if (this.wireStats != null) {
-                this.wireStats.update(length,1);
+                this.wireStats.update(length, 1);
+            }
+            if (config.isUseResponseQueue()) {
+                if (!messageQueue.offer(new Dto(rsp, array), QUEUE_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
+                    log.warn("{}: Queue full, dropping message", config.getClientId());
+                }
+            } else {
+                handleResponse(rsp, array);
             }
         } else {
-            int numMsgs =0;
+            int numMsgs = 0;
             final ByteBuffer byteBuffer = ByteBuffer.wrap(array);
             while (byteBuffer.remaining() > 0) {
                 int msgLen = byteBuffer.getShort() & 0xFFFF;
                 if (msgLen > byteBuffer.remaining()) {
-                    log.error("Corrupt packet, array: {} msgLen: {} buf: {}", array.length,msgLen, byteBuffer);
+                    log.error("Corrupt packet, array: {} msgLen: {} buf: {}", array.length, msgLen, byteBuffer);
                     break;
                 }
                 byte[] ofMsgBytes = new byte[msgLen];
@@ -219,26 +242,35 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 try {
                     rsp = OpenfeedGatewayMessage.parseFrom(ofMsgBytes);
                     numMsgs++;
-                }
-                catch(Exception e) {
-                    log.error("Could not decode message dataLength: {} msgNo: {} buf: {} msgLen: {} error: {}", array.length,numMsgs,byteBuffer,msgLen, e.getMessage());
+                } catch (Exception e) {
+                    log.error("Could not decode message dataLength: {} msgNo: {} buf: {} msgLen: {} error: {}", array.length, numMsgs, byteBuffer, msgLen, e.getMessage());
                     break;
                 }
-                this.messageQueue.offer(new Dto(rsp,ofMsgBytes));
+                try {
+                    if (config.isUseResponseQueue()) {
+                        if (!messageQueue.offer(new Dto(rsp, ofMsgBytes), QUEUE_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
+                            log.warn("{}: Queue full, dropping message", config.getClientId());
+                        }
+                    } else {
+                        handleResponse(rsp, array);
+                    }
+                } catch (Exception e) {
+                    log.error("{}: Could not process message, msg: {}", config.getClientId(), rsp, e);
+                }
             }
             if (this.wireStats != null) {
-                this.wireStats.update(length,numMsgs);
+                this.wireStats.update(length, numMsgs);
             }
         }
     }
 
-    private void sendPingFrame(ChannelHandlerContext ctx,String payload) {
+    private void sendPingFrame(ChannelHandlerContext ctx, String payload) {
         try {
             StringBuilder sb = new StringBuilder(DateTimeFormatter.ISO_DATE_TIME.format(ZonedDateTime.now()) + ": ").append(ctx.channel().localAddress() + ": ").append(client.getToken());
-            if(!Strings.isNullOrEmpty(payload)) {
+            if (!Strings.isNullOrEmpty(payload)) {
                 sb.append(payload);
             }
-            ByteBuf outBuf  = ctx.alloc().buffer(sb.length());
+            ByteBuf outBuf = ctx.alloc().buffer(sb.length());
             outBuf.writeBytes(sb.toString().getBytes());
             PingWebSocketFrame frame = new PingWebSocketFrame(outBuf);
             ctx.writeAndFlush(frame);
@@ -247,7 +279,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         }
     }
 
-    private void sendPongFrame(ChannelHandlerContext ctx,String payload) {
+    private void sendPongFrame(ChannelHandlerContext ctx, String payload) {
         try {
             ByteBuf buf = ctx.alloc().buffer(payload.length());
             buf.writeBytes(payload.getBytes());
@@ -265,8 +297,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
             handshakeFuture.setFailure(cause);
         }
         ctx.close();
-        client.disconnect();
-        this.processingThreadFuture.cancel(true);
+        shutdownHandler();
     }
 
     private OpenfeedGatewayMessage decodeJson(String data) {
@@ -286,6 +317,9 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         }
         if (config.isLogAll()) {
             logMsg(ofgm);
+        }
+        if(wireStats != null) {
+            wireStats.incrMessagesConsumed();
         }
 
         switch (ofgm.getDataCase()) {
@@ -402,9 +436,8 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         }
 
         if (messageHandler != null) {
-            messageHandler.onMessage(ofgm,bytes);
+            messageHandler.onMessage(ofgm, bytes);
         }
-
     }
 
     private void log(OpenfeedGatewayMessage ofmsg) {
@@ -416,6 +449,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
     private void logMsg(OpenfeedGatewayMessage ofmsg) {
         log.info("{} < {}", config.getClientId(), PbUtil.toJson(ofmsg));
     }
+
 
     class Dto {
         OpenfeedGatewayMessage message;

@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 public class OpenfeedClientExampleMain {
     private static final Logger log = LoggerFactory.getLogger(OpenfeedClientExampleMain.class);
     private static Options options;
-    private InstrumentCache instrumentCache = new InstrumentCacheImpl();
-    private OpenfeedClientConfigImpl config;
+    private final InstrumentCache instrumentCache = new InstrumentCacheImpl();
+    private final OpenfeedClientConfigImpl config;
     private final boolean useMessageHandler;
 
     public static void main(String[] args) throws Exception {
@@ -71,6 +71,7 @@ public class OpenfeedClientExampleMain {
         options.addOption(Option.builder("scheme").hasArg().desc("URI Scheme, defaults to" + config.getScheme()).build());
         options.addOption(Option.builder("host").hasArg().desc("Host, defaults " + config.getHost()).build());
         options.addOption(Option.builder("port").hasArg().desc("Port, defaults " + config.getPort()).build());
+        options.addOption(Option.builder("rq").desc("Use Response Queue, defaults " + config.isUseResponseQueue()).build());
         //
         options.addOption(Option.builder("lrr").desc("log requests and responses").build());
         options.addOption(Option.builder("lh").desc("log heartbeats").build());
@@ -126,9 +127,7 @@ public class OpenfeedClientExampleMain {
             v = cmdLine.getOptionValue("e");
             String[] vs = v.split(",");
             String[] exchanges = new String[vs.length];
-            for (int i = 0; i < vs.length; i++) {
-                exchanges[i] = vs[i];
-            }
+            System.arraycopy(vs, 0, exchanges, 0, vs.length);
             config.setExchanges(exchanges);
         }
         if (cmdLine.hasOption("chids")) {
@@ -172,7 +171,7 @@ public class OpenfeedClientExampleMain {
             v = cmdLine.getOptionValue("bf");
             String[] filters = v.split(",");
             for (String filterDef : filters) {
-                String filterParams[] = filterDef.split(":");
+                String[] filterParams = filterDef.split(":");
                 config.addBulkSubscriptionFilter(BulkSubscriptionFilter.newBuilder()
                         .setSymbolType(SymbolType.valueOf(filterParams[0]))
                         .setSymbolPattern(filterParams[1])
@@ -205,6 +204,9 @@ public class OpenfeedClientExampleMain {
         }
         if (cmdLine.hasOption("port")) {
             config.setPort(Integer.parseInt(cmdLine.getOptionValue("port")));
+        }
+        if (cmdLine.hasOption("rq")) {
+            config.setUseResponseQueue(true);
         }
         if (cmdLine.hasOption("lrr")) {
             config.setLogRequestResponse(true);
@@ -267,7 +269,7 @@ public class OpenfeedClientExampleMain {
         this.useMessageHandler = useMessageHandler;
     }
 
-    public void start() throws CloneNotSupportedException, InterruptedException {
+    public void start()  {
         config.setClientId("client");
         ConnectionStats connectionStats = new ConnectionStats();
         MarketsManagerImpl marketsManager = new MarketsManagerImpl();

@@ -31,6 +31,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private long reconnectDelayMs = RECONNECT_TIMEOUT_WAIT_MS;
     private int receiveBufferSize = RCV_BUF_SIZE;
     private int maxFramePayloadSize = MAX_FRAME_PAYLOAD_SIZE;
+    private boolean useResponseQueue =false;
 
     // Subscriptions
     private String[] symbols = null;
@@ -40,9 +41,9 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     //
     private Service service = Service.REAL_TIME;
     //
-    private Set<SubscriptionType> subscriptionTypes = new HashSet<>();
-    private Set<InstrumentDefinition.InstrumentType> instrumentTypes = new HashSet<>();
-    private List<BulkSubscriptionFilter> bulkSubscriptionFilters = new ArrayList<>();
+    private final Set<SubscriptionType> subscriptionTypes = new HashSet<>();
+    private final Set<InstrumentDefinition.InstrumentType> instrumentTypes = new HashSet<>();
+    private final List<BulkSubscriptionFilter> bulkSubscriptionFilters = new ArrayList<>();
     private String [] spreadTypes;
     private int snapshotIntervalSec;
     private boolean instrumentRequest;
@@ -74,6 +75,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private int wireStatsDisplaySeconds = 0;
     private int pingSeconds = WEBSOCKET_PING_SECONDS;
     private boolean disableClientOnDuplicateLogin = true;
+
 
     public OpenfeedClientConfigImpl dup() throws CloneNotSupportedException {
         OpenfeedClientConfigImpl o = new OpenfeedClientConfigImpl();
@@ -560,7 +562,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
 
     @Override
     public boolean isLogSymbol(String s) {
-        return logSymbols != null ? logSymbols.contains(s) : false;
+        return logSymbols != null && logSymbols.contains(s);
     }
 
     @Override
@@ -598,6 +600,15 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     @Override
     public int getReceiveBufferSize() {
         return receiveBufferSize;
+    }
+
+    @Override
+    public boolean isUseResponseQueue() {
+        return this.useResponseQueue;
+    }
+
+    public void setUseResponseQueue(boolean useResponseQueue) {
+        this.useResponseQueue = useResponseQueue;
     }
 
     public void setReceiveBufferSize(int receiveBufferSize) {

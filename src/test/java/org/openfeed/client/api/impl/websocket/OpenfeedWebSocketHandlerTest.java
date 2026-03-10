@@ -31,7 +31,7 @@ public class OpenfeedWebSocketHandlerTest {
     private SubscriptionManagerImpl subscriptionManager;
     @Mock
     private WebSocketClientHandshaker webSocketClientHandshaker;
-    @Mock
+
     private OpenfeedClientMessageHandler clientMessageHandler;
 
     private TestClientHandler clientHandler;
