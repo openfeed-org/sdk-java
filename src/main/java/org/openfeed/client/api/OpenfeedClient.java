@@ -170,6 +170,7 @@ public interface OpenfeedClient {
      * @return Subscription
      */
     Subscription getSubscription(String subscriptionId);
+    Subscription getSubscriptionBySymbol(String symbol);
 
     void schedule(Runnable task, long delay, TimeUnit timeUnit);
 

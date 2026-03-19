@@ -25,5 +25,6 @@ public interface SubscriptionManager {
     void removeSubscriptionChannel(int[] channelIds);
 
     Subscription getSubscription(String subscriptionId);
+    Subscription getSubscriptionBySymbol(String symbol);
     Collection<Subscription> getSubscriptions();
 }

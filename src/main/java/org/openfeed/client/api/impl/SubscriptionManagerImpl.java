@@ -17,13 +17,13 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     private static final Logger log = LoggerFactory.getLogger(SubscriptionManager.class);
 
     //
-    private Map<String, Subscription> subscriptionIdToSubscription = new ConcurrentHashMap<>();
-    private Map<Long, Subscription> correlationIdToSubscription = new Long2ObjectHashMap<>();
+    private final Map<String, Subscription> subscriptionIdToSubscription = new ConcurrentHashMap<>();
+    private final Map<Long, Subscription> correlationIdToSubscription = new Long2ObjectHashMap<>();
     //
-    private Map<String, Subscription> symbolToSubscription = new ConcurrentHashMap<>();
-    private Map<Long, Subscription> marketIdToSubscription = new Long2ObjectHashMap<Subscription>();
-    private Map<String, Subscription> exchangeToSubscription = new ConcurrentHashMap<>();
-    private Map<Integer, Subscription> channelIdToSubscription = new Int2ObjectHashMap<Subscription>();
+    private final Map<String, Subscription> symbolToSubscription = new ConcurrentHashMap<>();
+    private final Map<Long, Subscription> marketIdToSubscription = new Long2ObjectHashMap<Subscription>();
+    private final Map<String, Subscription> exchangeToSubscription = new ConcurrentHashMap<>();
+    private final Map<Integer, Subscription> channelIdToSubscription = new Int2ObjectHashMap<Subscription>();
 
     @Override
     public boolean isSubscribed(String symbol) {
@@ -100,6 +100,22 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         Subscription subscription = new Subscription(subscriptionId, subReq);
         subscriptionIdToSubscription.put(subscriptionId, subscription);
         correlationIdToSubscription.put(subReq.getCorrelationId(), subscription);
+        for (SubscriptionRequest.Request req : subReq.getRequestsList()) {
+            switch (req.getDataCase()) {
+                case SYMBOL:
+                    symbolToSubscription.put(req.getSymbol(), subscription);
+                    break;
+                case MARKETID:
+                    break;
+                case EXCHANGE:
+                    break;
+                case CHANNELID:
+                    break;
+                case DATA_NOT_SET:
+                    break;
+                default:
+            }
+        }
     }
 
     @Override
@@ -175,6 +191,11 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
     }
 
     @Override
+    public Subscription getSubscriptionBySymbol(String symbol) {
+        return this.symbolToSubscription.get(symbol);
+    }
+
+    @Override
     public void removeSubscription(long[] marketIds) {
         for (long id : marketIds) {
             Subscription sub = marketIdToSubscription.remove(id);
@@ -216,10 +237,11 @@ public class SubscriptionManagerImpl implements SubscriptionManager {
         Subscription subscription = this.correlationIdToSubscription.get(subscriptionResponse.getCorrelationId());
         if (subscription == null) {
             // Probably an unsubscribe
-            log.debug("No subscription found for: {}", subscriptionResponse);
+            log.info("No subscription found for: {}", subscriptionResponse);
             return;
         }
-        boolean success = subscriptionResponse.getStatus().getResult() == Result.SUCCESS ? true : false;
+        subscription.setResponseStatus(subscriptionResponse.getStatus());
+        boolean success = subscriptionResponse.getStatus().getResult() == Result.SUCCESS;
         if(subscription.getSymbols() != null) {
             if(success) {
                 Arrays.stream(subscription.getSymbols()).forEach( s -> subscription.updateStateSymbol(s,Subscription.SubscriptionState.Subscribed));

@@ -2,18 +2,20 @@ package org.openfeed.client.api.impl;
 
 import org.agrona.collections.Int2ObjectHashMap;
 import org.agrona.collections.Long2ObjectHashMap;
+import org.openfeed.Status;
 import org.openfeed.SubscriptionRequest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Subscription {
 
-
     public enum SubscriptionState {
-        Pending, Subscribed, UnSubscribed;
+        Pending, Subscribed, UnSubscribed
     }
-    private String subscriptionId;
+    private final String subscriptionId;
     private long correlationId;
     private SubscriptionRequest request;
     private  boolean exchangeSubscription;
@@ -21,24 +23,26 @@ public class Subscription {
     private Long[] marketIds;
     private String[] exchanges;
     private Integer [] channelIds;
-    private Map<String, SubscriptionState> symboltoState = new HashMap<>();
-    private Map<Long, SubscriptionState> marketIdtoState = new Long2ObjectHashMap<SubscriptionState>();
-    private Map<String, SubscriptionState> exchangetoState = new HashMap<>();
-    private Map<Integer, SubscriptionState> channelIdtoState = new Int2ObjectHashMap<SubscriptionState>();
+    private final Map<String, SubscriptionState> symboltoState = new HashMap<>();
+    private final Map<Long, SubscriptionState> marketIdtoState = new Long2ObjectHashMap<SubscriptionState>();
+    private final Map<String, SubscriptionState> exchangetoState = new HashMap<>();
+    private final Map<Integer, SubscriptionState> channelIdtoState = new Int2ObjectHashMap<SubscriptionState>();
+    // SubscriptionResponse
+    private Status status;
 
-    public Subscription(String subscriptionId, SubscriptionRequest subReq, String[] values,
+    public Subscription(String subscriptionId, SubscriptionRequest subReq, String[] symbols,
             long correlationId, boolean exchangeSubscription) {
         this.subscriptionId = subscriptionId;
         this.request = subReq;
         this.correlationId  = correlationId;
         this.exchangeSubscription = exchangeSubscription;
         if (!exchangeSubscription) {
-            this.symbols = values;
+            this.symbols = symbols;
             for (String symbol : this.symbols) {
                 symboltoState.put(symbol, SubscriptionState.Pending);
             }
         } else {
-            this.exchanges = values;
+            this.exchanges = symbols;
             for (String exchange : exchanges) {
                 exchangetoState.put(exchange, SubscriptionState.Pending);
             }
@@ -68,17 +72,38 @@ public class Subscription {
     public Subscription(String subscriptionId, SubscriptionRequest subReq) {
         this.subscriptionId = subscriptionId;
         this.request = subReq;
+        this.correlationId  = subReq.getCorrelationId();
+        List<String> symbols = new ArrayList<>();
+        for(SubscriptionRequest.Request req : subReq.getRequestsList()) {
+            switch(req.getDataCase()) {
+                case SYMBOL:
+                    String s = req.getSymbol();
+                    symbols.add(s);
+                    symboltoState.put(s, SubscriptionState.Pending);
+                    break;
+                case MARKETID:
+                    break;
+                case EXCHANGE:
+                    break;
+                case CHANNELID:
+                    break;
+                case DATA_NOT_SET:
+                    break;
+                default:
+            }
+        }
+        this.symbols = symbols.toArray(new String[0]);
     }
 
-    public Subscription.SubscriptionState getStateSymbol(String symbol) {
+    public SubscriptionState getStateSymbol(String symbol) {
         return symboltoState.get(symbol);
     }
 
-    public Subscription.SubscriptionState getStateMarketId(long marketId) {
+    public SubscriptionState getStateMarketId(long marketId) {
         return marketIdtoState.get(marketId);
     }
 
-    public Subscription.SubscriptionState getStateExchange(String exchange) {
+    public SubscriptionState getStateExchange(String exchange) {
         return exchangetoState.get(exchange);
     }
 
@@ -109,7 +134,7 @@ public class Subscription {
                 unsubscribedCount++;
             }
         }
-        return unsubscribedCount == symbols.length ? true : false;
+        return unsubscribedCount == symbols.length;
     }
 
     public boolean markMarketIdUnsubscribed(long id) {
@@ -122,7 +147,7 @@ public class Subscription {
                 unsubscribedCount++;
             }
         }
-        return unsubscribedCount == marketIds.length ? true : false;
+        return unsubscribedCount == marketIds.length;
     }
 
     public boolean markExchangeUnsubscribed(String exchange) {
@@ -135,7 +160,7 @@ public class Subscription {
                 unsubscribedCount++;
             }
         }
-        return unsubscribedCount == exchanges.length ? true : false;
+        return unsubscribedCount == exchanges.length;
     }
 
     public boolean markChannelUnsubscribed(int channelId) {
@@ -148,7 +173,7 @@ public class Subscription {
                 unsubscribedCount++;
             }
         }
-        return unsubscribedCount == channelIds.length ? true : false;
+        return unsubscribedCount == channelIds.length;
     }
 
     public String getSubscriptionId() {
@@ -157,6 +182,14 @@ public class Subscription {
 
     public SubscriptionRequest getRequest() {
         return request;
+    }
+
+    public long getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(long correlationId) {
+        this.correlationId = correlationId;
     }
 
     public boolean isExchange() {
@@ -181,6 +214,14 @@ public class Subscription {
 
     public Integer [] getChannelIds() {
         return channelIds;
+    }
+
+    public Status getResponseStatus() {
+        return status;
+    }
+
+    public void setResponseStatus(Status status) {
+        this.status = status;
     }
 
     public void setSubscriptionsToUnsubscribed() {

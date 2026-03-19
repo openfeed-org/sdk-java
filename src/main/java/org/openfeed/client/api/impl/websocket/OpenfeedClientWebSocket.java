@@ -659,9 +659,9 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                 ":" +
                 service.getNumber() +
                 ":" +
-                String.valueOf(subscriptionTypes) +
+                subscriptionTypes +
                 ":" +
-                String.valueOf(symbols);
+                symbols;
         return sb;
     }
 
@@ -670,9 +670,9 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                 ":" +
                 service.getNumber() +
                 ":" +
-                String.valueOf(subscriptionTypes) +
+                subscriptionTypes +
                 ":" +
-                String.valueOf(ids);
+                ids;
         return sb;
     }
 
@@ -690,9 +690,9 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                 ":" +
                 service.getNumber() +
                 ":" +
-                String.valueOf(subscriptionTypes) +
+                subscriptionTypes +
                 ":" +
-                String.valueOf(ids);
+                ids;
         return sb;
     }
 
@@ -701,7 +701,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                 ":" +
                 service.getNumber() +
                 ":" +
-                String.valueOf(symbols);
+                symbols;
         return sb;
     }
 
@@ -1178,6 +1178,11 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     @Override
     public Subscription getSubscription(String subscriptionId) {
         return this.subscriptionManager.getSubscription(subscriptionId);
+    }
+
+    @Override
+    public Subscription getSubscriptionBySymbol(String symbol) {
+        return this.subscriptionManager.getSubscriptionBySymbol(symbol);
     }
 
 }
