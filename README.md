@@ -9,7 +9,7 @@
 
 	mvn clean install
 
-An executable jar will be build in `target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar`, with the main class being [OpenfeedClientExampleMain](src/main/java/org/openfeed/client/OpenfeedClientExampleMain.java) 
+An executable jar will be build in `target/openfeed-client-<version>.jar`, with the main class being [OpenfeedClientExampleMain](src/main/java/org/openfeed/client/OpenfeedClientExampleMain.java) 
 
 ## Maven Repository
 The latest released jar is in the Maven Repositories under:
@@ -21,48 +21,50 @@ The latest released jar is in the Maven Repositories under:
                 <version><!-- Insert version --></version>
             </dependency>
 ```
+This jar is an uber/fat jar.
+
 ## Command line examples
 
 ### Display Command Line Help
 
 ```shell
-java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -h
+java -jar target/openfeed-client-<version>.jar -h
 ```
 
 ### To connect and subscribe for IBM quotes and display updates
 
 ```shell
-java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -s IBM -lu
+java -jar target/openfeed-client-<version>.jar -u <user> -p <password> -s IBM -lu
 ```
 
 ### Subscribe for all of NYSE and NASDAQ
 
 ```shell
-java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -e NYSE,NASDAQ
+java -jar target/openfeed-client-<version>.jar -u <user> -p <password> -e NYSE,NASDAQ
 ```
 
 ### Subscribe only for trades for AAPL and IBM and display the updates
 
 ```shell
-java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -t -s AAPL,IBM -lu
+java -jar target/openfeed-client-<version>.jar -u <user> -p <password> -t -s AAPL,IBM -lu
 ```  
 
 ### Subscribe for OHLC and Price Level Depth for ESZ0
 
 ```shell
-java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -s ESZ0 -st depth_price,ohlc -ls -ld
+java -jar target/openfeed-client-<version>.jar -u <user> -p <password> -s ESZ0 -st depth_price,ohlc -ls -ld
 ```  
 
 ### Get all instruments for NYSE and display them.
 
 ```shell
-java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -ir -e NYSE -li
+java -jar target/openfeed-client-<version>.jar -u <user> -p <password> -ir -e NYSE -li
 ```
 
 ### To log heartbeats (keep alives)
 
 ```shell
-java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -e NYSE -lh
+java -jar target/openfeed-client-<version>.jar -u <user> -p <password> -e NYSE -lh
 ```
 
 The default heartbeat will be of the form:
@@ -80,7 +82,7 @@ client-0: Exchange < {"transactionTime":"1570465382000080120","exchange":true,"c
 ### To get a list of all subscription exchange codes: 
 
 ```shell
-java -jar target/openfeed-client-1.0.0-SNAPSHOT-shaded.jar -u <user> -p <password> -er
+java -jar target/openfeed-client-<version>.jar -u <user> -p <password> -er
 ```
   
 ## API Usage
