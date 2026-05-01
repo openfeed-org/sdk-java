@@ -16,6 +16,7 @@ public interface OpenfeedClient {
 
     /**
      * Will drop the connection and re-connect if configured.
+     * If not configured for re-connect will then shut down the connection.
      */
     void disconnect();
 

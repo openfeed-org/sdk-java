@@ -65,7 +65,7 @@ public class WireStats {
     }
 
     public String toString() {
-        return "Wire: Mbytes = " + bytesReceived / MB
+        return "Wire: MbytesReceived = " + bytesReceived / MB
                 + ", packets = "+packetsReceived + ", avePacketSizeBytes = "+ (packetsReceived > 0 ? (bytesReceived/packetsReceived) : 0)
                 + ", aveMsgs/packet = "+ (packetsReceived > 0 ? (messagesPerPacket/packetsReceived) : 0)
                 + ", pings = "+ this.pingsReceived + ", pongs = "+ this.pongsReceived

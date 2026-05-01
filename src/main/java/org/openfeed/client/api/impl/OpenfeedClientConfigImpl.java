@@ -10,7 +10,8 @@ import org.openfeed.client.api.OpenfeedClientConfig;
 import java.util.*;
 
 public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
-    private static final long RECONNECT_TIMEOUT_WAIT_MS = 2000;
+    private static final long RECONNECT_TIMEOUT_MS = 2_000;
+    public static final long MAX_RECONNECT_DELAY_MS     = 10_000;
     private static final int RCV_BUF_SIZE = 10 * (1024 * 1024);
     private static final int MAX_FRAME_PAYLOAD_SIZE = 128 * 1024;
     private static final int PROTOCOL_VERSION = 1;
@@ -28,7 +29,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private String jwt = null;
     private String sessionId = null;
     private boolean reconnect = true;
-    private long reconnectDelayMs = RECONNECT_TIMEOUT_WAIT_MS;
+    private long reconnectDelayMs = RECONNECT_TIMEOUT_MS;
     private int receiveBufferSize = RCV_BUF_SIZE;
     private int maxFramePayloadSize = MAX_FRAME_PAYLOAD_SIZE;
     private boolean useResponseQueue =false;
@@ -130,6 +131,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
         o.statsDisplaySeconds = this.statsDisplaySeconds;
         o.wireStats = this.wireStats;
         o.wireStatsDisplaySeconds = this.wireStatsDisplaySeconds;
+        o.pingSeconds = this.pingSeconds;
         return o;
     }
 

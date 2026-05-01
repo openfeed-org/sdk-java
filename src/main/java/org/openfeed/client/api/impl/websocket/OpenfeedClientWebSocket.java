@@ -4,7 +4,14 @@ import com.google.common.base.Strings;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelPromise;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -13,10 +20,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
-import io.netty.handler.codec.http.websocketx.WebSocketVersion;
+import io.netty.handler.codec.http.websocketx.*;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
@@ -38,29 +42,31 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
+public class OpenfeedClientWebSocket implements OpenfeedClient {
 
     private static final Logger log = LoggerFactory.getLogger(OpenfeedClientWebSocket.class);
     private static final String OS = System.getProperty("os.name").toLowerCase();
-    private static final int CONNECT_TIMEOUT_MSEC = 3000;
+    private final boolean EPOLL = OS.indexOf("linux") >= 0;
+    private static final int CONNECT_TIMEOUT_MSEC = 3_000;
     private static final long LOGIN_WAIT_SEC = 15;
     private static final int BUF_SIZE_ENCODE = 1024;
     private static final int WSS_PORT = 443;
 
 
     private final OpenfeedClientConfigImpl config;
-    private Bootstrap clientBootstrap;
-    private EventLoopGroup clientEventLoopGroup;
+    private final EventLoopGroup clientEventLoopGroup;
     private OpenfeedWebSocketHandler webSocketHandler;
     private URI uri;
     private Channel channel;
-    private ChannelPromise loginFuture;
+    private long reconnectDelayMs;
+    private CompletableFuture<String> loginFuture;
     private ChannelPromise logoutFuture;
     // Session State
     private long correlationId = 1;
@@ -71,7 +77,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private final OpenfeedClientHandler clientHandler;
     private final OpenfeedClientMessageHandler messageHandler;
     //
-    private final AtomicBoolean running = new AtomicBoolean(true);
     private final AtomicBoolean connected = new AtomicBoolean(false);
     private final AtomicBoolean reconnectInProgress = new AtomicBoolean(false);
     private int numSuccessLogins = 0;
@@ -96,6 +101,12 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         this.clientHandler = clientHandler;
         this.messageHandler = messageHandler;
         this.clientVersion = getClientVersion();
+        this.reconnectDelayMs = config.getReconnectDelayMs();
+        if (EPOLL) {
+            clientEventLoopGroup = new EpollEventLoopGroup(1);
+        } else {
+            clientEventLoopGroup = new NioEventLoopGroup(1);
+        }
     }
 
 
@@ -116,10 +127,31 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     @Override
     public void connectAndLogin() {
         log.info("{}: Starting Openfeed Client, user: {}", config.getClientId(), config.getUserName());
-        init();
-        attemptConnectAndLogin();
-        // Start re-connection task
-        new Thread(this).start();
+        this.loginFuture = new CompletableFuture<>();
+
+        // Connect
+        scheduleConnect(0);
+        // Wait for login response
+        try {
+            loginFuture.get(LOGIN_WAIT_SEC, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            log.error("{}: Login timeout for user: {}", config.getClientId(), config.getUserName());
+        } catch (Exception e) {
+           log.error("{}: Login failed: ", config.getClientId(),e.getCause());
+        }
+    }
+
+    private void scheduleConnect(long delayMs) {
+        if (connected.get()) {
+            return;
+        }
+        long delay = delayMs;
+        if (delay > 0) {
+            reconnectDelayMs = Math.min(reconnectDelayMs * 2, OpenfeedClientConfigImpl.MAX_RECONNECT_DELAY_MS);
+            delay = reconnectDelayMs;
+            log.info("Reconnecting in {} ms", delay);
+        }
+        clientEventLoopGroup.schedule(this::doConnect, delay, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -130,30 +162,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     @Override
     public long getNextCorrelationId() {
         return this.correlationId++;
-    }
-
-    @Override
-    public void run() {
-        while (running.get()) {
-            if (!connected.get()) {
-                log.info("{}: Attempting reconnection in {} ms", config.getClientId(),
-                        config.getReconnectDelayMs());
-                try {
-                    Thread.sleep(config.getReconnectDelayMs());
-                } catch (InterruptedException ie) {
-                    break;
-                }
-                init();
-                attemptConnectAndLogin();
-                if (numSuccessLogins > 1 && isLoggedIn()) {
-                    resubscribe();
-                    reconnectInProgress.set(false);
-                }
-            }
-            // Wait until channel closes, if connected
-            awaitChannelClose();
-        }
-        log.info("{}: Shutting down re-connect thread", config.getClientId());
     }
 
     private void resubscribe() {
@@ -172,7 +180,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         }
     }
 
-    private void init() {
+    private void doConnect() {
         uri = null;
         final boolean ssl = config.getScheme().equalsIgnoreCase("wss");
         SslContext sslCtx = null;
@@ -186,7 +194,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
             }
         }
         try {
-            uri = new URI(config.getScheme() + "://" + config.getHost() + ":" + config.getPort() + "/ws"+ (config.getParameterSessionId() != null ? "?"+OpenfeedClientConfig.PARAMETER_SESSION_ID+"="+config.getParameterSessionId() : ""));
+            uri = new URI(config.getScheme() + "://" + config.getHost() + ":" + config.getPort() + "/ws" + (config.getParameterSessionId() != null ? "?" + OpenfeedClientConfig.PARAMETER_SESSION_ID + "=" + config.getParameterSessionId() : ""));
         } catch (URISyntaxException ex) {
             log.error("{}: Invalid URL err: {}", config.getClientId(), ex.getMessage());
         }
@@ -195,21 +203,12 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         // Connect with V13 (RFC 6455 aka HyBi-17).
         webSocketHandler = new OpenfeedWebSocketHandler(config, this, this.subscriptionManager, clientHandler, WebSocketClientHandshakerFactory
                 .newHandshaker(uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders(), config.getMaxFramePayloadSize()), messageHandler);
-        boolean epoll = OS.indexOf("linux") >= 0;
 
-        // Ensure previous event loop was shutdown
-        shutdown();
-        // Configure the event loop
-        if (epoll) {
-            clientEventLoopGroup = new EpollEventLoopGroup();
-        } else {
-            clientEventLoopGroup = new NioEventLoopGroup();
-        }
         log.debug("{}: Using EventLoop: {}", config.getClientId(), clientEventLoopGroup.getClass());
         try {
-            clientBootstrap = new Bootstrap();
+            Bootstrap clientBootstrap = new Bootstrap();
             clientBootstrap.group(clientEventLoopGroup);
-            if (epoll) {
+            if (EPOLL) {
                 clientBootstrap.channel(EpollSocketChannel.class);
             } else {
                 clientBootstrap.channel(NioSocketChannel.class);
@@ -239,9 +238,41 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                             p.addLast(webSocketHandler);
                         }
                     });
+
+            log.info("{}: Starting connection to: {}", config.getClientId(), uri);
+
+            // Connect
+            clientBootstrap.connect(config.getHost(), config.getPort()).addListener((ChannelFuture cf) -> {
+                if (!cf.isSuccess()) {
+                    log.warn("Websocket connect failed: {}", cf.cause().getMessage());
+                    scheduleConnect(reconnectDelayMs);
+                    return;
+                }
+                this.channel = cf.channel();
+
+                // Wait for the WebSocket handshake
+                webSocketHandler.handshakeFuture().addListener(hf -> {
+                    if (!hf.isSuccess()) {
+                        log.warn("WS handshake failed: {}", hf.cause().getMessage());
+                        scheduleConnect(reconnectDelayMs);
+                        return;
+                    }
+                    // Successful Connection
+                    this.reconnectDelayMs = config.getReconnectDelayMs();
+                    this.connected.set(true);
+                    if (eventHandler != null) {
+                        eventHandler.onEvent(this, new OpenfeedEvent(EventType.Connected, "Connected to: " + uri));
+                    }
+
+                    // login
+                    login();
+                    log.info("{}: Successfully connected to: {} from: {}", config.getClientId(), uri, channel.localAddress());
+                });
+            });
+
         } catch (Exception e) {
             log.error("{} Initialization error: {}", config.getClientId(), e.getMessage());
-            throw new RuntimeException(config.getClientId() + ": Could not initialize environment", e);
+            shutdownOrReconnect();
         }
     }
 
@@ -255,50 +286,26 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         channel.eventLoop().schedule(task, delay, timeUnit);
     }
 
-    private void attemptConnectAndLogin() {
-        try {
-            log.info("{}: Starting connection to: {}", config.getClientId(), uri);
-            // Connect
-            ChannelFuture connnectFuture = clientBootstrap.connect(config.getHost(), config.getPort()).sync();
-            this.channel = connnectFuture.channel();
-            // Wait for connect
-            webSocketHandler.handshakeFuture().sync();
-            this.connected.set(true);
-            if (eventHandler != null) {
-                eventHandler.onEvent(this, new OpenfeedEvent(EventType.Connected, "Connected to: " + uri));
-            }
-            // login
-            login();
-
-            log.info("{}: Successfully connected to: {} from: {}", config.getClientId(), uri, channel.localAddress());
-        } catch (Exception e) {
-            log.error("{}: Could not connect to uri {} err: {}", config.getClientId(), uri, e.getMessage());
-            reconnectOrShutdown(!config.isReconnect());
-        }
-    }
-
-    private void reconnectOrShutdown(boolean shutdown) {
+    private void shutdownOrReconnect() {
         closeConnection();
-        if (!config.isReconnect() || shutdown) {
-            if (!running.get()) {
-                // Already shutdown
-                return;
-            }
-            this.running.set(false);
+        if (!config.isReconnect()) {
             log.warn("{}: Closing and shutting down.", config.getClientId());
             shutdown();
         } else {
             log.info("{}: re-connecting in: {} ms", config.getClientId(), config.getReconnectDelayMs());
-            reconnectInProgress.set(true);
+            scheduleConnect(reconnectDelayMs);
         }
     }
 
     private void closeConnection() {
-        if (this.channel != null && this.channel.isActive()) {
-            this.channel.close();
-        }
         if (eventHandler != null) {
             eventHandler.onEvent(this, new OpenfeedEvent(EventType.Disconnected, "Disconnected from: " + uri));
+        }
+        // Send Close Frame
+        if (this.channel != null && this.channel.isActive()) {
+            this.channel.writeAndFlush(new CloseWebSocketFrame())
+                    .addListener(ChannelFutureListener.CLOSE);
+            this.channel.close();
         }
         this.connected.set(false);
         this.token = null;
@@ -307,25 +314,14 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     private void shutdown() {
         if (clientEventLoopGroup != null && !clientEventLoopGroup.isShutdown()) {
             log.info("{}: Shutting down event loop", config.getClientId());
-            clientEventLoopGroup.shutdownGracefully();
+            clientEventLoopGroup.shutdownGracefully(0, 1, TimeUnit.SECONDS);
         }
     }
 
-    private void awaitChannelClose() {
-        if (this.channel != null && channel.isActive()) {
-            try {
-                this.channel.closeFuture().sync();
-                log.info("{}: Channel Closed", config.getClientId());
-                this.channel = null;
-                closeConnection();
-                // For re-subscribe mark subscriptions as unsubsribed
-                subscriptionManager.setAllSubscriptionsUnsubcribed();
-            } catch (InterruptedException e) {
-                log.error("{}: Channel Close Issue: {}", config.getClientId(), e.getMessage());
-            }
-        }
-    }
-
+    /**
+     * Will drop the connection and re-connect if configured.
+     * If not configured for re-connect will then shut down the connection.
+     */
     @Override
     public void disconnect() {
         this.connected.set(false);
@@ -333,9 +329,12 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         if (isLoggedIn()) {
             logout();
         }
-        reconnectOrShutdown(!config.isReconnect());
+        shutdownOrReconnect();
     }
 
+    /**
+     * Will disconnect and shutdown the connection.
+     */
     @Override
     public void close() {
         config.setReconnect(false);
@@ -343,6 +342,20 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
     }
 
     private void login() {
+        this.loginFuture.whenComplete( (f,e) -> {
+            if (e != null) {
+                log.error("{}: Login not successful for user: {}", config.getClientId(),config.getUserName(),e);
+            } else {
+                numSuccessLogins++;
+                if (eventHandler != null) {
+                    eventHandler.onEvent(this, new OpenfeedEvent(EventType.Login, "Logged In"));
+                }
+                // If previous subscribed then subscribe again
+                if (numSuccessLogins > 1 && isLoggedIn()) {
+                    resubscribe();
+                }
+            }
+        });
         LoginRequest.Builder request = LoginRequest.newBuilder().setCorrelationId(correlationId++)
                 .setClientVersion(clientVersion).setProtocolVersion(config.getProtocolVersion());
         if (!Strings.isNullOrEmpty(config.getJwt())) {
@@ -352,20 +365,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         }
         OpenfeedGatewayRequest ofreq = request().setLoginRequest(request).build();
         send(ofreq);
-        this.loginFuture = this.channel.newPromise();
-        try {
-            boolean ret = this.loginFuture.await(LOGIN_WAIT_SEC, TimeUnit.SECONDS);
-            if (!ret) {
-                log.error("{}: Login timeout for user: ", config.getClientId(), request.getUsername());
-            } else {
-                numSuccessLogins++;
-                if (eventHandler != null) {
-                    eventHandler.onEvent(this, new OpenfeedEvent(EventType.Login, "Logged In"));
-                }
-            }
-        } catch (InterruptedException e) {
-            log.error("{}: Login Timeout err: {}", config.getClientId(), e.getMessage());
-        }
     }
 
     private void log(OpenfeedGatewayRequest ofreq) {
@@ -380,17 +379,12 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
                 .build();
         OpenfeedGatewayRequest ofreq = request().setLogoutRequest(request).build();
         send(ofreq);
-        this.logoutFuture = this.channel.newPromise();
-        try {
-            boolean ret = this.logoutFuture.await(LOGIN_WAIT_SEC, TimeUnit.SECONDS);
-            if (!ret) {
+        this.logoutFuture = this.channel.newPromise().addListener(f -> {
+            if (!f.isSuccess()) {
                 log.error("Logout Timeout");
                 throw new RuntimeException("Logout timeout");
             }
-        } catch (InterruptedException e) {
-            log.error("Logout Timeout err: {}", e.getMessage());
-            throw new RuntimeException("Logout timeout");
-        }
+        });
     }
 
     @Override
@@ -401,13 +395,13 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         log(req);
 
         // Binary
-        ByteBuf outBuf = ByteBufAllocator.DEFAULT.buffer(1044,config.getMaxFramePayloadSize());
+        ByteBuf outBuf = ByteBufAllocator.DEFAULT.buffer(1044, config.getMaxFramePayloadSize());
         try {
             this.encodeBuf.reset();
             req.writeTo(this.encodeBuf);
-            byte [] bytes = encodeBuf.toByteArray();
-            if(bytes.length >= config.getMaxFramePayloadSize()) {
-                log.error("request size({}) is large than websocket frame size({}), not sending {}",bytes.length,config.getMaxFramePayloadSize(),PbUtil.toJson(req).substring(0,50));
+            byte[] bytes = encodeBuf.toByteArray();
+            if (bytes.length >= config.getMaxFramePayloadSize()) {
+                log.error("request size({}) is large than websocket frame size({}), not sending {}", bytes.length, config.getMaxFramePayloadSize(), PbUtil.toJson(req).substring(0, 50));
                 return;
             }
             outBuf.writeBytes(encodeBuf.toByteArray());
@@ -438,9 +432,9 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
 
     public void completeLogin(boolean success, String error) {
         if (success) {
-            this.loginFuture.setSuccess();
+            this.loginFuture.complete("Login Successful");
         } else {
-            this.loginFuture.setFailure(new RuntimeException(error));
+            this.loginFuture.completeExceptionally(new RuntimeException(error));
         }
     }
 
@@ -793,7 +787,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient, Runnable {
         request.addRequests(subReq);
 
         String subscriptionId = createSubscriptionId(config.getUserName(), service, request.build());
-        subscriptionManager.addSubscriptionExchange(subscriptionId, request.build(), new String[] {exchange}, correlationId);
+        subscriptionManager.addSubscriptionExchange(subscriptionId, request.build(), new String[]{exchange}, correlationId);
         OpenfeedGatewayRequest req = request().setSubscriptionRequest(request).build();
         send(req);
         return subscriptionId;

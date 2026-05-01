@@ -296,7 +296,6 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
         if (!handshakeFuture.isDone()) {
             handshakeFuture.setFailure(cause);
         }
-        ctx.close();
         shutdownHandler();
     }
 
