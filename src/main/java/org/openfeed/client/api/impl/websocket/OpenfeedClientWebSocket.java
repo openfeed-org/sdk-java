@@ -4,14 +4,7 @@ import com.google.common.base.Strings;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.ChannelPromise;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -20,7 +13,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.websocketx.*;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
+import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
@@ -44,7 +40,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -78,7 +73,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient {
     private final OpenfeedClientMessageHandler messageHandler;
     //
     private final AtomicBoolean connected = new AtomicBoolean(false);
-    private final AtomicBoolean reconnectInProgress = new AtomicBoolean(false);
     private int numSuccessLogins = 0;
     private final String clientVersion;
 
@@ -127,7 +121,6 @@ public class OpenfeedClientWebSocket implements OpenfeedClient {
     @Override
     public void connectAndLogin() {
         log.info("{}: Starting Openfeed Client, user: {}", config.getClientId(), config.getUserName());
-        this.loginFuture = new CompletableFuture<>();
 
         // Connect
         scheduleConnect(0);
@@ -145,6 +138,8 @@ public class OpenfeedClientWebSocket implements OpenfeedClient {
         if (connected.get()) {
             return;
         }
+        this.loginFuture = new CompletableFuture<>();
+
         long delay = delayMs;
         if (delay > 0) {
             reconnectDelayMs = Math.min(reconnectDelayMs * 2, OpenfeedClientConfigImpl.MAX_RECONNECT_DELAY_MS);
@@ -350,7 +345,9 @@ public class OpenfeedClientWebSocket implements OpenfeedClient {
                 if (eventHandler != null) {
                     eventHandler.onEvent(this, new OpenfeedEvent(EventType.Login, "Logged In"));
                 }
+
                 // If previous subscribed then subscribe again
+                log.debug("LOGIN: numSuccessLogins: {} connected: {} token: {}",numSuccessLogins,connected.get(),this.token);
                 if (numSuccessLogins > 1 && isLoggedIn()) {
                     resubscribe();
                 }
@@ -1151,7 +1148,7 @@ public class OpenfeedClientWebSocket implements OpenfeedClient {
 
     @Override
     public boolean isReConnect() {
-        return numSuccessLogins > 1 && this.reconnectInProgress.get();
+        return numSuccessLogins > 1;
     }
 
     public void setConnected(boolean b) {

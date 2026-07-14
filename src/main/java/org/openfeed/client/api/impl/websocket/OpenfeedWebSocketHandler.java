@@ -326,7 +326,7 @@ public class OpenfeedWebSocketHandler extends SimpleChannelInboundHandler<Object
                 log(ofgm);
                 LoginResponse loginResponse = ofgm.getLoginResponse();
                 if (loginResponse.getStatus().getResult() == Result.SUCCESS) {
-                    log.debug("{}: Login successful: token {}", config.getClientId(), PbUtil.toJson(ofgm));
+                    log.info("{}: Login successful: token {}", config.getClientId(), PbUtil.toJson(ofgm));
                     this.client.setToken(loginResponse.getToken());
                     this.client.completeLogin(true, null);
                 } else {
