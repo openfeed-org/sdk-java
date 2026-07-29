@@ -71,7 +71,7 @@ public class OpenfeedClientConfigImpl implements OpenfeedClientConfig {
     private boolean logWire;
     //
     private int numberOfConnections = 1;
-    private int statsDisplaySeconds = 30;
+    private int statsDisplaySeconds = 0;
     private boolean wireStats = false;
     private int wireStatsDisplaySeconds = 0;
     private int pingSeconds = WEBSOCKET_PING_SECONDS;
